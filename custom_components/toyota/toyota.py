@@ -2,6 +2,8 @@
 import requests
 import logging
 
+from langcodes import Language
+
 # ENDPOINTS
 BASE_URL = "https://myt-agg.toyota-europe.com/cma/api"
 ENDPOINT_AUTH = 'https://ssoms.toyota-europe.com/authenticate'
@@ -21,6 +23,8 @@ VIN = 'vin'
 TOKEN = 'token'
 UUID = 'uuid'
 CUSTOMERPROFILE = 'customerProfile'
+FUEL = "fuel"
+MILEAGE = "mileage"
 TYPE = 'type'
 VALUE = 'value'
 UNIT = 'unit'
@@ -38,22 +42,45 @@ _LOGGER: logging.Logger = logging.getLogger(__package__)
 
 class MyT:
 
-    def __init__(self, vin, locale, uuid=None, username=None, password=None, token=None):
-        self._username = username
-        self._password = password
-        self._vin = vin
-        self._locale = locale
+    def __init__(
+        self,
+        vin: str,
+        locale: str,
+        uuid: str = None,
+        username: str = None,
+        password: str = None,
+        token: str = None
+    ) -> None:
+        """Toyota API"""
+
+        if self.locale_is_valid(locale):
+            self._locale = locale
+        else:
+            _LOGGER.error("Please provide a valid locale string! Valid format is: en-gb.")
+
+        if self.vin_is_valid(vin):
+            self._vin = vin
+        else:
+            _LOGGER.error("Please provide a valid vin-number!")
 
         if token is None or uuid is None:
-            token, uuid = self.authenticate()
-            self._token = token
-            self._uuid = uuid
+            token, uuid = self.authenticate(username, password)
+            self.token = token
+            self.uuid = uuid
         else:
-            self._uuid = uuid
-            self._token = token
+            self.token = token
+            self.uuid = uuid
 
     @staticmethod
-    def _create_login_json(username, password, vin):
+    def vin_is_valid(vin: str) -> bool:
+        return len(vin) == 17
+
+    @staticmethod
+    def locale_is_valid(locale: str) -> bool:
+        return Language.make(locale).is_valid()
+
+    @staticmethod
+    def create_login_json(username: str, password: str, vin: str) -> dict:
         login = {
             USERNAME: username,
             PASSWORD: password,
@@ -62,27 +89,36 @@ class MyT:
         return login
 
     @staticmethod
-    def request(endpoint, headers):
+    def request(endpoint: str, headers: dict):
 
         url = BASE_URL + endpoint
 
-        response = requests.get(url, headers=headers, timeout=TIMEOUT)
+        response = requests.get(
+            url,
+            headers=headers,
+            timeout=TIMEOUT
+        )
 
         if response.status_code != HTTP_OK:
             _LOGGER.error('HTTP error: {} text: {}'.format(response.status_code, response.text))
-            return
+            return False
 
         return response.json()
 
-    def authenticate(self):
+    def authenticate(self, username: str, password: str):
         headers = LOGIN_BASE_HEADERS
         headers.update({'X-TME-LC': self._locale})
 
-        response = requests.post(ENDPOINT_AUTH, headers=headers, timeout=TIMEOUT, json=self._create_login_json(self._username, self._password, self._vin))
+        response = requests.post(
+            ENDPOINT_AUTH,
+            headers=headers,
+            timeout=TIMEOUT,
+            json=self.create_login_json(username, password, self._vin)
+        )
 
         if response.status_code != HTTP_OK:
             _LOGGER.error('Login failed, check your credentials! {}'.format(response.text))
-            return
+            return False
 
         result = response.json()
 
@@ -91,39 +127,48 @@ class MyT:
 
         return token, uuid
 
-    def get_odometer(self):
-
-        headers = {'Cookie': f'iPlanetDirectoryPro={self._token}'}
-        endpoint = f'/vehicle/{self._vin}/addtionalInfo'
-
-        data = self.request(endpoint, headers=headers)
+    async def get_odometer(self) -> tuple:
 
         odometer = 0
         odometer_unit = ''
         fuel = 0
+        headers = {'Cookie': f'iPlanetDirectoryPro={self._token}'}
+        endpoint = f'/vehicle/{self._vin}/addtionalInfo'
+
+        data = self.request(
+            endpoint,
+            headers=headers
+        )
+
         for item in data:
-            if item[TYPE] == 'mileage':
+            if item[TYPE] == MILEAGE:
                 odometer = item[VALUE]
                 odometer_unit = item[UNIT]
-            if item[TYPE] == 'Fuel':
+            if item[TYPE] == FUEL:
                 fuel = item[VALUE]
         return odometer, odometer_unit, fuel
 
-    def get_parking(self):
+    async def get_parking(self) -> str:
 
         headers = {'Cookie': f'iPlanetDirectoryPro={self._token}', 'VIN': self._vin}
         endpoint = f'/users/{self._uuid}/vehicle/location'
 
-        parking = self.request(endpoint, headers=headers)
+        parking = self.request(
+            endpoint,
+            headers=headers
+        )
 
         return parking
 
-    def get_vehicle_information(self):
+    async def get_vehicle_information(self) -> tuple:
 
         headers = {'Cookie': f'iPlanetDirectoryPro={self._token}', 'uuid': self._uuid, 'X-TME-LOCALE': self._locale}
         endpoint = f'/vehicles/{self._vin}/remoteControl/status'
 
-        data = self.request(endpoint, headers=headers)
+        data = self.request(
+            endpoint,
+            headers=headers
+        )
 
         last_updated = data[VEHICLE_INFO][ACQUISITIONDATE]
         battery = data[VEHICLE_INFO][CHARGE_INFO]

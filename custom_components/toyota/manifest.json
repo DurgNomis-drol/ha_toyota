@@ -1,0 +1,11 @@
+{
+  "after_dependencies": ["cloud", "http"],
+  "domain": "toyota",
+  "name": "Toyota Connected Services",
+  "config_flow": true,
+  "documentation": "https://github.com/DurgNomis-drol/ha_toyota",
+  "issue_tracker": "https://github.com/DurgNomis-drol/ha_toyota/issues",
+  "codeowners": ["@DurgNomis-drol"],
+  "requirements": ["requests"],
+  "version": "0.1.0"
+}
