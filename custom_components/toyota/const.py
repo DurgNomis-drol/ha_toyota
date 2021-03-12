@@ -21,7 +21,7 @@ FUEL = "fuel"
 PARKING = "parking"
 BATTERY = "battery"
 HVAC = "hvac"
-HVAC_TEMPERATURE = "temperature"
+HVAC_TEMPERATURE = "InsideTemperature"
 LAST_UPDATED = "last_updated"
 
 # ICONS

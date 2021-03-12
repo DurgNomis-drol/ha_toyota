@@ -4,7 +4,7 @@ from datetime import timedelta
 import logging
 
 import async_timeout
-from toyota import MyT
+from .toyota import MyT
 
 from homeassistant.config_entries import SOURCE_REAUTH, ConfigEntry
 from homeassistant.const import CONF_EMAIL, CONF_PASSWORD, CONF_API_TOKEN
@@ -44,39 +44,11 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     token = entry.data[CONF_API_TOKEN]
 
     # websession = aiohttp_client.async_get_clientsession(hass)
-    if uuid is not None and token is not None:
-        client = MyT(token=token, uuid=uuid, locale=locale, vin=vin)
-    else:
-        client = MyT(username=email, password=password, locale=locale, vin=vin)
+    client = ToyotaApi(username=email, password=password, locale=locale, vin=vin, uuid=uuid, token=token)
 
     async def async_update_data():
         """Fetch data from Toyota API."""
-
-        async def with_timeout(task):
-            async with async_timeout.timeout(10):
-                return await task
-
-        odometer, odometer_unit, fuel = await with_timeout(client.get_odometer())
-
-        parking = await with_timeout(client.get_parking())
-
-        battery, hvac, last_updated = await with_timeout(client.get_vehicle_information())
-
-        vehicle = {
-            NICKNAME: nickname,
-            VIN: vin,
-            LAST_UPDATED: last_updated,
-            PARKING: parking,
-            VEHICLE_INFO: {
-                ODOMETER: odometer,
-                ODOMETER_UNIT: odometer_unit,
-                FUEL: fuel,
-                BATTERY: battery,
-                HVAC: hvac
-            }
-        }
-
-        return vehicle
+        return await client.gather_information(nickname=nickname, vin=vin)
 
     coordinator = DataUpdateCoordinator(
         hass,
@@ -144,3 +116,65 @@ class ToyotaEntity(CoordinatorEntity):
     def device_state_attributes(self):
         """Return the state attributes."""
         return {self.last_updated}
+
+
+class ToyotaApi:
+    """Toyota API"""
+
+    def __init__(
+        self,
+        username: str,
+        password: str,
+        locale: str,
+        vin: str,
+        uuid: str = None,
+        token: str = None,
+         ) -> None:
+        self.username = username
+        self.password = password
+        self.locale = locale
+        self.uuid = uuid
+        self.vin = vin
+        self.token = token
+        self.client = MyT(
+            username=self.username, password=self.password, locale=self.locale, vin=self.vin, token=self.token
+        )
+
+    async def test_credentials(self, username, password):
+        """Tests if your credentials are valid."""
+        token, uuid = self.client.perform_login(username=username, password=password)
+        if token is not None and uuid is not None:
+            return token, uuid
+        else:
+            return False
+
+    async def gather_information(self, nickname: str, vin: str) -> dict:
+        """Gather information from different endpoints and collect it."""
+        async def with_timeout(task):
+            async with async_timeout.timeout(10):
+                return await task
+
+        odometer, odometer_unit, fuel = await with_timeout(self.client.get_odometer())
+
+        parking = await with_timeout(self.client.get_parking())
+
+        battery, hvac, last_updated = await with_timeout(self.client.get_vehicle_information())
+
+        vehicle = {
+            NICKNAME: nickname,
+            VIN: vin,
+            LAST_UPDATED: last_updated,
+            PARKING: parking,
+            VEHICLE_INFO: {
+                ODOMETER: odometer,
+                ODOMETER_UNIT: odometer_unit,
+                FUEL: fuel,
+                BATTERY: battery,
+                HVAC: hvac
+            }
+        }
+
+        _LOGGER.debug(vehicle)
+
+        return vehicle
+

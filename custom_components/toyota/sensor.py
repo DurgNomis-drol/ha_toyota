@@ -1,7 +1,7 @@
 """Platform for Toyota sensor integration."""
 
 from . import ToyotaEntity
-from homeassistant.const import DEVICE_CLASS_TEMPERATURE
+from homeassistant.const import DEVICE_CLASS_TEMPERATURE, PERCENTAGE
 from .const import DATA_COORDINATOR, DOMAIN, ICON_FUEL, FUEL, VEHICLE_INFO, ICON_ODOMETER, ODOMETER, ODOMETER_UNIT, ICON_HVAC
 from .const import HVAC, HVAC_TEMPERATURE, ICON_PARKING, PARKING
 

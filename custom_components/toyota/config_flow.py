@@ -2,7 +2,9 @@
 import logging
 
 import aiohttp
-from toyota import MyT
+
+from . import ToyotaApi
+from .toyota import ToyotaVinNotValid, ToyotaLocaleNotValid, ToyotaLoginError
 import voluptuous as vol
 
 from homeassistant import config_entries
@@ -34,27 +36,39 @@ class MazdaConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
     async def async_step_user(self, user_input=None):
         """Handle the initial step."""
+        errors = {}
 
         if user_input is not None:
             await self.async_set_unique_id(user_input[CONF_EMAIL].lower())
 
             try:
-                client = MyT(
+                client = ToyotaApi(
                     username=user_input[CONF_EMAIL],
                     password=user_input[CONF_PASSWORD],
                     locale=user_input[CONF_LOCALE],
                     vin=user_input[CONF_VIN],
                 )
+                token, uuid = await client.test_credentials(
+                    username=user_input[CONF_EMAIL],
+                    password=user_input[CONF_PASSWORD]
+                )
                 data = user_input
                 data.update(
                     {
-                        CONF_API_TOKEN: client.token,
-                        CONF_UUID: client.uuid,
+                        CONF_API_TOKEN: token,
+                        CONF_UUID: uuid,
                     }
                 )
+            except ToyotaLoginError:
+                errors["base"] = "invalid_auth"
+            except ToyotaLocaleNotValid:
+                errors["base"] = "invalid_locale"
+            except ToyotaVinNotValid:
+                errors["base"] = "invalid_vin"
             except Exception as ex:  # pylint: disable=broad-except
+                errors["base"] = "unknown"
                 _LOGGER.error(
-                    "Unknown error occurred during Toyota login request: %s", ex
+                    "An error occurred during Toyota login request: %s", ex
                 )
             else:
                 return self.async_create_entry(
@@ -62,5 +76,5 @@ class MazdaConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 )
 
         return self.async_show_form(
-            step_id="user", data_schema=DATA_SCHEMA
+            step_id="user", data_schema=DATA_SCHEMA, errors=errors
         )

@@ -1,0 +1,34 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Toyota Connected Services authentication",
+        "description": "Please input your MyT credentials below. You will also need your VIN number, language code and lastly you will have to give your car a nickname.",
+        "data": {
+          "email": "Myt email",
+          "password": "MyT password",
+          "vin_number": "Vin number",
+          "locale": "Language code in this style (da-dk)",
+          "nickname": "Give your car a nickname"
+        }
+      }
+    },
+    "error": {
+      "invalid_auth": "Username/Password is incorrect.",
+      "invalid_vin": "VIN number is not valid.",
+      "invalid_locale": "Language code is not valid.",
+      "unknown": "Unexpected error"
+    }
+  },
+  "options": {
+    "step": {
+      "user": {
+        "data": {
+          "binary_sensor": "Binary sensor enabled",
+          "sensor": "Sensor enabled",
+          "switch": "Switch enabled"
+        }
+      }
+    }
+  }
+}

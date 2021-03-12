@@ -41,6 +41,7 @@ _LOGGER: logging.Logger = logging.getLogger(__package__)
 
 
 class MyT:
+    """Toyota Connected Services API class."""
 
     def __init__(
         self,
@@ -52,35 +53,34 @@ class MyT:
         token: str = None
     ) -> None:
         """Toyota API"""
-
         if self.locale_is_valid(locale):
             self._locale = locale
         else:
-            _LOGGER.error("Please provide a valid locale string! Valid format is: en-gb.")
+            raise ToyotaLocaleNotValid("Please provide a valid locale string! Valid format is: en-gb.")
 
         if self.vin_is_valid(vin):
             self._vin = vin
         else:
-            _LOGGER.error("Please provide a valid vin-number!")
+            raise ToyotaVinNotValid("Please provide a valid vin-number!")
 
-        if token is None or uuid is None:
-            token, uuid = self.authenticate(username, password)
-            self.token = token
-            self.uuid = uuid
-        else:
-            self.token = token
-            self.uuid = uuid
+        self.username = username
+        self.password = password
+        self._token = token
+        self._uuid = uuid
 
     @staticmethod
     def vin_is_valid(vin: str) -> bool:
+        """Is vin number the correct length."""
         return len(vin) == 17
 
     @staticmethod
     def locale_is_valid(locale: str) -> bool:
+        """Is locale string valid."""
         return Language.make(locale).is_valid()
 
     @staticmethod
-    def create_login_json(username: str, password: str, vin: str) -> dict:
+    def _create_login_json(username: str, password: str, vin: str) -> dict:
+        """Create login json."""
         login = {
             USERNAME: username,
             PASSWORD: password,
@@ -89,8 +89,8 @@ class MyT:
         return login
 
     @staticmethod
-    def request(endpoint: str, headers: dict):
-
+    def _request(endpoint: str, headers: dict):
+        """Make the request."""
         url = BASE_URL + endpoint
 
         response = requests.get(
@@ -100,12 +100,12 @@ class MyT:
         )
 
         if response.status_code != HTTP_OK:
-            _LOGGER.error('HTTP error: {} text: {}'.format(response.status_code, response.text))
-            return False
+            raise ToyotaHttpError('HTTP error: {} text: {}'.format(response.status_code, response.text))
 
         return response.json()
 
-    def authenticate(self, username: str, password: str):
+    def perform_login(self, username, password) -> tuple:
+        """Performs login to toyota servers."""
         headers = LOGIN_BASE_HEADERS
         headers.update({'X-TME-LC': self._locale})
 
@@ -113,12 +113,11 @@ class MyT:
             ENDPOINT_AUTH,
             headers=headers,
             timeout=TIMEOUT,
-            json=self.create_login_json(username, password, self._vin)
+            json=self._create_login_json(username, password, self._vin)
         )
 
         if response.status_code != HTTP_OK:
-            _LOGGER.error('Login failed, check your credentials! {}'.format(response.text))
-            return False
+            raise ToyotaLoginError('Login failed, check your credentials! {}'.format(response.text))
 
         result = response.json()
 
@@ -128,14 +127,14 @@ class MyT:
         return token, uuid
 
     async def get_odometer(self) -> tuple:
-
+        """Get information from odometer."""
         odometer = 0
         odometer_unit = ''
         fuel = 0
         headers = {'Cookie': f'iPlanetDirectoryPro={self._token}'}
         endpoint = f'/vehicle/{self._vin}/addtionalInfo'
 
-        data = self.request(
+        data = self._request(
             endpoint,
             headers=headers
         )
@@ -149,11 +148,11 @@ class MyT:
         return odometer, odometer_unit, fuel
 
     async def get_parking(self) -> str:
-
+        """Get where you have parked your car."""
         headers = {'Cookie': f'iPlanetDirectoryPro={self._token}', 'VIN': self._vin}
         endpoint = f'/users/{self._uuid}/vehicle/location'
 
-        parking = self.request(
+        parking = self._request(
             endpoint,
             headers=headers
         )
@@ -161,11 +160,11 @@ class MyT:
         return parking
 
     async def get_vehicle_information(self) -> tuple:
-
+        """Get information about the vehicle."""
         headers = {'Cookie': f'iPlanetDirectoryPro={self._token}', 'uuid': self._uuid, 'X-TME-LOCALE': self._locale}
         endpoint = f'/vehicles/{self._vin}/remoteControl/status'
 
-        data = self.request(
+        data = self._request(
             endpoint,
             headers=headers
         )
@@ -175,3 +174,27 @@ class MyT:
         hvac = data[VEHICLE_INFO][HVAC]
 
         return battery, hvac, last_updated
+
+
+class ToyotaVinNotValid(Exception):
+    """Raise if vin is not valid."""
+
+    pass
+
+
+class ToyotaLocaleNotValid(Exception):
+    """Raise if locale string is not valid."""
+
+    pass
+
+
+class ToyotaLoginError(Exception):
+    """Raise if a login error happens."""
+
+    pass
+
+
+class ToyotaHttpError(Exception):
+    """Raise if http error happens."""
+
+    pass
