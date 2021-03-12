@@ -42,29 +42,32 @@ class MazdaConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             await self.async_set_unique_id(user_input[CONF_EMAIL].lower())
 
             try:
+                session = aiohttp_client.async_get_clientsession(self.hass)
                 client = ToyotaApi(
                     username=user_input[CONF_EMAIL],
                     password=user_input[CONF_PASSWORD],
                     locale=user_input[CONF_LOCALE],
                     vin=user_input[CONF_VIN],
+                    session=session
                 )
-                token, uuid = await client.test_credentials(
-                    username=user_input[CONF_EMAIL],
-                    password=user_input[CONF_PASSWORD]
-                )
-                data = user_input
-                data.update(
-                    {
-                        CONF_API_TOKEN: token,
-                        CONF_UUID: uuid,
-                    }
-                )
-            except ToyotaLoginError:
+                valid, token, uuid = await client.test_credentials()
+                if valid:
+                    data = user_input
+                    data.update(
+                        {
+                            CONF_API_TOKEN: token,
+                            CONF_UUID: uuid,
+                        }
+                    )
+            except ToyotaLoginError as ex:
                 errors["base"] = "invalid_auth"
-            except ToyotaLocaleNotValid:
+                _LOGGER.error(ex)
+            except ToyotaLocaleNotValid as ex:
                 errors["base"] = "invalid_locale"
-            except ToyotaVinNotValid:
+                _LOGGER.error(ex)
+            except ToyotaVinNotValid as ex:
                 errors["base"] = "invalid_vin"
+                _LOGGER.error(ex)
             except Exception as ex:  # pylint: disable=broad-except
                 errors["base"] = "unknown"
                 _LOGGER.error(

@@ -1,16 +1,14 @@
 """Toyota API module"""
+import aiohttp
 import requests
 import logging
+import json
 
 from langcodes import Language
 
 # ENDPOINTS
 BASE_URL = "https://myt-agg.toyota-europe.com/cma/api"
 ENDPOINT_AUTH = 'https://ssoms.toyota-europe.com/authenticate'
-
-# HEADERS
-LOGIN_BASE_HEADERS = {'X-TME-BRAND': 'TOYOTA', 'Accept': 'application/json, text/plain, */*', 'Sec-Fetch-Dest': 'empty'}
-TRIPS_BASE_HEADER = {'X-TME-TOKEN': None}
 
 TIMEOUT = 10
 
@@ -47,6 +45,7 @@ class MyT:
         self,
         vin: str,
         locale: str,
+        session: aiohttp.ClientSession,
         uuid: str = None,
         username: str = None,
         password: str = None,
@@ -63,6 +62,7 @@ class MyT:
         else:
             raise ToyotaVinNotValid("Please provide a valid vin-number!")
 
+        self.session = session
         self.username = username
         self.password = password
         self._token = token
@@ -79,47 +79,47 @@ class MyT:
         return Language.make(locale).is_valid()
 
     @staticmethod
-    def _create_login_json(username: str, password: str, vin: str) -> dict:
+    def _create_login_json(username: str, password: str) -> str:
         """Create login json."""
-        login = {
-            USERNAME: username,
-            PASSWORD: password,
-            VIN: vin,
+        login_dict = {
+            USERNAME:username,
+            PASSWORD:password,
         }
-        return login
+        return json.dumps(login_dict)
 
-    @staticmethod
-    def _request(endpoint: str, headers: dict):
+    async def _request(self, endpoint: str, headers: dict):
         """Make the request."""
         url = BASE_URL + endpoint
 
-        response = requests.get(
-            url,
-            headers=headers,
-            timeout=TIMEOUT
-        )
+        async with self.session.get(
+                url,
+                headers=headers,
+                timeout=TIMEOUT
+        ) as response:
+            if response.status != HTTP_OK:
+                raise ToyotaHttpError('HTTP error: {} text: {}'.format(response.status, response.text))
 
-        if response.status_code != HTTP_OK:
-            raise ToyotaHttpError('HTTP error: {} text: {}'.format(response.status_code, response.text))
+        return await response.json()
 
-        return response.json()
-
-    def perform_login(self, username, password) -> tuple:
+    async def perform_login(self, username: str, password: str) -> tuple:
         """Performs login to toyota servers."""
-        headers = LOGIN_BASE_HEADERS
-        headers.update({'X-TME-LC': self._locale})
+        headers = {
+            'X-TME-BRAND': 'TOYOTA',
+            'X-TME-LC': self._locale,
+            'Accept': 'application/json, text/plain, */*',
+            'Sec-Fetch-Dest': 'empty',
+            'Content-Type': 'application/json;charset=UTF-8'
+        }
 
-        response = requests.post(
-            ENDPOINT_AUTH,
-            headers=headers,
-            timeout=TIMEOUT,
-            json=self._create_login_json(username, password, self._vin)
-        )
+        async with self.session.post(
+                ENDPOINT_AUTH,
+                headers=headers,
+                json={USERNAME: username, PASSWORD: password}
+        ) as response:
+            if response.status != HTTP_OK:
+                raise ToyotaLoginError('Login failed, check your credentials! {}'.format(response.text))
 
-        if response.status_code != HTTP_OK:
-            raise ToyotaLoginError('Login failed, check your credentials! {}'.format(response.text))
-
-        result = response.json()
+        result = await response.json()
 
         token = result.get(TOKEN)
         uuid = result.get(UUID)
@@ -131,10 +131,12 @@ class MyT:
         odometer = 0
         odometer_unit = ''
         fuel = 0
-        headers = {'Cookie': f'iPlanetDirectoryPro={self._token}'}
+        headers = {
+            'Cookie': f'iPlanetDirectoryPro={self._token}'
+        }
         endpoint = f'/vehicle/{self._vin}/addtionalInfo'
 
-        data = self._request(
+        data = await self._request(
             endpoint,
             headers=headers
         )
@@ -149,10 +151,13 @@ class MyT:
 
     async def get_parking(self) -> str:
         """Get where you have parked your car."""
-        headers = {'Cookie': f'iPlanetDirectoryPro={self._token}', 'VIN': self._vin}
+        headers = {
+            'Cookie': f'iPlanetDirectoryPro={self._token}',
+            'VIN': self._vin
+        }
         endpoint = f'/users/{self._uuid}/vehicle/location'
 
-        parking = self._request(
+        parking = await self._request(
             endpoint,
             headers=headers
         )
@@ -161,10 +166,14 @@ class MyT:
 
     async def get_vehicle_information(self) -> tuple:
         """Get information about the vehicle."""
-        headers = {'Cookie': f'iPlanetDirectoryPro={self._token}', 'uuid': self._uuid, 'X-TME-LOCALE': self._locale}
+        headers = {
+            'Cookie': f'iPlanetDirectoryPro={self._token}',
+            'uuid': self._uuid,
+            'X-TME-LOCALE': self._locale
+        }
         endpoint = f'/vehicles/{self._vin}/remoteControl/status'
 
-        data = self._request(
+        data = await self._request(
             endpoint,
             headers=headers
         )

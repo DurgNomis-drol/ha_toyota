@@ -1,5 +1,6 @@
 """Toyota integration"""
 import asyncio
+import aiohttp
 from datetime import timedelta
 import logging
 
@@ -16,8 +17,6 @@ from homeassistant.helpers.update_coordinator import (
     DataUpdateCoordinator,
     UpdateFailed,
 )
-from homeassistant.util.async_ import gather_with_concurrency
-
 from .const import DATA_CLIENT, DATA_COORDINATOR, DOMAIN
 from .const import ODOMETER, ODOMETER_UNIT, FUEL, PARKING, BATTERY, HVAC, LAST_UPDATED, VEHICLE_INFO, NICKNAME, VIN
 from .const import CONF_NICKNAME, CONF_VIN, CONF_LOCALE, CONF_UUID
@@ -43,8 +42,16 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     uuid = entry.data[CONF_UUID]
     token = entry.data[CONF_API_TOKEN]
 
-    # websession = aiohttp_client.async_get_clientsession(hass)
-    client = ToyotaApi(username=email, password=password, locale=locale, vin=vin, uuid=uuid, token=token)
+    session = aiohttp_client.async_get_clientsession(hass)
+    client = ToyotaApi(
+        username=email,
+        password=password,
+        locale=locale,
+        vin=vin,
+        uuid=uuid,
+        token=token,
+        session=session
+    )
 
     async def async_update_data():
         """Fetch data from Toyota API."""
@@ -55,7 +62,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         _LOGGER,
         name=DOMAIN,
         update_method=async_update_data,
-        update_interval=timedelta(seconds=60),
+        update_interval=timedelta(seconds=300),
     )
 
     hass.data[DOMAIN][entry.entry_id] = {
@@ -127,8 +134,9 @@ class ToyotaApi:
         password: str,
         locale: str,
         vin: str,
+        session: aiohttp.ClientSession,
         uuid: str = None,
-        token: str = None,
+        token: str = None
          ) -> None:
         self.username = username
         self.password = password
@@ -136,17 +144,23 @@ class ToyotaApi:
         self.uuid = uuid
         self.vin = vin
         self.token = token
+        self.session = session
         self.client = MyT(
-            username=self.username, password=self.password, locale=self.locale, vin=self.vin, token=self.token
+            username=self.username,
+            password=self.password,
+            locale=self.locale,
+            vin=self.vin,
+            token=self.token,
+            session=self.session
         )
 
-    async def test_credentials(self, username, password):
+    async def test_credentials(self):
         """Tests if your credentials are valid."""
-        token, uuid = self.client.perform_login(username=username, password=password)
+        token, uuid = await self.client.perform_login(username=self.username, password=self.password)
         if token is not None and uuid is not None:
-            return token, uuid
+            return True, token, uuid
         else:
-            return False
+            return False, None, None
 
     async def gather_information(self, nickname: str, vin: str) -> dict:
         """Gather information from different endpoints and collect it."""
