@@ -1,9 +1,23 @@
 """Platform for Toyota sensor integration."""
 
-from . import ToyotaEntity
 from homeassistant.const import DEVICE_CLASS_TEMPERATURE, PERCENTAGE
-from .const import DATA_COORDINATOR, DOMAIN, ICON_FUEL, FUEL, VEHICLE_INFO, ICON_ODOMETER, ODOMETER, ODOMETER_UNIT, ICON_HVAC
-from .const import HVAC, HVAC_TEMPERATURE, ICON_PARKING, PARKING
+
+from . import ToyotaEntity
+from .const import (
+    DATA_COORDINATOR,
+    DOMAIN,
+    FUEL,
+    HVAC,
+    HVAC_TEMPERATURE,
+    ICON_FUEL,
+    ICON_HVAC,
+    ICON_ODOMETER,
+    ICON_PARKING,
+    ODOMETER,
+    ODOMETER_UNIT,
+    PARKING,
+    VEHICLE_INFO,
+)
 
 
 async def async_setup_entry(hass, config_entry, async_add_devices):
@@ -139,5 +153,4 @@ class ToyotaParkingSensor(ToyotaEntity):
     @property
     def state(self):
         """Return the state of the sensor."""
-        return self.coordinator.data[PARKING]['address']
-
+        return self.coordinator.data[PARKING]["address"]

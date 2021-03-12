@@ -9,6 +9,7 @@ license = "MIT"
 python = "^3.8"
 requests = "^2.25.1"
 langcodes = "^3.1.0"
+homeassistant = "^2021.3.3"
 
 [tool.poetry.dev-dependencies]
 pre-commit = "^2.11.1"

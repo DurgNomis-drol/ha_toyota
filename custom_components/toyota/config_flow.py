@@ -1,19 +1,18 @@
 """Config flow for Toyota Connected Services integration."""
 import logging
 
-import aiohttp
-
-from . import ToyotaApi
-from .toyota import ToyotaVinNotValid, ToyotaLocaleNotValid, ToyotaLoginError
 import voluptuous as vol
 
 from homeassistant import config_entries
-from homeassistant.const import CONF_EMAIL, CONF_PASSWORD, CONF_API_TOKEN
+from homeassistant.const import CONF_API_TOKEN, CONF_EMAIL, CONF_PASSWORD
 from homeassistant.helpers import aiohttp_client
+
+from . import ToyotaApi
+from .const import CONF_LOCALE, CONF_NICKNAME, CONF_UUID, CONF_VIN
 
 # https://github.com/PyCQA/pylint/issues/3202
 from .const import DOMAIN  # pylint: disable=unused-import
-from .const import CONF_NICKNAME, CONF_VIN, CONF_UUID, CONF_LOCALE
+from .toyota import ToyotaLocaleNotValid, ToyotaLoginError, ToyotaVinNotValid
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -48,7 +47,7 @@ class MazdaConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     password=user_input[CONF_PASSWORD],
                     locale=user_input[CONF_LOCALE],
                     vin=user_input[CONF_VIN],
-                    session=session
+                    session=session,
                 )
                 valid, token, uuid = await client.test_credentials()
                 if valid:
@@ -70,9 +69,7 @@ class MazdaConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 _LOGGER.error(ex)
             except Exception as ex:  # pylint: disable=broad-except
                 errors["base"] = "unknown"
-                _LOGGER.error(
-                    "An error occurred during Toyota login request: %s", ex
-                )
+                _LOGGER.error("An error occurred during Toyota login request: %s", ex)
             else:
                 return self.async_create_entry(
                     title=user_input[CONF_EMAIL], data=user_input

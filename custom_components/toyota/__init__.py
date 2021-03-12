@@ -1,32 +1,48 @@
 """Toyota integration"""
 import asyncio
-import aiohttp
 from datetime import timedelta
 import logging
 
+import aiohttp
 import async_timeout
-from .toyota import MyT
 
-from homeassistant.config_entries import SOURCE_REAUTH, ConfigEntry
-from homeassistant.const import CONF_EMAIL, CONF_PASSWORD, CONF_API_TOKEN
+from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import CONF_API_TOKEN, CONF_EMAIL, CONF_PASSWORD
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers import aiohttp_client
 from homeassistant.helpers.update_coordinator import (
     CoordinatorEntity,
     DataUpdateCoordinator,
-    UpdateFailed,
 )
-from .const import DATA_CLIENT, DATA_COORDINATOR, DOMAIN
-from .const import ODOMETER, ODOMETER_UNIT, FUEL, PARKING, BATTERY, HVAC, LAST_UPDATED, VEHICLE_INFO, NICKNAME, VIN
-from .const import CONF_NICKNAME, CONF_VIN, CONF_LOCALE, CONF_UUID
+
+from .const import (
+    BATTERY,
+    CONF_LOCALE,
+    CONF_NICKNAME,
+    CONF_UUID,
+    CONF_VIN,
+    DATA_CLIENT,
+    DATA_COORDINATOR,
+    DOMAIN,
+    FUEL,
+    HVAC,
+    LAST_UPDATED,
+    NICKNAME,
+    ODOMETER,
+    ODOMETER_UNIT,
+    PARKING,
+    VEHICLE_INFO,
+    VIN,
+)
+from .toyota import MyT
 
 _LOGGER = logging.getLogger(__name__)
 
 PLATFORMS = ["sensor"]
 
 
-async def async_setup(hass: HomeAssistant, config: dict):
+async def async_setup(hass: HomeAssistant):
     """Set up the Toyota Connected Services component."""
     hass.data[DOMAIN] = {}
     return True
@@ -50,7 +66,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         vin=vin,
         uuid=uuid,
         token=token,
-        session=session
+        session=session,
     )
 
     async def async_update_data():
@@ -136,8 +152,8 @@ class ToyotaApi:
         vin: str,
         session: aiohttp.ClientSession,
         uuid: str = None,
-        token: str = None
-         ) -> None:
+        token: str = None,
+    ) -> None:
         self.username = username
         self.password = password
         self.locale = locale
@@ -151,19 +167,22 @@ class ToyotaApi:
             locale=self.locale,
             vin=self.vin,
             token=self.token,
-            session=self.session
+            session=self.session,
         )
 
     async def test_credentials(self):
         """Tests if your credentials are valid."""
-        token, uuid = await self.client.perform_login(username=self.username, password=self.password)
+        token, uuid = await self.client.perform_login(
+            username=self.username, password=self.password
+        )
         if token is not None and uuid is not None:
             return True, token, uuid
-        else:
-            return False, None, None
+
+        return False, None, None
 
     async def gather_information(self, nickname: str, vin: str) -> dict:
         """Gather information from different endpoints and collect it."""
+
         async def with_timeout(task):
             async with async_timeout.timeout(10):
                 return await task
@@ -172,7 +191,9 @@ class ToyotaApi:
 
         parking = await with_timeout(self.client.get_parking())
 
-        battery, hvac, last_updated = await with_timeout(self.client.get_vehicle_information())
+        battery, hvac, last_updated = await with_timeout(
+            self.client.get_vehicle_information()
+        )
 
         vehicle = {
             NICKNAME: nickname,
@@ -184,11 +205,10 @@ class ToyotaApi:
                 ODOMETER_UNIT: odometer_unit,
                 FUEL: fuel,
                 BATTERY: battery,
-                HVAC: hvac
-            }
+                HVAC: hvac,
+            },
         }
 
         _LOGGER.debug(vehicle)
 
         return vehicle
-
