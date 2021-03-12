@@ -69,7 +69,7 @@ class MazdaConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 _LOGGER.error(ex)
             except Exception as ex:  # pylint: disable=broad-except
                 errors["base"] = "unknown"
-                _LOGGER.error("An error occurred during Toyota login request: %s", ex)
+                _LOGGER.error("An unknown error occurred during Toyota login request: %s", ex)
             else:
                 return self.async_create_entry(
                     title=user_input[CONF_EMAIL], data=user_input
