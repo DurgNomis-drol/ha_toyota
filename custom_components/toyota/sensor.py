@@ -4,11 +4,17 @@ from homeassistant.const import DEVICE_CLASS_TEMPERATURE, PERCENTAGE
 
 from . import ToyotaEntity
 from .const import (
+    BATTERY,
     DATA_COORDINATOR,
     DOMAIN,
+    ENGINE,
     FUEL,
+    FUEL_TYPE,
     HVAC,
     HVAC_TEMPERATURE,
+    HYBRID,
+    ICON_BATTERY,
+    ICON_CAR,
     ICON_FUEL,
     ICON_HVAC,
     ICON_ODOMETER,
@@ -16,7 +22,10 @@ from .const import (
     ODOMETER,
     ODOMETER_UNIT,
     PARKING,
+    PRODUCTION_YEAR,
+    TRANSMISSION,
     VEHICLE_INFO,
+    VIN,
 )
 
 
@@ -26,13 +35,56 @@ async def async_setup_entry(hass, config_entry, async_add_devices):
 
     sensors = []
 
-    for _ in enumerate(coordinator.data):
-        sensors.append(ToyotaFuelRemainingSensor(coordinator))
-        sensors.append(ToyotaOdometerSensor(coordinator))
-        sensors.append(ToyotaHVACSensor(coordinator))
-        sensors.append(ToyotaParkingSensor(coordinator))
+    for index, _ in enumerate(coordinator.data):
+        sensors.append(ToyotaCarSensor(coordinator, index))
+        # If Connected Services is setup for the car, setup additional sensors
+        if VEHICLE_INFO in coordinator.data[index]:
+            sensors.append(ToyotaFuelRemainingSensor(coordinator, index))
+            sensors.append(ToyotaOdometerSensor(coordinator, index))
+            sensors.append(ToyotaHVACSensor(coordinator, index))
+            sensors.append(ToyotaParkingSensor(coordinator, index))
+            # If car is hybrid, add battery sensor
+            if coordinator.data[index][HYBRID]:
+                sensors.append(ToyotaEVSensor(coordinator, index))
 
     async_add_devices(sensors)
+
+
+class ToyotaCarSensor(ToyotaEntity):
+    """Class for the fuel remaining sensor."""
+
+    @property
+    def name(self):
+        """Return the name of the sensor."""
+        return f"{self.nickname}"
+
+    @property
+    def unique_id(self):
+        """Return a unique identifier for this entity."""
+        return f"{self.nickname}/car"
+
+    @property
+    def device_state_attributes(self):
+        """Return the state attributes."""
+        return {
+            "model_name": self.model,
+            VIN: self.vin,
+            HYBRID: self.coordinator.data[self.index][HYBRID],
+            PRODUCTION_YEAR: self.coordinator.data[self.index][PRODUCTION_YEAR],
+            ENGINE: self.coordinator.data[self.index][ENGINE],
+            TRANSMISSION: self.coordinator.data[self.index][TRANSMISSION],
+            FUEL_TYPE: self.coordinator.data[self.index][FUEL_TYPE],
+        }
+
+    @property
+    def icon(self):
+        """Return the icon to use in the frontend."""
+        return ICON_CAR
+
+    @property
+    def state(self):
+        """Return the state of the sensor."""
+        return self.model
 
 
 class ToyotaFuelRemainingSensor(ToyotaEntity):
@@ -41,17 +93,24 @@ class ToyotaFuelRemainingSensor(ToyotaEntity):
     @property
     def name(self):
         """Return the name of the sensor."""
-        return f"{self.nickname} Fuel Remaining Percentage"
+        return f"{self.nickname} fuel tank"
 
     @property
     def unique_id(self):
         """Return a unique identifier for this entity."""
-        return f"{self.nickname}/fuel_remaining_percentage"
+        return f"{self.nickname}/fuel_tank"
 
     @property
     def unit_of_measurement(self):
         """Return the unit of measurement."""
         return PERCENTAGE
+
+    @property
+    def device_state_attributes(self):
+        """Return the state attributes."""
+        return {
+            FUEL_TYPE: self.coordinator.data[self.index][VEHICLE_INFO][FUEL_TYPE],
+        }
 
     @property
     def icon(self):
@@ -61,7 +120,7 @@ class ToyotaFuelRemainingSensor(ToyotaEntity):
     @property
     def state(self):
         """Return the state of the sensor."""
-        return self.coordinator.data[VEHICLE_INFO][FUEL]
+        return self.coordinator.data[self.index][VEHICLE_INFO][FUEL]
 
 
 class ToyotaOdometerSensor(ToyotaEntity):
@@ -80,7 +139,7 @@ class ToyotaOdometerSensor(ToyotaEntity):
     @property
     def unit_of_measurement(self):
         """Return the unit of measurement."""
-        return self.coordinator.data[VEHICLE_INFO][ODOMETER_UNIT]
+        return self.coordinator.data[self.index][VEHICLE_INFO][ODOMETER_UNIT]
 
     @property
     def icon(self):
@@ -90,7 +149,7 @@ class ToyotaOdometerSensor(ToyotaEntity):
     @property
     def state(self):
         """Return the state of the sensor."""
-        return self.coordinator.data[VEHICLE_INFO][ODOMETER]
+        return self.coordinator.data[self.index][VEHICLE_INFO][ODOMETER]
 
 
 class ToyotaHVACSensor(ToyotaEntity):
@@ -119,12 +178,12 @@ class ToyotaHVACSensor(ToyotaEntity):
     @property
     def device_state_attributes(self):
         """Return the state attributes."""
-        return {self.coordinator.data[VEHICLE_INFO][HVAC]}
+        return self.coordinator.data[self.index][VEHICLE_INFO][HVAC]
 
     @property
     def state(self):
         """Return the state of the sensor."""
-        return self.coordinator.data[VEHICLE_INFO][HVAC][HVAC_TEMPERATURE]
+        return self.coordinator.data[self.index][VEHICLE_INFO][HVAC][HVAC_TEMPERATURE]
 
 
 class ToyotaParkingSensor(ToyotaEntity):
@@ -133,12 +192,12 @@ class ToyotaParkingSensor(ToyotaEntity):
     @property
     def name(self):
         """Return the name of the sensor."""
-        return f"{self.nickname} Parking"
+        return f"{self.nickname} last parked"
 
     @property
     def unique_id(self):
         """Return a unique identifier for this entity."""
-        return f"{self.nickname}/parking"
+        return f"{self.nickname}/last_parked"
 
     @property
     def icon(self):
@@ -148,9 +207,45 @@ class ToyotaParkingSensor(ToyotaEntity):
     @property
     def device_state_attributes(self):
         """Return the state attributes."""
-        return {self.coordinator.data[PARKING]}
+        return self.coordinator.data[self.index][PARKING]
 
     @property
     def state(self):
         """Return the state of the sensor."""
-        return self.coordinator.data[PARKING]["address"]
+        return self.coordinator.data[self.index][PARKING]["address"]
+
+
+class ToyotaEVSensor(ToyotaEntity):
+    """Class for the fuel remaining sensor."""
+
+    @property
+    def name(self):
+        """Return the name of the sensor."""
+        return f"{self.nickname} battery"
+
+    @property
+    def unique_id(self):
+        """Return a unique identifier for this entity."""
+        return f"{self.nickname}/battery"
+
+    @property
+    def unit_of_measurement(self):
+        """Return the unit of measurement."""
+        return PERCENTAGE
+
+    @property
+    def icon(self):
+        """Return the icon to use in the frontend."""
+        return ICON_BATTERY
+
+    @property
+    def device_state_attributes(self):
+        """Return the state attributes."""
+        return self.coordinator.data[self.index][VEHICLE_INFO][BATTERY]
+
+    @property
+    def state(self):
+        """Return the state of the sensor."""
+        return self.coordinator.data[self.index][VEHICLE_INFO][BATTERY][
+            "ChargeRemainingAmount"
+        ]

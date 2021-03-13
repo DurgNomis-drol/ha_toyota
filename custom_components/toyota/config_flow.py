@@ -7,12 +7,12 @@ from homeassistant import config_entries
 from homeassistant.const import CONF_API_TOKEN, CONF_EMAIL, CONF_PASSWORD
 from homeassistant.helpers import aiohttp_client
 
-from . import ToyotaApi
-from .const import CONF_LOCALE, CONF_NICKNAME, CONF_UUID, CONF_VIN
+from .api import ToyotaApi
+from .const import CONF_LOCALE, CONF_UUID
 
 # https://github.com/PyCQA/pylint/issues/3202
 from .const import DOMAIN  # pylint: disable=unused-import
-from .toyota import ToyotaLocaleNotValid, ToyotaLoginError, ToyotaVinNotValid
+from .toyota import ToyotaLocaleNotValid, ToyotaLoginError
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -21,8 +21,6 @@ DATA_SCHEMA = vol.Schema(
         vol.Required(CONF_EMAIL): str,
         vol.Required(CONF_PASSWORD): str,
         vol.Required(CONF_LOCALE): str,
-        vol.Required(CONF_VIN): str,
-        vol.Required(CONF_NICKNAME): str,
     }
 )
 
@@ -46,26 +44,18 @@ class MazdaConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     username=user_input[CONF_EMAIL],
                     password=user_input[CONF_PASSWORD],
                     locale=user_input[CONF_LOCALE],
-                    vin=user_input[CONF_VIN],
                     session=session,
                 )
-                valid, token, uuid = await client.test_credentials()
+                valid, token, uuid = await client.get_token_and_uuid()
                 if valid:
                     data = user_input
-                    data.update(
-                        {
-                            CONF_API_TOKEN: token,
-                            CONF_UUID: uuid,
-                        }
-                    )
+                    data.update({CONF_API_TOKEN: token, CONF_UUID: uuid})
+
             except ToyotaLoginError as ex:
                 errors["base"] = "invalid_auth"
                 _LOGGER.error(ex)
             except ToyotaLocaleNotValid as ex:
                 errors["base"] = "invalid_locale"
-                _LOGGER.error(ex)
-            except ToyotaVinNotValid as ex:
-                errors["base"] = "invalid_vin"
                 _LOGGER.error(ex)
             except Exception as ex:  # pylint: disable=broad-except
                 errors["base"] = "unknown"

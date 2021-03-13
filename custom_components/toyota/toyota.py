@@ -1,12 +1,13 @@
 """Toyota API module"""
-import json
 import logging
 
 import aiohttp
 from langcodes import Language
+import requests
 
 # ENDPOINTS
 BASE_URL = "https://myt-agg.toyota-europe.com/cma/api"
+BASE_URL_CARS = "https://cpb2cs.toyota-europe.com/vehicle"
 ENDPOINT_AUTH = "https://ssoms.toyota-europe.com/authenticate"
 
 TIMEOUT = 10
@@ -42,9 +43,8 @@ class MyT:
 
     def __init__(
         self,
-        vin: str,
         locale: str,
-        session: aiohttp.ClientSession,
+        session: aiohttp.ClientSession = None,
         uuid: str = None,
         username: str = None,
         password: str = None,
@@ -58,11 +58,6 @@ class MyT:
                 "Please provide a valid locale string! Valid format is: en-gb."
             )
 
-        if self.vin_is_valid(vin):
-            self._vin = vin
-        else:
-            raise ToyotaVinNotValid("Please provide a valid vin-number!")
-
         self.session = session
         self.username = username
         self.password = password
@@ -70,37 +65,28 @@ class MyT:
         self._uuid = uuid
 
     @staticmethod
-    def vin_is_valid(vin: str) -> bool:
-        """Is vin number the correct length."""
-        return len(vin) == 17
-
-    @staticmethod
     def locale_is_valid(locale: str) -> bool:
         """Is locale string valid."""
         return Language.make(locale).is_valid()
 
-    @staticmethod
-    def _create_login_json(username: str, password: str) -> str:
-        """Create login json."""
-        login_dict = {
-            USERNAME: username,
-            PASSWORD: password,
-        }
-        return json.dumps(login_dict)
-
     async def _request(self, endpoint: str, headers: dict):
         """Make the request."""
-        url = BASE_URL + endpoint
 
-        async with self.session.get(url, headers=headers, timeout=TIMEOUT) as response:
-            if response.status != HTTP_OK:
+        async with self.session.get(
+            endpoint, headers=headers, timeout=TIMEOUT
+        ) as response:
+            if response.status == HTTP_OK:
+                resp = await response.json()
+            elif response.status == 204:
+                raise ToyotaNoCarError("Please setup connected services for your car!")
+            else:
                 raise ToyotaHttpError(
-                    "HTTP error: {} text: {}".format(response.status, response.text)
+                    "HTTP: {} - {}".format(response.status, response.text)
                 )
 
-        return await response.json()
+        return await resp
 
-    async def perform_login(self, username: str, password: str) -> tuple:
+    def perform_login(self, username: str, password: str) -> tuple:
         """Performs login to toyota servers."""
         headers = {
             "X-TME-BRAND": "TOYOTA",
@@ -110,30 +96,48 @@ class MyT:
             "Content-Type": "application/json;charset=UTF-8",
         }
 
-        async with self.session.post(
+        response = requests.post(
             ENDPOINT_AUTH,
             headers=headers,
             json={USERNAME: username, PASSWORD: password},
-        ) as response:
-            if response.status != HTTP_OK:
-                raise ToyotaLoginError(
-                    "Login failed, check your credentials! {}".format(response.text)
-                )
+        )
+        if response.status_code != HTTP_OK:
+            raise ToyotaLoginError(
+                "Login failed, check your credentials! {}".format(response.text)
+            )
 
-        result = await response.json()
+        result = response.json()
 
         token = result.get(TOKEN)
-        uuid = result.get(UUID)
+        uuid = result[CUSTOMERPROFILE][UUID]
 
         return token, uuid
 
-    async def get_odometer(self) -> tuple:
+    async def get_cars(self) -> list:
+        """Retrieves list of cars you have registered with MyT"""
+        headers = {
+            "X-TME-BRAND": "TOYOTA",
+            "X-TME-LC": self._locale,
+            "Accept": "application/json, text/plain, */*",
+            "Sec-Fetch-Dest": "empty",
+            "X-TME-TOKEN": self._token,
+        }
+
+        endpoint = (
+            f"{BASE_URL_CARS}/user/{self._uuid}/vehicles?services=uio&legacy=true"
+        )
+
+        cars = await self._request(endpoint, headers=headers)
+
+        return cars
+
+    async def get_odometer(self, vin: str) -> tuple:
         """Get information from odometer."""
         odometer = 0
         odometer_unit = ""
         fuel = 0
         headers = {"Cookie": f"iPlanetDirectoryPro={self._token}"}
-        endpoint = f"/vehicle/{self._vin}/addtionalInfo"
+        endpoint = f"{BASE_URL}/vehicle/{vin}/addtionalInfo"
 
         data = await self._request(endpoint, headers=headers)
 
@@ -145,23 +149,23 @@ class MyT:
                 fuel = item[VALUE]
         return odometer, odometer_unit, fuel
 
-    async def get_parking(self) -> str:
+    async def get_parking(self, vin: str) -> dict:
         """Get where you have parked your car."""
-        headers = {"Cookie": f"iPlanetDirectoryPro={self._token}", "VIN": self._vin}
-        endpoint = f"/users/{self._uuid}/vehicle/location"
+        headers = {"Cookie": f"iPlanetDirectoryPro={self._token}", "VIN": vin}
+        endpoint = f"{BASE_URL}/users/{self._uuid}/vehicle/location"
 
         parking = await self._request(endpoint, headers=headers)
 
         return parking
 
-    async def get_vehicle_information(self) -> tuple:
+    async def get_vehicle_information(self, vin: str) -> tuple:
         """Get information about the vehicle."""
         headers = {
             "Cookie": f"iPlanetDirectoryPro={self._token}",
             "uuid": self._uuid,
             "X-TME-LOCALE": self._locale,
         }
-        endpoint = f"/vehicles/{self._vin}/remoteControl/status"
+        endpoint = f"{BASE_URL}/vehicles/{vin}/remoteControl/status"
 
         data = await self._request(endpoint, headers=headers)
 
@@ -170,10 +174,6 @@ class MyT:
         hvac = data[VEHICLE_INFO][HVAC]
 
         return battery, hvac, last_updated
-
-
-class ToyotaVinNotValid(Exception):
-    """Raise if vin is not valid."""
 
 
 class ToyotaLocaleNotValid(Exception):
@@ -186,3 +186,7 @@ class ToyotaLoginError(Exception):
 
 class ToyotaHttpError(Exception):
     """Raise if http error happens."""
+
+
+class ToyotaNoCarError(Exception):
+    """Raise if 205 is returned (Means no car found)."""

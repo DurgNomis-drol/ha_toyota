@@ -7,15 +7,12 @@
         "data": {
           "email": "Myt email",
           "password": "MyT password",
-          "vin_number": "Vin number",
-          "locale": "Language code in this style (da-dk)",
-          "nickname": "Give your car a nickname"
+          "locale": "Language code in this style (da-dk)"
         }
       }
     },
     "error": {
       "invalid_auth": "Username/Password is incorrect.",
-      "invalid_vin": "VIN number is not valid.",
       "invalid_locale": "Language code is not valid.",
       "unknown": "Unexpected error"
     }
