@@ -1,0 +1,31 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Toyota Connected Services login",
+        "description": "Angiv venligst din email og adgangskode til MyT nedenfor.",
+        "data": {
+          "email": "Email",
+          "password": "Adgangskode",
+          "locale": "Landekode i denne stil (da-dk)"
+        }
+      }
+    },
+    "error": {
+      "invalid_auth": "Email/Adgangskode er forkert.",
+      "invalid_locale": "Landekode format er ikke korrekt.",
+      "unknown": "Uventet fejl."
+    }
+  },
+  "options": {
+    "step": {
+      "user": {
+        "data": {
+          "binary_sensor": "Binary sensor enabled",
+          "sensor": "Sensor enabled",
+          "switch": "Switch enabled"
+        }
+      }
+    }
+  }
+}

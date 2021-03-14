@@ -8,13 +8,12 @@ DATA_CLIENT = "toyota_client"
 DATA_COORDINATOR = "coordinator"
 
 # CONF
-CONF_NICKNAME = "nickname"
-CONF_VIN = "vin_number"
 CONF_LOCALE = "locale"
 CONF_UUID = "uuid"
 
 # COORDINATOR DATA ATTRIBUTES
 VEHICLE_INFO = "vehicle_info"
+DASHBOARD = "dashboard"
 MODEL = "modelName"
 NICKNAME = "alias"
 VIN = "vin"
@@ -39,6 +38,29 @@ ICON_ODOMETER = "mdi:speedometer"
 ICON_HVAC = "mdi:hvac"
 ICON_PARKING = "mdi:map-marker"
 ICON_BATTERY = "mdi:car-battery"
+
+# DICT STRUCTURE FOR HOLDING INFORMATION
+VEHICLE_DICT_FORMAT = {
+    NICKNAME: None,
+    DASHBOARD: {
+        FUEL: None,
+        FUEL_TYPE: None,
+        ODOMETER: None,
+        ODOMETER_UNIT: None,
+    },
+    HVAC: {},
+    BATTERY: {},
+    PARKING: {},
+    VEHICLE_INFO: {
+        ENGINE: None,
+        TRANSMISSION: None,
+        HYBRID: None,
+        MODEL: None,
+        PRODUCTION_YEAR: None,
+        VIN: None,
+    },
+    LAST_UPDATED: None,
+}
 
 STARTUP_MESSAGE = f"""
 -------------------------------------------------------------------

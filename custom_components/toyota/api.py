@@ -1,4 +1,5 @@
 """API for Toyota Connected Services integration."""
+from asyncio import gather
 import logging
 
 import aiohttp
@@ -6,6 +7,7 @@ import async_timeout
 
 from .const import (
     BATTERY,
+    DASHBOARD,
     ENGINE,
     FUEL,
     FUEL_TYPE,
@@ -19,13 +21,11 @@ from .const import (
     PARKING,
     PRODUCTION_YEAR,
     TRANSMISSION,
+    VEHICLE_DICT_FORMAT,
     VEHICLE_INFO,
     VIN,
 )
 from .toyota import MyT, ToyotaHttpError, ToyotaNoCarError
-
-# from homeassistant.util.async_ import gather_with_concurrency
-
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -72,63 +72,83 @@ class ToyotaApi:
         """Retrieve list of cars"""
         return await self.client.get_cars()
 
-    async def gather_information(self):
-        """Gather information from different endpoints and collect it."""
-        vehicles = []
+    async def get_car_data(self, car):
+        """Gather information from different endpoints and format it."""
 
         async def with_timeout(task):
             async with async_timeout.timeout(10):
                 return await task
 
-        cars = await with_timeout(self.client.get_cars())
+        # GET PREDEFINED DICT FORMAT
+        vehicle = VEHICLE_DICT_FORMAT
 
-        for car in cars:
-            vehicle = {
-                NICKNAME: car[NICKNAME],
+        # ALIAS
+        vehicle[NICKNAME] = car[NICKNAME]
+
+        # DASHBOARD
+        vehicle[DASHBOARD].update(
+            {
+                FUEL_TYPE: car[FUEL],
+            }
+        )
+
+        # VEHICLE INFORMATION
+        vehicle[VEHICLE_INFO].update(
+            {
+                ENGINE: car[ENGINE],
+                TRANSMISSION: car[TRANSMISSION],
                 MODEL: car[MODEL],
                 VIN: car[VIN],
                 HYBRID: car[HYBRID],
                 PRODUCTION_YEAR: car["productionYear"],
-                FUEL_TYPE: car[FUEL],
-                ENGINE: car[ENGINE],
-                TRANSMISSION: car[TRANSMISSION],
             }
-            try:
-                odometer, odometer_unit, fuel = await with_timeout(
-                    self.client.get_odometer(car[VIN])
-                )
+        )
 
-                parking = await with_timeout(self.client.get_parking(car[VIN]))
+        try:
+            odometer, odometer_unit, fuel = await with_timeout(
+                self.client.get_odometer(car[VIN])
+            )
 
-                battery, hvac, last_updated = await with_timeout(
-                    self.client.get_vehicle_information(car[VIN])
-                )
+            parking = await with_timeout(self.client.get_parking(car[VIN]))
 
-                vehicle.update(
-                    {
-                        LAST_UPDATED: last_updated,
-                        PARKING: parking["event"],
-                        VEHICLE_INFO: {
-                            ODOMETER: odometer,
-                            ODOMETER_UNIT: odometer_unit,
-                            FUEL: fuel,
-                            BATTERY: battery,
-                            HVAC: hvac,
-                        },
-                    }
-                )
+            battery, hvac, last_updated = await with_timeout(
+                self.client.get_vehicle_information(car[VIN])
+            )
 
-            except ToyotaNoCarError as ex:
-                _LOGGER.error(ex)
-            except ToyotaHttpError as ex:
-                _LOGGER.error(ex)
-            except Exception as ex:  # pylint: disable=broad-except
-                _LOGGER.error(
-                    "An unknown error occurred: %s",
-                    ex,
-                )
-            finally:
-                vehicles.append(vehicle)
+            vehicle[LAST_UPDATED] = last_updated
+            vehicle[PARKING] = parking["event"]
+            vehicle[HVAC] = hvac
+            vehicle[BATTERY] = battery
 
-        _LOGGER.debug("Vehicles: %s", vehicles)
-        return vehicles
+            vehicle[DASHBOARD].update(
+                {
+                    ODOMETER: odometer,
+                    ODOMETER_UNIT: odometer_unit,
+                    FUEL: fuel,
+                }
+            )
+
+        except ToyotaNoCarError as ex:
+            _LOGGER.error(ex)
+        except ToyotaHttpError as ex:
+            _LOGGER.error(ex)
+        except Exception as ex:  # pylint: disable=broad-except
+            _LOGGER.error(
+                "An unknown error occurred: %s",
+                ex,
+            )
+        finally:
+            return vehicle
+
+    async def gather_information(self):
+        """Gather information from all cars registered to the account."""
+
+        valid, cars = await self.get_cars()
+
+        if valid:
+            vehicles = await gather(*[self.get_car_data(car) for car in cars])
+
+            _LOGGER.debug("Vehicles: %s", vehicles)
+            return vehicles
+
+        _LOGGER.error("Cannot find any cars in your account.")

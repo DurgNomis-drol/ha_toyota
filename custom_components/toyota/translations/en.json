@@ -3,16 +3,16 @@
     "step": {
       "user": {
         "title": "Toyota Connected Services authentication",
-        "description": "Please input your MyT credentials below. You will also need your VIN number, language code and lastly you will have to give your car a nickname.",
+        "description": "Please input your email and password for MyT below.",
         "data": {
-          "email": "Myt email",
-          "password": "MyT password",
+          "email": "Email",
+          "password": "Password",
           "locale": "Language code in this style (da-dk)"
         }
       }
     },
     "error": {
-      "invalid_auth": "Username/Password is incorrect.",
+      "invalid_auth": "Email/Password is incorrect.",
       "invalid_locale": "Language code is not valid.",
       "unknown": "Unexpected error"
     }

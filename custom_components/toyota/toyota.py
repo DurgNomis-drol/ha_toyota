@@ -69,9 +69,10 @@ class MyT:
         """Is locale string valid."""
         return Language.make(locale).is_valid()
 
-    async def _request(self, endpoint: str, headers: dict):
+    async def _request(self, endpoint: str, headers: dict) -> tuple:
         """Make the request."""
 
+        resp = None
         async with self.session.get(
             endpoint, headers=headers, timeout=TIMEOUT
         ) as response:
@@ -79,12 +80,17 @@ class MyT:
                 resp = await response.json()
             elif response.status == 204:
                 raise ToyotaNoCarError("Please setup connected services for your car!")
+            elif response.status == 401:
+                token, uuid = self.perform_login(self.username, self.password)
+                self._token = token
+                self._uuid = uuid
+                return False, None
             else:
                 raise ToyotaHttpError(
                     "HTTP: {} - {}".format(response.status, response.text)
                 )
 
-        return await resp
+        return True, resp
 
     def perform_login(self, username: str, password: str) -> tuple:
         """Performs login to toyota servers."""
@@ -96,6 +102,7 @@ class MyT:
             "Content-Type": "application/json;charset=UTF-8",
         }
 
+        # Cannot authenticate with aiohttp (returns 415), but it works with requests.
         response = requests.post(
             ENDPOINT_AUTH,
             headers=headers,
@@ -113,7 +120,7 @@ class MyT:
 
         return token, uuid
 
-    async def get_cars(self) -> list:
+    async def get_cars(self) -> tuple:
         """Retrieves list of cars you have registered with MyT"""
         headers = {
             "X-TME-BRAND": "TOYOTA",
@@ -127,9 +134,15 @@ class MyT:
             f"{BASE_URL_CARS}/user/{self._uuid}/vehicles?services=uio&legacy=true"
         )
 
-        cars = await self._request(endpoint, headers=headers)
+        retry, cars = await self._request(endpoint, headers=headers)
 
-        return cars
+        if retry:
+            retry, cars = await self._request(endpoint, headers=headers)
+
+        if isinstance(cars, list) and cars:
+            return True, cars
+
+        return False, None
 
     async def get_odometer(self, vin: str) -> tuple:
         """Get information from odometer."""
@@ -139,7 +152,10 @@ class MyT:
         headers = {"Cookie": f"iPlanetDirectoryPro={self._token}"}
         endpoint = f"{BASE_URL}/vehicle/{vin}/addtionalInfo"
 
-        data = await self._request(endpoint, headers=headers)
+        retry, data = await self._request(endpoint, headers=headers)
+
+        if retry:
+            retry, data = await self._request(endpoint, headers=headers)
 
         for item in data:
             if item[TYPE] == MILEAGE:
@@ -154,7 +170,10 @@ class MyT:
         headers = {"Cookie": f"iPlanetDirectoryPro={self._token}", "VIN": vin}
         endpoint = f"{BASE_URL}/users/{self._uuid}/vehicle/location"
 
-        parking = await self._request(endpoint, headers=headers)
+        retry, parking = await self._request(endpoint, headers=headers)
+
+        if retry:
+            retry, parking = await self._request(endpoint, headers=headers)
 
         return parking
 
@@ -167,7 +186,10 @@ class MyT:
         }
         endpoint = f"{BASE_URL}/vehicles/{vin}/remoteControl/status"
 
-        data = await self._request(endpoint, headers=headers)
+        retry, data = await self._request(endpoint, headers=headers)
+
+        if retry:
+            retry, data = await self._request(endpoint, headers=headers)
 
         last_updated = data[VEHICLE_INFO][ACQUISITIONDATE]
         battery = data[VEHICLE_INFO][CHARGE_INFO]

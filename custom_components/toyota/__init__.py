@@ -20,15 +20,20 @@ from .const import (
     DATA_CLIENT,
     DATA_COORDINATOR,
     DOMAIN,
+    LAST_UPDATED,
     MODEL,
     NICKNAME,
     STARTUP_MESSAGE,
+    VEHICLE_INFO,
     VIN,
 )
 
 _LOGGER = logging.getLogger(__name__)
 
 PLATFORMS = ["sensor"]
+
+# Update sensors every 5 minutes
+UPDATE_INTERVAL = timedelta(seconds=300)
 
 
 async def async_setup(_hass: HomeAssistant, _config: Config) -> bool:
@@ -67,7 +72,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         _LOGGER,
         name=DOMAIN,
         update_method=async_update_data,
-        update_interval=timedelta(seconds=300),
+        update_interval=UPDATE_INTERVAL,
     )
 
     # Fetch initial data so we have data when entities subscribe
@@ -113,9 +118,10 @@ class ToyotaEntity(CoordinatorEntity):
         """Initialize the Toyota entity."""
         super().__init__(coordinator)
         self.index = index
-        self.vin = self.coordinator.data[self.index][VIN]
+        self.vin = self.coordinator.data[self.index][VEHICLE_INFO][VIN]
         self.nickname = self.coordinator.data[self.index][NICKNAME]
-        self.model = self.coordinator.data[self.index][MODEL]
+        self.model = self.coordinator.data[self.index][VEHICLE_INFO][MODEL]
+        self.last_updated = self.coordinator.data[self.index][LAST_UPDATED]
 
     @property
     def device_info(self):
@@ -124,5 +130,5 @@ class ToyotaEntity(CoordinatorEntity):
             "identifiers": {(DOMAIN, self.vin)},
             "name": self.nickname,
             "model": self.model,
-            "manufacturer": "Toyota",
+            "manufacturer": "ha_toyota",
         }
