@@ -395,15 +395,15 @@ python-versions = "*"
 
 [[package]]
 name = "mytoyota"
-version = "0.1.0"
-description = "Tool to communicate with Toyota Connected Services."
+version = "0.1.4"
+description = "Python client for Toyota Connected Services."
 category = "main"
 optional = false
 python-versions = "*"
 
 [package.dependencies]
+httpx = "*"
 langcodes = "*"
-requests = "*"
 
 [[package]]
 name = "nodeenv"
@@ -1038,8 +1038,8 @@ mypy-extensions = [
     {file = "mypy_extensions-0.4.3.tar.gz", hash = "sha256:2d82818f5bb3e369420cb3c4060a7970edba416647068eb4c5343488a6c604a8"},
 ]
 mytoyota = [
-    {file = "mytoyota-0.1.0-py3-none-any.whl", hash = "sha256:7e2801fab1fff6b8797f1b0b30507b26c47af36e12ee96916c607595b77698d5"},
-    {file = "mytoyota-0.1.0.tar.gz", hash = "sha256:4ca5893d44d7010f67ac7af86a492509c122f6f59404e25fd6d5f81cfcab26dc"},
+    {file = "mytoyota-0.1.4-py3-none-any.whl", hash = "sha256:cf52ea9ed2aebfcdc1cad872eec660400b47b5c4cbbda7fb22b83d1d096a8526"},
+    {file = "mytoyota-0.1.4.tar.gz", hash = "sha256:ac0ba14237f57ec2968d9392e988084366155ed4c450851a586e8a82e00ced37"},
 ]
 nodeenv = [
     {file = "nodeenv-1.5.0-py2.py3-none-any.whl", hash = "sha256:5304d424c529c997bc888453aeaa6362d242b6b4631e90f3d4bf1b290f1c84a9"},
