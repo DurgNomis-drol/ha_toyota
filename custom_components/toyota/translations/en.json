@@ -2,13 +2,13 @@
   "config": {
     "step": {
       "user": {
-        "title": "Toyota Connected Services authentication",
+        "title": "Toyota Connected Services",
         "description": "Please input your email and password for MyT below.",
         "data": {
           "email": "Email",
           "password": "Password",
           "locale": "Language code in this style (da-dk)",
-          "region": "Region (Only Europe is support right now)"
+          "region": "Region (Only Europe is supported right now)"
         }
       }
     },

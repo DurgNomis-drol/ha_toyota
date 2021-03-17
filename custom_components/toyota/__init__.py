@@ -60,7 +60,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         password=password,
         locale=locale,
         uuid=uuid,
-        region=region,
+        region=region.lower(),
         token=token,
     )
 
