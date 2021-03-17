@@ -19,11 +19,12 @@ from .const import (
     ICON_HVAC,
     ICON_ODOMETER,
     ICON_PARKING,
+    IMAGE,
     MILEAGE,
     ODOMETER,
     ODOMETER_UNIT,
     PARKING,
-    STATUS, IMAGE,
+    STATUS,
 )
 
 
