@@ -6,6 +6,6 @@
   "documentation": "https://github.com/DurgNomis-drol/ha_toyota",
   "issue_tracker": "https://github.com/DurgNomis-drol/ha_toyota/issues",
   "codeowners": ["@DurgNomis-drol"],
-  "requirements": ["requests", "langcodes"],
+  "requirements": ["mytoyota==0.1.4"],
   "version": "0.1.0"
 }

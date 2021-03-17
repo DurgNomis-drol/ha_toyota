@@ -12,24 +12,23 @@ CONF_LOCALE = "locale"
 CONF_UUID = "uuid"
 
 # COORDINATOR DATA ATTRIBUTES
-VEHICLE_INFO = "vehicle_info"
-DASHBOARD = "dashboard"
-MODEL = "modelName"
-NICKNAME = "alias"
+DETAILS = "details"
+MODEL = "model"
+ALIAS = "alias"
 VIN = "vin"
+STATUS = "status"
 ODOMETER = "odometer"
+MILEAGE = "mileage"
 ODOMETER_UNIT = "odometer_unit"
-FUEL = "fuel"
+FUEL = "Fuel"
 FUEL_TYPE = "fuel_type"
 PARKING = "parking"
 BATTERY = "battery"
 HVAC = "hvac"
 HVAC_TEMPERATURE = "InsideTemperature"
-ENGINE = "engine"
-TRANSMISSION = "transmission"
 HYBRID = "hybrid"
-PRODUCTION_YEAR = "production_year"
 LAST_UPDATED = "last_updated"
+IMAGE = "image"
 
 # ICONS
 ICON_CAR = "mdi:car"
@@ -39,28 +38,6 @@ ICON_HVAC = "mdi:hvac"
 ICON_PARKING = "mdi:map-marker"
 ICON_BATTERY = "mdi:car-battery"
 
-# DICT STRUCTURE FOR HOLDING INFORMATION
-VEHICLE_DICT_FORMAT = {
-    NICKNAME: None,
-    DASHBOARD: {
-        FUEL: None,
-        FUEL_TYPE: None,
-        ODOMETER: None,
-        ODOMETER_UNIT: None,
-    },
-    HVAC: {},
-    BATTERY: {},
-    PARKING: {},
-    VEHICLE_INFO: {
-        ENGINE: None,
-        TRANSMISSION: None,
-        HYBRID: None,
-        MODEL: None,
-        PRODUCTION_YEAR: None,
-        VIN: None,
-    },
-    LAST_UPDATED: None,
-}
 
 STARTUP_MESSAGE = f"""
 -------------------------------------------------------------------

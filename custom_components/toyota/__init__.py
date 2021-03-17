@@ -3,28 +3,29 @@ import asyncio
 from datetime import timedelta
 import logging
 
+from mytoyota.client import MyT
+from mytoyota.exceptions import ToyotaLoginError
+
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import CONF_API_TOKEN, CONF_EMAIL, CONF_PASSWORD
+from homeassistant.const import CONF_API_TOKEN, CONF_EMAIL, CONF_PASSWORD, CONF_REGION
 from homeassistant.core import Config, HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
-from homeassistant.helpers import aiohttp_client
 from homeassistant.helpers.update_coordinator import (
     CoordinatorEntity,
     DataUpdateCoordinator,
 )
 
-from .api import ToyotaApi
 from .const import (
+    ALIAS,
     CONF_LOCALE,
     CONF_UUID,
     DATA_CLIENT,
     DATA_COORDINATOR,
+    DETAILS,
     DOMAIN,
-    LAST_UPDATED,
+    HYBRID,
     MODEL,
-    NICKNAME,
     STARTUP_MESSAGE,
-    VEHICLE_INFO,
     VIN,
 )
 
@@ -52,20 +53,31 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     locale = entry.data[CONF_LOCALE]
     uuid = entry.data[CONF_UUID]
     token = entry.data[CONF_API_TOKEN]
+    region = entry.data[CONF_REGION]
 
-    session = aiohttp_client.async_get_clientsession(hass)
-    client = ToyotaApi(
+    client = MyT(
         username=email,
         password=password,
         locale=locale,
         uuid=uuid,
+        region=region,
         token=token,
-        session=session,
     )
 
     async def async_update_data():
         """Fetch data from Toyota API."""
-        return await client.gather_information()
+
+        vehicles = []
+
+        try:
+            vehicles = await client.gather_information()
+        except ToyotaLoginError as ex:
+            _LOGGER.error(ex)
+        except Exception as ex:  # pylint: disable=broad-except
+            _LOGGER.error(ex)
+
+        _LOGGER.debug(vehicles)
+        return vehicles
 
     coordinator = DataUpdateCoordinator(
         hass,
@@ -118,17 +130,17 @@ class ToyotaEntity(CoordinatorEntity):
         """Initialize the Toyota entity."""
         super().__init__(coordinator)
         self.index = index
-        self.vin = self.coordinator.data[self.index][VEHICLE_INFO][VIN]
-        self.nickname = self.coordinator.data[self.index][NICKNAME]
-        self.model = self.coordinator.data[self.index][VEHICLE_INFO][MODEL]
-        self.last_updated = self.coordinator.data[self.index][LAST_UPDATED]
+        self.vin = self.coordinator.data[self.index][VIN]
+        self.alias = self.coordinator.data[self.index][ALIAS]
+        self.model = self.coordinator.data[self.index][DETAILS][MODEL]
+        self.hybrid = self.coordinator.data[self.index][DETAILS][HYBRID]
 
     @property
     def device_info(self):
         """Return device info for the Toyota entity."""
         return {
             "identifiers": {(DOMAIN, self.vin)},
-            "name": self.nickname,
+            "name": self.alias,
             "model": self.model,
             "manufacturer": "ha_toyota",
         }

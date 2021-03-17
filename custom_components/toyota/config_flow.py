@@ -1,18 +1,22 @@
 """Config flow for Toyota Connected Services integration."""
 import logging
 
+from mytoyota.client import MyT
+from mytoyota.exceptions import (
+    ToyotaInvalidUsername,
+    ToyotaLocaleNotValid,
+    ToyotaLoginError,
+    ToyotaRegionNotSupported,
+)
 import voluptuous as vol
 
 from homeassistant import config_entries
-from homeassistant.const import CONF_API_TOKEN, CONF_EMAIL, CONF_PASSWORD
-from homeassistant.helpers import aiohttp_client
+from homeassistant.const import CONF_API_TOKEN, CONF_EMAIL, CONF_PASSWORD, CONF_REGION
 
-from .api import ToyotaApi
 from .const import CONF_LOCALE, CONF_UUID
 
 # https://github.com/PyCQA/pylint/issues/3202
 from .const import DOMAIN  # pylint: disable=unused-import
-from .toyota import ToyotaLocaleNotValid, ToyotaLoginError
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -21,6 +25,7 @@ DATA_SCHEMA = vol.Schema(
         vol.Required(CONF_EMAIL): str,
         vol.Required(CONF_PASSWORD): str,
         vol.Required(CONF_LOCALE): str,
+        vol.Required(CONF_REGION): str,
     }
 )
 
@@ -39,23 +44,30 @@ class MazdaConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             await self.async_set_unique_id(user_input[CONF_EMAIL].lower())
 
             try:
-                session = aiohttp_client.async_get_clientsession(self.hass)
-                client = ToyotaApi(
+                client = MyT(
                     username=user_input[CONF_EMAIL],
                     password=user_input[CONF_PASSWORD],
                     locale=user_input[CONF_LOCALE],
-                    session=session,
+                    region=user_input[CONF_REGION],
                 )
-                valid, token, uuid = await client.get_token_and_uuid()
-                if valid:
-                    data = user_input
-                    data.update({CONF_API_TOKEN: token, CONF_UUID: uuid})
+
+                token = client.get_token()
+                uuid = client.get_uuid()
+
+                data = user_input
+                data.update({CONF_API_TOKEN: token, CONF_UUID: uuid})
 
             except ToyotaLoginError as ex:
                 errors["base"] = "invalid_auth"
                 _LOGGER.error(ex)
             except ToyotaLocaleNotValid as ex:
                 errors["base"] = "invalid_locale"
+                _LOGGER.error(ex)
+            except ToyotaRegionNotSupported as ex:
+                errors["base"] = "region_not_supported"
+                _LOGGER.error("Region not supported - %s", ex)
+            except ToyotaInvalidUsername as ex:
+                errors["base"] = "invalid_username"
                 _LOGGER.error(ex)
             except Exception as ex:  # pylint: disable=broad-except
                 errors["base"] = "unknown"

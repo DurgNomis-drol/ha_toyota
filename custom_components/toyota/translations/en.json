@@ -7,14 +7,17 @@
         "data": {
           "email": "Email",
           "password": "Password",
-          "locale": "Language code in this style (da-dk)"
+          "locale": "Language code in this style (da-dk)",
+          "region": "Region"
         }
       }
     },
     "error": {
+      "invalid_username": "Email must contain @.",
+      "region_not_supported": "Region is not supported.",
       "invalid_auth": "Email/Password is incorrect.",
       "invalid_locale": "Language code is not valid.",
-      "unknown": "Unexpected error"
+      "unknown": "Unexpected error."
     }
   },
   "options": {

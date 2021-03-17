@@ -7,11 +7,14 @@
         "data": {
           "email": "Email",
           "password": "Adgangskode",
-          "locale": "Landekode i denne stil (da-dk)"
+          "locale": "Landekode i denne stil (da-dk)",
+          "region": "Region"
         }
       }
     },
     "error": {
+      "invalud_username": "Email skal indeholde @.",
+      "region_not_supported": "Region er ikke understøttet",
       "invalid_auth": "Email/Adgangskode er forkert.",
       "invalid_locale": "Landekode format er ikke korrekt.",
       "unknown": "Uventet fejl."
