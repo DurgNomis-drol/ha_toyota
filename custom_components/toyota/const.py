@@ -10,6 +10,9 @@ DATA_COORDINATOR = "coordinator"
 # CONF
 CONF_LOCALE = "locale"
 CONF_UUID = "uuid"
+CONF_REGION_SUPPORTED = [
+    "Europe",
+]
 
 # COORDINATOR DATA ATTRIBUTES
 DETAILS = "details"

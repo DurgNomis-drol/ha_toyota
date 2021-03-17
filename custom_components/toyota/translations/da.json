@@ -8,27 +8,16 @@
           "email": "Email",
           "password": "Adgangskode",
           "locale": "Landekode i denne stil (da-dk)",
-          "region": "Region"
+          "region": "Region (Kun Europa er understøttet lige nu)"
         }
       }
     },
     "error": {
-      "invalud_username": "Email skal indeholde @.",
+      "invalid_username": "Email skal indeholde @.",
       "region_not_supported": "Region er ikke understøttet",
       "invalid_auth": "Email/Adgangskode er forkert.",
       "invalid_locale": "Landekode format er ikke korrekt.",
       "unknown": "Uventet fejl."
-    }
-  },
-  "options": {
-    "step": {
-      "user": {
-        "data": {
-          "binary_sensor": "Binary sensor enabled",
-          "sensor": "Sensor enabled",
-          "switch": "Switch enabled"
-        }
-      }
     }
   }
 }

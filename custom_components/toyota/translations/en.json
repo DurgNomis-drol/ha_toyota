@@ -8,7 +8,7 @@
           "email": "Email",
           "password": "Password",
           "locale": "Language code in this style (da-dk)",
-          "region": "Region"
+          "region": "Region (Only Europe is support right now)"
         }
       }
     },
@@ -18,17 +18,6 @@
       "invalid_auth": "Email/Password is incorrect.",
       "invalid_locale": "Language code is not valid.",
       "unknown": "Unexpected error."
-    }
-  },
-  "options": {
-    "step": {
-      "user": {
-        "data": {
-          "binary_sensor": "Binary sensor enabled",
-          "sensor": "Sensor enabled",
-          "switch": "Switch enabled"
-        }
-      }
     }
   }
 }

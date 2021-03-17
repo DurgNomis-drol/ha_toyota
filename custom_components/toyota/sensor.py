@@ -125,7 +125,7 @@ class ToyotaFuelRemainingSensor(ToyotaEntity):
     @property
     def state(self):
         """Return the state of the sensor."""
-        return self.coordinator.data[self.index][ODOMETER][FUEL]
+        return self.coordinator.data[self.index][STATUS][ODOMETER][FUEL]
 
 
 class ToyotaOdometerSensor(ToyotaEntity):
@@ -144,7 +144,7 @@ class ToyotaOdometerSensor(ToyotaEntity):
     @property
     def unit_of_measurement(self):
         """Return the unit of measurement."""
-        return self.coordinator.data[self.index][ODOMETER][ODOMETER_UNIT]
+        return self.coordinator.data[self.index][STATUS][ODOMETER][ODOMETER_UNIT]
 
     @property
     def icon(self):
@@ -154,7 +154,7 @@ class ToyotaOdometerSensor(ToyotaEntity):
     @property
     def state(self):
         """Return the state of the sensor."""
-        return self.coordinator.data[self.index][DETAILS][MILEAGE]
+        return self.coordinator.data[self.index][STATUS][DETAILS][MILEAGE]
 
 
 class ToyotaHVACSensor(ToyotaEntity):
