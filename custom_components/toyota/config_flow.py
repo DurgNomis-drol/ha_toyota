@@ -51,7 +51,7 @@ class MazdaConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     region=user_input[CONF_REGION],
                 )
 
-                token = client.get_token()
+                token = await client.get_token()
                 uuid = client.get_uuid()
 
                 data = user_input
