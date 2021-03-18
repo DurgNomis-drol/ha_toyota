@@ -31,7 +31,7 @@ from .const import (
 
 _LOGGER = logging.getLogger(__name__)
 
-PLATFORMS = ["sensor"]
+PLATFORMS = ["sensor", "device_tracker"]
 
 # Update sensors every 5 minutes
 UPDATE_INTERVAL = timedelta(seconds=300)
