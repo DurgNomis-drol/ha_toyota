@@ -36,12 +36,12 @@ class ToyotaParkingTracker(ToyotaEntity, TrackerEntity):
     @property
     def latitude(self):
         """Return latitude value of the device."""
-        return self.coordinator.data[self.index][STATUS][PARKING]["event"]["lat"]
+        return float(self.coordinator.data[self.index][STATUS][PARKING]["event"]["lat"])
 
     @property
     def longitude(self):
         """Return longitude value of the device."""
-        return self.coordinator.data[self.index][STATUS][PARKING]["event"]["lon"]
+        return float(self.coordinator.data[self.index][STATUS][PARKING]["event"]["lon"])
 
     @property
     def name(self):
