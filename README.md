@@ -21,6 +21,8 @@ it working but there are no promises.
 
 ## Features
 
+Only Europe is supported right now. If you want to help to add other regions, please open an issue over at [`mytoyota`](https://github.com/DurgNomis-drol/mytoyota).
+
 This component will set up the following platforms:
 
 | Platform         | Sample sensor           | Description                       |
