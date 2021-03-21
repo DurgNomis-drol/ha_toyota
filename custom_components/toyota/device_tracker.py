@@ -51,7 +51,7 @@ class ToyotaParkingTracker(ToyotaEntity, TrackerEntity):
     @property
     def unique_id(self):
         """Return a unique identifier for this entity."""
-        return f"{self.alias}/last_parked"
+        return f"{self.vin}/last_parked"
 
     @property
     def source_type(self):

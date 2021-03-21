@@ -64,7 +64,7 @@ class ToyotaCarSensor(ToyotaEntity):
     @property
     def unique_id(self):
         """Return a unique identifier for this entity."""
-        return f"{self.alias}/car"
+        return f"{self.vin}/car"
 
     @property
     def device_state_attributes(self):
@@ -98,7 +98,7 @@ class ToyotaFuelRemainingSensor(ToyotaEntity):
     @property
     def unique_id(self):
         """Return a unique identifier for this entity."""
-        return f"{self.alias}/fuel_tank"
+        return f"{self.vin}/fuel_tank"
 
     @property
     def unit_of_measurement(self):
@@ -134,7 +134,7 @@ class ToyotaOdometerSensor(ToyotaEntity):
     @property
     def unique_id(self):
         """Return a unique identifier for this entity."""
-        return f"{self.alias}/odometer"
+        return f"{self.vin}/odometer"
 
     @property
     def unit_of_measurement(self):
@@ -164,7 +164,7 @@ class ToyotaHVACSensor(ToyotaEntity):
     @property
     def unique_id(self):
         """Return a unique identifier for this entity."""
-        return f"{self.alias}/hvac"
+        return f"{self.vin}/hvac"
 
     @property
     def device_class(self):
@@ -199,7 +199,7 @@ class ToyotaEVSensor(ToyotaEntity):
     @property
     def unique_id(self):
         """Return a unique identifier for this entity."""
-        return f"{self.alias}/battery"
+        return f"{self.vin}/battery"
 
     @property
     def unit_of_measurement(self):
