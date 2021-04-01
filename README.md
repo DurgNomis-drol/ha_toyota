@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="https://logoeps.com/wp-content/uploads/2011/04/toyota-logo-vector.png" alt="logo" height="200">
+    <img src="https://brands.home-assistant.io/_/toyota/icon@2x.png" alt="logo" height="200">
 </p>
 
 <h2 align="center">Toyota community integration</h2>
@@ -21,16 +21,17 @@ it working but there are no promises.
 
 ## Features
 
-Only Europe is supported right now. If you want to help to add other regions, please open an issue over at [`mytoyota`](https://github.com/DurgNomis-drol/mytoyota).
+Only Europe is supported right now. If you want to help add other regions, please open an issue over at [`mytoyota`](https://github.com/DurgNomis-drol/mytoyota).
 
 This component will set up the following platforms:
 
-| Platform         | Sample sensor           | Description                       |
-| ---------------- | ----------------------- | --------------------------------- |
-| `sensor`         | `sensor.aygo`           | Static data about your car        |
-| `sensor`         | `sensor.aygo_fuel_tank` | Fuel tank information             |
-| `sensor`         | `sensor.aygo_odometer`  | Odometer information              |
-| `device_tracker` | `device_tracker.aygo`   | Shows you last parked information |
+| Platform         | Sample sensor                 | Description                       |
+| ---------------- | ----------------------------- | --------------------------------- |
+| `sensor`         | `sensor.aygo`                 | Static data about your car        |
+| `sensor`         | `sensor.aygo_odometer`        | Odometer information              |
+| `sensor`         | `sensor.aygo_fuel_tank`       | Fuel tank information             |
+| `sensor`         | `sensor.aygo_starter_battery` | Starter battery health            |
+| `device_tracker` | `device_tracker.aygo`         | Shows you last parked information |
 
 **Sensors displaying statistical information are coming soon...**
 

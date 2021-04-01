@@ -1,0 +1,60 @@
+[
+  {
+    "alias": "Aygo",
+    "vin": "JTXXXXXXXXXXXXXXX",
+    "details": {
+      "batteryHealth": "GOOD",
+      "claimedBy": "MT-XXXX",
+      "engine": "1.0 benzin (72 hk)",
+      "entitledBy": "MT-XXXX",
+      "entitledOn": "2021-03-10T09:20:42.152Z",
+      "exteriorColour": "1E0 ",
+      "fuel": "PETROL",
+      "fullKatashiki": "KDDD0L-ADDGDD",
+      "grade": "Mid/High",
+      "horsePower": 72,
+      "hybrid": false,
+      "id": 1111111,
+      "imageUrl": "https://dj3z27z47basa.cloudfront.net/5957a713-f80f-483f-998c-97f956367048",
+      "interiorColour": "20",
+      "isEntitled": true,
+      "isNC": true,
+      "licensePlate": "CXXXXXX",
+      "modelCode": "AY",
+      "modelDescription": "Aygo 2B",
+      "modelDocumentId": "12345",
+      "modelName": "Aygo 2B",
+      "owner": true,
+      "ownerFlag": true,
+      "productionYear": "2021",
+      "source": "NMSC",
+      "startDate": "2021-03-11T09:20:42.152Z",
+      "transmission": "5-trins man. gear",
+      "transmissionType": "MT",
+      "vehicleAddedOn": "2021-03-01T09:43:42.350Z"
+    },
+    "status": {
+      "battery": null,
+      "hvac": null,
+      "odometer": {
+        "mileage": 250,
+        "mileage_unit": "km",
+        "Fuel": 29.02
+      },
+      "parking": {
+        "event": {
+          "lat": "56.111111",
+          "lon": "9.111111",
+          "address": null,
+          "timestamp": "1616936418000"
+        },
+        "tripStatus": "0",
+        "energy": null,
+        "protectionState": null
+      }
+    },
+    "servicesEnabled": {
+      "connectedServices": true
+    }
+  }
+]

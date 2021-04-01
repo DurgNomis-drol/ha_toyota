@@ -1,54 +1,44 @@
 """Platform for Toyota sensor integration."""
 
-from homeassistant.const import DEVICE_CLASS_TEMPERATURE, PERCENTAGE
+from homeassistant.const import PERCENTAGE, STATE_UNKNOWN
 
 from . import ToyotaEntity
 from .const import (
-    BATTERY,
+    BATTERY_HEALTH,
+    CONNECTED_SERVICES,
     DATA_COORDINATOR,
     DETAILS,
     DOMAIN,
     FUEL,
     FUEL_TYPE,
-    HVAC,
-    HVAC_TEMPERATURE,
     ICON_BATTERY,
     ICON_CAR,
     ICON_FUEL,
-    ICON_HVAC,
     ICON_ODOMETER,
-    IMAGE,
+    LICENSE_PLATE,
     MILEAGE,
     MILEAGE_UNIT,
     ODOMETER,
+    SERVICES,
     STATUS,
 )
 
 
 async def async_setup_entry(hass, config_entry, async_add_devices):
     """Set up the sensor platform."""
-    coordinator = hass.data[DOMAIN][config_entry.entry_id][DATA_COORDINATOR]
-
     sensors = []
 
-    def check_if_enabled(service):
-        """Check if Toyota Connected Services is enabled for the car."""
-        if "error" in service:
-            return False
-
-        return True
+    coordinator = hass.data[DOMAIN][config_entry.entry_id][DATA_COORDINATOR]
 
     for index, _ in enumerate(coordinator.data):
         sensors.append(ToyotaCarSensor(coordinator, index))
 
         # If Connected Services is setup for the car, setup additional sensors
-        if check_if_enabled(coordinator.data[index][STATUS][ODOMETER]):
-            sensors.append(ToyotaFuelRemainingSensor(coordinator, index))
+        if coordinator.data[index][SERVICES][CONNECTED_SERVICES]:
+            sensors.append(ToyotaStarterBatterySensor(coordinator, index))
             sensors.append(ToyotaOdometerSensor(coordinator, index))
-        # if check_if_enabled(coordinator.data[index][STATUS][HVAC]):
-        #     sensors.append(ToyotaHVACSensor(coordinator, index))
-        # if coordinator.data[index][DETAILS][HYBRID]:
-        #    sensors.append(ToyotaEVSensor(coordinator, index))
+            if FUEL in coordinator.data[index][STATUS][ODOMETER]:
+                sensors.append(ToyotaFuelRemainingSensor(coordinator, index))
 
     async_add_devices(sensors, True)
 
@@ -79,12 +69,41 @@ class ToyotaCarSensor(ToyotaEntity):
     @property
     def state(self):
         """Return the state of the sensor."""
-        return self.model
+        if LICENSE_PLATE in self.coordinator.data[self.index][DETAILS]:
+            return self.coordinator.data[self.index][DETAILS][LICENSE_PLATE]
+
+        return STATE_UNKNOWN
+
+
+class ToyotaStarterBatterySensor(ToyotaEntity):
+    """Class for the fuel remaining sensor."""
 
     @property
-    def entity_picture(self):
-        """Return entity picture."""
-        return self.coordinator.data[self.index][DETAILS][IMAGE]
+    def name(self):
+        """Return the name of the sensor."""
+        return f"{self.alias} starter battery health"
+
+    @property
+    def unique_id(self):
+        """Return a unique identifier for this entity."""
+        return f"{self.vin}/starter_battery_condition"
+
+    @property
+    def icon(self):
+        """Return the icon to use in the frontend."""
+        return ICON_BATTERY
+
+    @property
+    def state(self):
+        """Return the state of the sensor."""
+        if BATTERY_HEALTH in self.coordinator.data[self.index][DETAILS]:
+            return (
+                self.coordinator.data[self.index][DETAILS][BATTERY_HEALTH]
+                .lower()
+                .capitalize()
+            )
+
+        return STATE_UNKNOWN
 
 
 class ToyotaFuelRemainingSensor(ToyotaEntity):
@@ -150,75 +169,3 @@ class ToyotaOdometerSensor(ToyotaEntity):
     def state(self):
         """Return the state of the sensor."""
         return self.coordinator.data[self.index][STATUS][ODOMETER][MILEAGE]
-
-
-# Is disabled for now
-class ToyotaHVACSensor(ToyotaEntity):
-    """Class for the fuel remaining sensor."""
-
-    @property
-    def name(self):
-        """Return the name of the sensor."""
-        return f"{self.alias} HVAC"
-
-    @property
-    def unique_id(self):
-        """Return a unique identifier for this entity."""
-        return f"{self.vin}/hvac"
-
-    @property
-    def device_class(self):
-        """Return the class of this device, from DEVICE_CLASS_*"""
-        return DEVICE_CLASS_TEMPERATURE
-
-    @property
-    def icon(self):
-        """Return the icon to use in the frontend."""
-        return ICON_HVAC
-
-    @property
-    def device_state_attributes(self):
-        """Return the state attributes."""
-        return self.coordinator.data[self.index][STATUS][HVAC]
-
-    @property
-    def state(self):
-        """Return the state of the sensor."""
-        return self.coordinator.data[self.index][STATUS][HVAC][HVAC_TEMPERATURE]
-
-
-# Is disabled for now
-class ToyotaEVSensor(ToyotaEntity):
-    """Class for the fuel remaining sensor."""
-
-    @property
-    def name(self):
-        """Return the name of the sensor."""
-        return f"{self.alias} battery"
-
-    @property
-    def unique_id(self):
-        """Return a unique identifier for this entity."""
-        return f"{self.vin}/battery"
-
-    @property
-    def unit_of_measurement(self):
-        """Return the unit of measurement."""
-        return PERCENTAGE
-
-    @property
-    def icon(self):
-        """Return the icon to use in the frontend."""
-        return ICON_BATTERY
-
-    @property
-    def device_state_attributes(self):
-        """Return the state attributes."""
-        return self.coordinator.data[self.index][STATUS][BATTERY]
-
-    @property
-    def state(self):
-        """Return the state of the sensor."""
-        return self.coordinator.data[self.index][STATUS][BATTERY][
-            "ChargeRemainingAmount"
-        ]
