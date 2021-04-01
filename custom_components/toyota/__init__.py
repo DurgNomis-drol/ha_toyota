@@ -7,7 +7,7 @@ from mytoyota.client import MyT
 from mytoyota.exceptions import ToyotaLoginError
 
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import CONF_API_TOKEN, CONF_EMAIL, CONF_PASSWORD, CONF_REGION
+from homeassistant.const import CONF_EMAIL, CONF_PASSWORD, CONF_REGION
 from homeassistant.core import Config, HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers.update_coordinator import (
@@ -18,20 +18,19 @@ from homeassistant.helpers.update_coordinator import (
 from .const import (
     ALIAS,
     CONF_LOCALE,
-    CONF_UUID,
     DATA_CLIENT,
     DATA_COORDINATOR,
     DETAILS,
     DOMAIN,
     HYBRID,
+    IMAGE,
     MODEL,
+    PLATFORMS,
     STARTUP_MESSAGE,
     VIN,
 )
 
 _LOGGER = logging.getLogger(__name__)
-
-PLATFORMS = ["sensor", "device_tracker"]
 
 # Update sensors every 5 minutes
 UPDATE_INTERVAL = timedelta(seconds=300)
@@ -51,18 +50,16 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     email = entry.data[CONF_EMAIL]
     password = entry.data[CONF_PASSWORD]
     locale = entry.data[CONF_LOCALE]
-    uuid = entry.data[CONF_UUID]
-    token = entry.data[CONF_API_TOKEN]
     region = entry.data[CONF_REGION]
 
     client = MyT(
         username=email,
         password=password,
         locale=locale,
-        uuid=uuid,
         region=region.lower(),
-        token=token,
     )
+
+    await client.login()
 
     async def async_update_data():
         """Fetch data from Toyota API."""
@@ -70,7 +67,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         vehicles = []
 
         try:
-            vehicles = await client.gather_information()
+            vehicles = await client.gather_all_information()
         except ToyotaLoginError as ex:
             _LOGGER.error(ex)
         except Exception as ex:  # pylint: disable=broad-except
@@ -134,6 +131,7 @@ class ToyotaEntity(CoordinatorEntity):
         self.alias = self.coordinator.data[self.index][ALIAS]
         self.model = self.coordinator.data[self.index][DETAILS][MODEL]
         self.hybrid = self.coordinator.data[self.index][DETAILS][HYBRID]
+        self.image = self.coordinator.data[self.index][DETAILS][IMAGE]
 
     @property
     def device_info(self):
@@ -142,5 +140,5 @@ class ToyotaEntity(CoordinatorEntity):
             "identifiers": {(DOMAIN, self.vin)},
             "name": self.alias,
             "model": self.model,
-            "manufacturer": "ha_toyota",
+            "manufacturer": DOMAIN,
         }

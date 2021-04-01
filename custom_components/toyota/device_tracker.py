@@ -5,26 +5,27 @@ from homeassistant.components.device_tracker import SOURCE_TYPE_GPS
 from homeassistant.components.device_tracker.config_entry import TrackerEntity
 
 from . import ToyotaEntity
-from .const import DATA_COORDINATOR, DOMAIN, ICON_CAR, PARKING, STATUS
+from .const import (
+    CONNECTED_SERVICES,
+    DATA_COORDINATOR,
+    DOMAIN,
+    ICON_CAR,
+    PARKING,
+    SERVICES,
+    STATUS,
+)
 
 _LOGGER = logging.getLogger(__name__)
 
 
 async def async_setup_entry(hass, config_entry, async_add_devices):
     """Set up the BMW ConnectedDrive tracker from config entry."""
-    coordinator = hass.data[DOMAIN][config_entry.entry_id][DATA_COORDINATOR]
-
     tracker = []
 
-    def check_if_enabled(service):
-        """Check if Toyota Connected Services is enabled for the car."""
-        if "error" in service:
-            return False
-
-        return True
+    coordinator = hass.data[DOMAIN][config_entry.entry_id][DATA_COORDINATOR]
 
     for index, _ in enumerate(coordinator.data):
-        if check_if_enabled(coordinator.data[index][STATUS][PARKING]):
+        if coordinator.data[index][SERVICES][CONNECTED_SERVICES]:
             tracker.append(ToyotaParkingTracker(coordinator, index))
 
     async_add_devices(tracker, True)
@@ -46,12 +47,12 @@ class ToyotaParkingTracker(ToyotaEntity, TrackerEntity):
     @property
     def name(self):
         """Return the name of the sensor."""
-        return f"{self.alias}"
+        return f"{self.alias} parking location"
 
     @property
     def unique_id(self):
         """Return a unique identifier for this entity."""
-        return f"{self.alias}/last_parked"
+        return f"{self.vin}/parking_location"
 
     @property
     def source_type(self):
@@ -67,3 +68,8 @@ class ToyotaParkingTracker(ToyotaEntity, TrackerEntity):
     def force_update(self):
         """All updates do not need to be written to the state machine."""
         return False
+
+    @property
+    def entity_picture(self):
+        """Return entity picture."""
+        return self.image

@@ -1,45 +1,47 @@
 """Constants for the Toyota Connected Services integration."""
 
+PLATFORMS = ["sensor", "device_tracker"]
+
 DOMAIN = "toyota"
 NAME = "Toyota Connected Services"
 ISSUES_URL = "https://github.com/DurgNomis-drol/ha_toyota/issues"
 
+# CONF
+CONF_LOCALE = "locale"
+CONF_REGION_SUPPORTED = [
+    "europe",
+]
+
+# DATA COORDINATOR
 DATA_CLIENT = "toyota_client"
 DATA_COORDINATOR = "coordinator"
 
-# CONF
-CONF_LOCALE = "locale"
-CONF_UUID = "uuid"
-CONF_REGION_SUPPORTED = [
-    "Europe",
-]
-
-# COORDINATOR DATA ATTRIBUTES
-DETAILS = "details"
-MODEL = "model"
+# DATA COORDINATOR ATTRIBUTES
 ALIAS = "alias"
-VIN = "vin"
-STATUS = "status"
-ODOMETER = "odometer"
+BATTERY_HEALTH = "batteryHealth"
+CONNECTED_SERVICES = "connectedServices"
+DETAILS = "details"
+ENGINE = "engine"
+FUEL = "Fuel"
+FUEL_TYPE = "fuel"
+HYBRID = "hybrid"
+IMAGE = "imageUrl"
+LICENSE_PLATE = "licensePlate"
 MILEAGE = "mileage"
 MILEAGE_UNIT = "mileage_unit"
-FUEL = "Fuel"
-FUEL_TYPE = "fuel_type"
+MODEL = "modelName"
+ODOMETER = "odometer"
 PARKING = "parking"
-BATTERY = "battery"
-HVAC = "hvac"
-HVAC_TEMPERATURE = "InsideTemperature"
-HYBRID = "hybrid"
-LAST_UPDATED = "last_updated"
-IMAGE = "image"
+STATUS = "status"
+SERVICES = "servicesEnabled"
+VIN = "vin"
 
 # ICONS
+ICON_BATTERY = "mdi:car-battery"
 ICON_CAR = "mdi:car"
 ICON_FUEL = "mdi:gas-station"
-ICON_ODOMETER = "mdi:speedometer"
-ICON_HVAC = "mdi:hvac"
+ICON_ODOMETER = "mdi:counter"
 ICON_PARKING = "mdi:map-marker"
-ICON_BATTERY = "mdi:car-battery"
 
 
 STARTUP_MESSAGE = f"""

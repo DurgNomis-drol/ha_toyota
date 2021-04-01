@@ -11,21 +11,25 @@ from mytoyota.exceptions import (
 import voluptuous as vol
 
 from homeassistant import config_entries
-from homeassistant.const import CONF_API_TOKEN, CONF_EMAIL, CONF_PASSWORD, CONF_REGION
+from homeassistant.const import CONF_EMAIL, CONF_PASSWORD, CONF_REGION
 
-from .const import CONF_LOCALE, CONF_REGION_SUPPORTED, CONF_UUID
+from .const import CONF_LOCALE, CONF_REGION_SUPPORTED
 
 # https://github.com/PyCQA/pylint/issues/3202
 from .const import DOMAIN  # pylint: disable=unused-import
 
 _LOGGER = logging.getLogger(__name__)
 
+supported_regions = CONF_REGION_SUPPORTED
+
 DATA_SCHEMA = vol.Schema(
     {
         vol.Required(CONF_EMAIL): str,
         vol.Required(CONF_PASSWORD): str,
         vol.Required(CONF_LOCALE): str,
-        vol.Required(CONF_REGION): vol.In(CONF_REGION_SUPPORTED),
+        vol.Required(CONF_REGION): vol.In(
+            [region.capitalize() for region in supported_regions]
+        ),
     }
 )
 
@@ -53,11 +57,7 @@ class MazdaConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     region=region.lower(),
                 )
 
-                token = await client.get_token()
-                uuid = client.get_uuid()
-
-                data = user_input
-                data.update({CONF_API_TOKEN: token, CONF_UUID: uuid})
+                await client.login()
 
             except ToyotaLoginError as ex:
                 errors["base"] = "invalid_auth"
