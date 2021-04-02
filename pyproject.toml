@@ -7,7 +7,6 @@ license = "MIT"
 
 [tool.poetry.dependencies]
 python = "^3.8"
-langcodes = "^3.1.0"
 homeassistant = "^2021.3.3"
 mytoyota = "0.2.2"
 
