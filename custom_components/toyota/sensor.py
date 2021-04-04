@@ -6,6 +6,7 @@ from . import ToyotaEntity
 from .const import (
     BATTERY_HEALTH,
     CONNECTED_SERVICES,
+    DATA_CLIENT,
     DATA_COORDINATOR,
     DETAILS,
     DOMAIN,
@@ -35,8 +36,9 @@ async def async_setup_entry(hass, config_entry, async_add_devices):
 
         # If Connected Services is setup for the car, setup additional sensors
         if coordinator.data[index][SERVICES][CONNECTED_SERVICES]:
-            sensors.append(ToyotaStarterBatterySensor(coordinator, index))
             sensors.append(ToyotaOdometerSensor(coordinator, index))
+            if BATTERY_HEALTH in coordinator.data[index][DETAILS]:
+                sensors.append(ToyotaStarterBatterySensor(coordinator, index))
             if FUEL in coordinator.data[index][STATUS][ODOMETER]:
                 sensors.append(ToyotaFuelRemainingSensor(coordinator, index))
 
@@ -59,7 +61,7 @@ class ToyotaCarSensor(ToyotaEntity):
     @property
     def device_state_attributes(self):
         """Return the state attributes."""
-        return self.coordinator.data[self.index][DETAILS]
+        return self.details
 
     @property
     def icon(self):
@@ -69,8 +71,10 @@ class ToyotaCarSensor(ToyotaEntity):
     @property
     def state(self):
         """Return the state of the sensor."""
-        if LICENSE_PLATE in self.coordinator.data[self.index][DETAILS]:
-            return self.coordinator.data[self.index][DETAILS][LICENSE_PLATE]
+        if LICENSE_PLATE in self.details:
+
+            license_plate = self.details[LICENSE_PLATE]
+            return None if license_plate is None else license_plate
 
         return STATE_UNKNOWN
 
@@ -96,14 +100,9 @@ class ToyotaStarterBatterySensor(ToyotaEntity):
     @property
     def state(self):
         """Return the state of the sensor."""
-        if BATTERY_HEALTH in self.coordinator.data[self.index][DETAILS]:
-            return (
-                self.coordinator.data[self.index][DETAILS][BATTERY_HEALTH]
-                .lower()
-                .capitalize()
-            )
 
-        return STATE_UNKNOWN
+        battery_health = self.details[BATTERY_HEALTH].lower().capitalize()
+        return None if battery_health is None else battery_health
 
 
 class ToyotaFuelRemainingSensor(ToyotaEntity):
@@ -128,7 +127,7 @@ class ToyotaFuelRemainingSensor(ToyotaEntity):
     def device_state_attributes(self):
         """Return the state attributes."""
         return {
-            FUEL_TYPE: self.coordinator.data[self.index][DETAILS][FUEL_TYPE],
+            FUEL_TYPE: self.details[FUEL_TYPE],
         }
 
     @property
@@ -139,7 +138,9 @@ class ToyotaFuelRemainingSensor(ToyotaEntity):
     @property
     def state(self):
         """Return the state of the sensor."""
-        return self.coordinator.data[self.index][STATUS][ODOMETER][FUEL]
+
+        fuel = self.coordinator.data[self.index][STATUS][ODOMETER][FUEL]
+        return None if fuel is None else fuel
 
 
 class ToyotaOdometerSensor(ToyotaEntity):
@@ -168,4 +169,6 @@ class ToyotaOdometerSensor(ToyotaEntity):
     @property
     def state(self):
         """Return the state of the sensor."""
-        return self.coordinator.data[self.index][STATUS][ODOMETER][MILEAGE]
+
+        mileage = self.coordinator.data[self.index][STATUS][ODOMETER][MILEAGE]
+        return None if mileage is None else mileage
