@@ -22,8 +22,6 @@ from .const import (
     DATA_COORDINATOR,
     DETAILS,
     DOMAIN,
-    HYBRID,
-    IMAGE,
     MODEL,
     PLATFORMS,
     STARTUP_MESSAGE,

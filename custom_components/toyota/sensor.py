@@ -6,7 +6,6 @@ from . import ToyotaEntity
 from .const import (
     BATTERY_HEALTH,
     CONNECTED_SERVICES,
-    DATA_CLIENT,
     DATA_COORDINATOR,
     DETAILS,
     DOMAIN,
