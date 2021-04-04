@@ -10,6 +10,7 @@ from .const import (
     DATA_COORDINATOR,
     DOMAIN,
     ICON_CAR,
+    IMAGE,
     PARKING,
     SERVICES,
     STATUS,
@@ -72,4 +73,4 @@ class ToyotaParkingTracker(ToyotaEntity, TrackerEntity):
     @property
     def entity_picture(self):
         """Return entity picture."""
-        return self.image
+        return self.details[IMAGE]

@@ -22,8 +22,6 @@ from .const import (
     DATA_COORDINATOR,
     DETAILS,
     DOMAIN,
-    HYBRID,
-    IMAGE,
     MODEL,
     PLATFORMS,
     STARTUP_MESSAGE,
@@ -129,9 +127,7 @@ class ToyotaEntity(CoordinatorEntity):
         self.index = index
         self.vin = self.coordinator.data[self.index][VIN]
         self.alias = self.coordinator.data[self.index][ALIAS]
-        self.model = self.coordinator.data[self.index][DETAILS][MODEL]
-        self.hybrid = self.coordinator.data[self.index][DETAILS][HYBRID]
-        self.image = self.coordinator.data[self.index][DETAILS][IMAGE]
+        self.details = self.coordinator.data[self.index][DETAILS]
 
     @property
     def device_info(self):
@@ -139,6 +135,6 @@ class ToyotaEntity(CoordinatorEntity):
         return {
             "identifiers": {(DOMAIN, self.vin)},
             "name": self.alias,
-            "model": self.model,
+            "model": self.details[MODEL],
             "manufacturer": DOMAIN,
         }
