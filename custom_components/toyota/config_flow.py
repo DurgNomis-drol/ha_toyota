@@ -48,12 +48,13 @@ class MazdaConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             await self.async_set_unique_id(user_input[CONF_EMAIL].lower())
 
             try:
+                locale = user_input[CONF_LOCALE]
                 region = user_input[CONF_REGION]
 
                 client = MyT(
                     username=user_input[CONF_EMAIL],
                     password=user_input[CONF_PASSWORD],
-                    locale=user_input[CONF_LOCALE],
+                    locale=locale.lower(),
                     region=region.lower(),
                 )
 
