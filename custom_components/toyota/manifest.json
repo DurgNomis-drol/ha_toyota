@@ -7,5 +7,6 @@
   "issue_tracker": "https://github.com/DurgNomis-drol/ha_toyota/issues",
   "codeowners": ["@DurgNomis-drol"],
   "requirements": ["mytoyota==0.2.2"],
-  "version": "0.2.0"
+  "version": "0.2.0",
+  "iot_class": "cloud_polling"
 }
