@@ -4,10 +4,10 @@ import logging
 from homeassistant.components.device_tracker import SOURCE_TYPE_GPS
 from homeassistant.components.device_tracker.config_entry import TrackerEntity
 
-from . import ToyotaEntity
 from .const import (
     CONNECTED_SERVICES,
     DATA_COORDINATOR,
+    DETAILS,
     DOMAIN,
     ICON_CAR,
     IMAGE,
@@ -15,6 +15,7 @@ from .const import (
     SERVICES,
     STATUS,
 )
+from .entity import ToyotaEntity
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -73,4 +74,4 @@ class ToyotaParkingTracker(ToyotaEntity, TrackerEntity):
     @property
     def entity_picture(self):
         """Return entity picture."""
-        return self.details[IMAGE]
+        return self.coordinator.data[self.index][DETAILS][IMAGE]

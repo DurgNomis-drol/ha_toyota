@@ -18,23 +18,57 @@ DATA_COORDINATOR = "coordinator"
 
 # DATA COORDINATOR ATTRIBUTES
 ALIAS = "alias"
+AVERAGE_SPEED = "averageSpeedInKmph"
 BATTERY_HEALTH = "batteryHealth"
+BUCKET = "bucket"
 CONNECTED_SERVICES = "connectedServices"
+DAILY = "daily"
+DATA = "data"
+MONTHLY = "monthly"
+WEEKLY = "weekly"
+YEARLY = "yearly"
 DETAILS = "details"
 ENGINE = "engine"
+EV_DISTANCE = "evDistanceInKm"
+EV_DISTANCE_PERCENTAGE = "evDistancePercentage"
 FUEL = "Fuel"
+FUEL_CONSUMED = "totalFuelConsumedInL"
 FUEL_TYPE = "fuel"
+HISTOGRAM = "histogram"
 HYBRID = "hybrid"
 IMAGE = "imageUrl"
 LICENSE_PLATE = "licensePlate"
+MAX_SPEED = "maxSpeedInKmph"
 MILEAGE = "mileage"
 MILEAGE_UNIT = "mileage_unit"
 MODEL = "modelName"
+NIGHT_TRIPS = "nightTripsCount"
 ODOMETER = "odometer"
 PARKING = "parking"
-STATUS = "status"
 SERVICES = "servicesEnabled"
+STATISTICS = "statistics"
+STATUS = "status"
+TOTAL_DURATION = "totalDurationInSec"
+TOTAL_DISTANCE = "totalDistanceInKm"
+TRIPS = "tripCount"
+SUMMARY = "summary"
 VIN = "vin"
+
+# LIST
+MONTHS = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+]
 
 # ICONS
 ICON_BATTERY = "mdi:car-battery"
@@ -42,6 +76,7 @@ ICON_CAR = "mdi:car"
 ICON_FUEL = "mdi:gas-station"
 ICON_ODOMETER = "mdi:counter"
 ICON_PARKING = "mdi:map-marker"
+ICON_HISTORY = "mdi:history"
 
 
 STARTUP_MESSAGE = f"""
