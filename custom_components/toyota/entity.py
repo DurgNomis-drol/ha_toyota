@@ -56,20 +56,38 @@ class ToyotaEntity(CoordinatorEntity):
         def get_timedelta(time):
             return str(timedelta(seconds=time))
 
-        attributes = {
-            "Total_fuel_consumed": get_fuel_consumed(statistics[DATA]),
-            "Number_of_trips": statistics[DATA][TRIPS],
-            "Number_of_night_trips": statistics[DATA][NIGHT_TRIPS],
-            "Total_driving_time": get_timedelta(statistics[DATA][TOTAL_DURATION]),
-            "Average_speed": round(statistics[DATA][AVERAGE_SPEED], 1),
-            "Max_speed": statistics[DATA][MAX_SPEED],
-        }
+        if statistics is not None:
+            attributes = {
+                "Total_fuel_consumed": get_fuel_consumed(statistics[DATA]),
+                "Number_of_trips": statistics[DATA][TRIPS],
+                "Number_of_night_trips": statistics[DATA][NIGHT_TRIPS],
+                "Total_driving_time": get_timedelta(statistics[DATA][TOTAL_DURATION]),
+                "Average_speed": round(statistics[DATA][AVERAGE_SPEED], 1),
+                "Max_speed": statistics[DATA][MAX_SPEED],
+            }
 
-        if self.hybrid:
-            attributes.update(
-                {
-                    "EV_distance_percentage": statistics[DATA][EV_DISTANCE_PERCENTAGE],
-                    "EV_distance": round(statistics[DATA][EV_DISTANCE], 1),
-                }
-            )
+            if self.hybrid:
+                attributes.update(
+                    {
+                        "EV_distance_percentage": statistics[DATA][EV_DISTANCE_PERCENTAGE],
+                        "EV_distance": round(statistics[DATA][EV_DISTANCE], 1),
+                    }
+                )
+        else:
+            attributes = {
+                "Total_fuel_consumed": "0",
+                "Number_of_trips": "0",
+                "Number_of_night_trips": "0",
+                "Total_driving_time": "0",
+                "Average_speed": "0",
+                "Max_speed": "0",
+            }
+
+            if self.hybrid:
+                attributes.update(
+                    {
+                        "EV_distance_percentage": "0",
+                        "EV_distance": "0",
+                    }
+                )
         return attributes

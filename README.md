@@ -40,8 +40,8 @@ This component will set up the following platforms:
 
 Be aware that weeks start on Sundays and not Mondays. This is not possible to change due to limitation on Toyota's end.
 
-When starting a new week, month or year, it will not show any information before your first trip. Even though a new month starts on the 1, you will need to wait for the 2 of the month before it is able to show you current month stats. This due to a limitation in Toyota API. This limitation also exists on weeks.
-Due to this, this integration will show last month stats instead until new information is available.
+When starting a new week, month or year, it will not show any information before your first trip. Even though a new month starts on the 1, you will need to wait for the 2 of the month before it is able to show you current month stats. This due to a limitation in Toyota API. This limitation also applies to weeks.
+Due to this, this integration will list sensors as unavailable when no data is available.
 
 ## Getting started
 

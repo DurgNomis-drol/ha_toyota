@@ -1,5 +1,6 @@
 """Platform for Toyota sensor integration."""
-from homeassistant.const import PERCENTAGE, STATE_UNKNOWN
+import arrow
+from homeassistant.const import PERCENTAGE, STATE_UNKNOWN, STATE_UNAVAILABLE
 
 from .const import (
     BATTERY_HEALTH,
@@ -206,23 +207,15 @@ class ToyotaCurrentWeekSensor(ToyotaEntity):
     def device_state_attributes(self):
         """Return the state attributes."""
 
-        if self.coordinator.data[self.index][STATISTICS][WEEKLY] is not None:
-            attributes = self.format_statistics_attributes(
-                self.coordinator.data[self.index][STATISTICS][WEEKLY]
-            )
-            attributes.update(
-                {
-                    "From week": (
-                        self.coordinator.data[self.index][STATISTICS][WEEKLY][BUCKET][
-                            "week"
-                        ]
-                        - 1
-                    )
-                }
-            )
-            return attributes
-
-        return None
+        attributes = self.format_statistics_attributes(
+            self.coordinator.data[self.index][STATISTICS][WEEKLY]
+        )
+        attributes.update(
+            {
+                "Weeknumber": arrow.now().strftime("%V")
+            }
+        )
+        return attributes
 
     @property
     def unit_of_measurement(self):
@@ -247,7 +240,7 @@ class ToyotaCurrentWeekSensor(ToyotaEntity):
                 ],
                 1,
             )
-        return None if total_distance is None else total_distance
+        return STATE_UNAVAILABLE if total_distance is None else total_distance
 
 
 class ToyotaCurrentMonthSensor(ToyotaEntity):
@@ -267,26 +260,16 @@ class ToyotaCurrentMonthSensor(ToyotaEntity):
     def device_state_attributes(self):
         """Return the state attributes."""
 
-        def get_month(number):
-            return MONTHS[number - 1]
+        attributes = self.format_statistics_attributes(
+            self.coordinator.data[self.index][STATISTICS][MONTHLY]
+        )
+        attributes.update(
+            {
+                "Month": arrow.now().format("MMMM")
+            }
+        )
 
-        if self.coordinator.data[self.index][STATISTICS][MONTHLY] is not None:
-            attributes = self.format_statistics_attributes(
-                self.coordinator.data[self.index][STATISTICS][MONTHLY]
-            )
-            attributes.update(
-                {
-                    "From": get_month(
-                        self.coordinator.data[self.index][STATISTICS][MONTHLY][BUCKET][
-                            "month"
-                        ]
-                    )
-                }
-            )
-
-            return attributes
-
-        return None
+        return attributes
 
     @property
     def unit_of_measurement(self):
@@ -311,7 +294,7 @@ class ToyotaCurrentMonthSensor(ToyotaEntity):
                 ],
                 1,
             )
-        return None if total_distance is None else total_distance
+        return STATE_UNAVAILABLE if total_distance is None else total_distance
 
 
 class ToyotaCurrentYearSensor(ToyotaEntity):
@@ -331,14 +314,16 @@ class ToyotaCurrentYearSensor(ToyotaEntity):
     def device_state_attributes(self):
         """Return the state attributes."""
 
-        if self.coordinator.data[self.index][STATISTICS][YEARLY] is not None:
-            attributes = self.format_statistics_attributes(
-                self.coordinator.data[self.index][STATISTICS][YEARLY]
-            )
+        attributes = self.format_statistics_attributes(
+            self.coordinator.data[self.index][STATISTICS][YEARLY]
+        )
+        attributes.update(
+            {
+                "Year": arrow.now().format("YYYY")
+            }
+        )
 
-            return attributes
-
-        return None
+        return attributes
 
     @property
     def unit_of_measurement(self):
@@ -363,4 +348,4 @@ class ToyotaCurrentYearSensor(ToyotaEntity):
                 ],
                 1,
             )
-        return None if total_distance is None else total_distance
+        return STATE_UNAVAILABLE if total_distance is None else total_distance
