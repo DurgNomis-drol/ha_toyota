@@ -205,11 +205,14 @@ class ToyotaCurrentWeekSensor(ToyotaEntity):
     def device_state_attributes(self):
         """Return the state attributes."""
 
-        from_dt = arrow.now().floor("week")
+        from_dt = arrow.now().span("week", week_start=7)[0]
 
-        attributes = self.format_statistics_attributes(
-            self.coordinator.data[self.index][STATISTICS][WEEKLY]
-        )
+        statistics = self.coordinator.data[self.index][STATISTICS][WEEKLY]
+
+        if from_dt == arrow.now():
+            statistics = None
+
+        attributes = self.format_statistics_attributes(statistics)
         attributes.update({"Weeknumber": from_dt.strftime("%V")})
         return attributes
 
@@ -258,12 +261,12 @@ class ToyotaCurrentMonthSensor(ToyotaEntity):
 
         from_dt = arrow.now().floor("month")
 
-        if from_dt == arrow.now():
-            from_dt.shift(days=-1)
+        statistics = self.coordinator.data[self.index][STATISTICS][MONTHLY]
 
-        attributes = self.format_statistics_attributes(
-            self.coordinator.data[self.index][STATISTICS][MONTHLY]
-        )
+        if from_dt == arrow.now():
+            statistics = None
+
+        attributes = self.format_statistics_attributes(statistics)
         attributes.update({"Month": from_dt.format("MMMM")})
 
         return attributes
@@ -313,12 +316,12 @@ class ToyotaCurrentYearSensor(ToyotaEntity):
 
         from_dt = arrow.now().floor("year")
 
-        if from_dt == arrow.now():
-            from_dt.shift(days=-1)
+        statistics = self.coordinator.data[self.index][STATISTICS][YEARLY]
 
-        attributes = self.format_statistics_attributes(
-            self.coordinator.data[self.index][STATISTICS][YEARLY]
-        )
+        if from_dt == arrow.now():
+            statistics = None
+
+        attributes = self.format_statistics_attributes(statistics)
         attributes.update({"Year": from_dt.format("YYYY")})
 
         return attributes
