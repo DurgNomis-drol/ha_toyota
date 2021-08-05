@@ -1,10 +1,10 @@
 """Platform for Toyota sensor integration."""
 import arrow
-from homeassistant.const import PERCENTAGE, STATE_UNKNOWN, STATE_UNAVAILABLE
+
+from homeassistant.const import PERCENTAGE, STATE_UNAVAILABLE, STATE_UNKNOWN
 
 from .const import (
     BATTERY_HEALTH,
-    BUCKET,
     CONNECTED_SERVICES,
     DATA,
     DATA_COORDINATOR,
@@ -19,9 +19,7 @@ from .const import (
     ICON_ODOMETER,
     LICENSE_PLATE,
     MILEAGE,
-    MILEAGE_UNIT,
     MONTHLY,
-    MONTHS,
     ODOMETER,
     SERVICES,
     STATISTICS,
@@ -175,7 +173,7 @@ class ToyotaOdometerSensor(ToyotaEntity):
     @property
     def unit_of_measurement(self):
         """Return the unit of measurement."""
-        return self.coordinator.data[self.index][STATUS][ODOMETER][MILEAGE_UNIT]
+        return self.mileage_unit
 
     @property
     def icon(self):
@@ -207,20 +205,18 @@ class ToyotaCurrentWeekSensor(ToyotaEntity):
     def device_state_attributes(self):
         """Return the state attributes."""
 
+        from_dt = arrow.now().floor("week")
+
         attributes = self.format_statistics_attributes(
             self.coordinator.data[self.index][STATISTICS][WEEKLY]
         )
-        attributes.update(
-            {
-                "Weeknumber": arrow.now().strftime("%V")
-            }
-        )
+        attributes.update({"Weeknumber": from_dt.strftime("%V")})
         return attributes
 
     @property
     def unit_of_measurement(self):
         """Return the unit of measurement."""
-        return self.coordinator.data[self.index][STATUS][ODOMETER][MILEAGE_UNIT]
+        return self.mileage_unit
 
     @property
     def icon(self):
@@ -260,21 +256,22 @@ class ToyotaCurrentMonthSensor(ToyotaEntity):
     def device_state_attributes(self):
         """Return the state attributes."""
 
+        from_dt = arrow.now().floor("month")
+
+        if from_dt == arrow.now():
+            from_dt.shift(days=-1)
+
         attributes = self.format_statistics_attributes(
             self.coordinator.data[self.index][STATISTICS][MONTHLY]
         )
-        attributes.update(
-            {
-                "Month": arrow.now().format("MMMM")
-            }
-        )
+        attributes.update({"Month": from_dt.format("MMMM")})
 
         return attributes
 
     @property
     def unit_of_measurement(self):
         """Return the unit of measurement."""
-        return self.coordinator.data[self.index][STATUS][ODOMETER][MILEAGE_UNIT]
+        return self.mileage_unit
 
     @property
     def icon(self):
@@ -314,21 +311,22 @@ class ToyotaCurrentYearSensor(ToyotaEntity):
     def device_state_attributes(self):
         """Return the state attributes."""
 
+        from_dt = arrow.now().floor("year")
+
+        if from_dt == arrow.now():
+            from_dt.shift(days=-1)
+
         attributes = self.format_statistics_attributes(
             self.coordinator.data[self.index][STATISTICS][YEARLY]
         )
-        attributes.update(
-            {
-                "Year": arrow.now().format("YYYY")
-            }
-        )
+        attributes.update({"Year": from_dt.format("YYYY")})
 
         return attributes
 
     @property
     def unit_of_measurement(self):
         """Return the unit of measurement."""
-        return self.coordinator.data[self.index][STATUS][ODOMETER][MILEAGE_UNIT]
+        return self.mileage_unit
 
     @property
     def icon(self):

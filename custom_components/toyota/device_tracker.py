@@ -3,6 +3,7 @@ import logging
 
 from homeassistant.components.device_tracker import SOURCE_TYPE_GPS
 from homeassistant.components.device_tracker.config_entry import TrackerEntity
+from homeassistant.const import STATE_UNAVAILABLE
 
 from .const import (
     CONNECTED_SERVICES,
@@ -39,12 +40,20 @@ class ToyotaParkingTracker(ToyotaEntity, TrackerEntity):
     @property
     def latitude(self):
         """Return latitude value of the device."""
-        return float(self.coordinator.data[self.index][STATUS][PARKING]["event"]["lat"])
+        return (
+            float(self.coordinator.data[self.index][STATUS][PARKING]["event"]["lat"])
+            if self.coordinator.data[self.index][STATUS][PARKING]
+            else STATE_UNAVAILABLE
+        )
 
     @property
     def longitude(self):
         """Return longitude value of the device."""
-        return float(self.coordinator.data[self.index][STATUS][PARKING]["event"]["lon"])
+        return (
+            float(self.coordinator.data[self.index][STATUS][PARKING]["event"]["lon"])
+            if self.coordinator.data[self.index][STATUS][PARKING]
+            else STATE_UNAVAILABLE
+        )
 
     @property
     def name(self):
