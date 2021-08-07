@@ -1,4 +1,4 @@
-"""Device tracker for Toyota Connected Services"""
+"""Device tracker platform for Toyota Connected Services"""
 import logging
 
 from homeassistant.components.device_tracker import SOURCE_TYPE_GPS
@@ -10,7 +10,6 @@ from .const import (
     DATA_COORDINATOR,
     DETAILS,
     DOMAIN,
-    ICON_CAR,
     IMAGE,
     PARKING,
     SERVICES,
@@ -22,7 +21,7 @@ _LOGGER = logging.getLogger(__name__)
 
 
 async def async_setup_entry(hass, config_entry, async_add_devices):
-    """Set up the BMW ConnectedDrive tracker from config entry."""
+    """Set up the Toyota Connected Services tracker from config entry."""
     tracker = []
 
     coordinator = hass.data[DOMAIN][config_entry.entry_id][DATA_COORDINATOR]
@@ -35,10 +34,7 @@ async def async_setup_entry(hass, config_entry, async_add_devices):
 
 
 class ToyotaParkingTracker(ToyotaBaseEntity, TrackerEntity):
-    """BMW Connected Drive device tracker."""
-
-    _attr_force_update = False
-    _attr_icon = ICON_CAR
+    """Toyota Connected Services device tracker."""
 
     @property
     def latitude(self):

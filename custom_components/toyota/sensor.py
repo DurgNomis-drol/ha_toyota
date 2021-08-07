@@ -1,4 +1,4 @@
-"""Platform for Toyota sensor integration."""
+"""Sensor platform for Toyota sensor integration."""
 import arrow
 
 from homeassistant.const import PERCENTAGE, STATE_UNAVAILABLE, STATE_UNKNOWN
