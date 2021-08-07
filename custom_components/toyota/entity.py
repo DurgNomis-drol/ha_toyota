@@ -1,7 +1,8 @@
-"""Custom coordinator entity base class for Toyota Connected Servers integration"""
+"""Custom coordinator entity base classes for Toyota Connected Services integration"""
 
 from datetime import timedelta
 
+from homeassistant.components.sensor import STATE_CLASS_MEASUREMENT, SensorEntity
 from homeassistant.const import STATE_UNAVAILABLE
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
@@ -15,6 +16,7 @@ from .const import (
     EV_DISTANCE_PERCENTAGE,
     FUEL_CONSUMED,
     HYBRID,
+    ICON_HISTORY,
     MAX_SPEED,
     MILEAGE_UNIT,
     MODEL,
@@ -27,13 +29,15 @@ from .const import (
 )
 
 
-class ToyotaEntity(CoordinatorEntity):
+class ToyotaBaseEntity(CoordinatorEntity):
     """Defines a base Toyota entity."""
 
-    def __init__(self, coordinator, index):
+    def __init__(self, coordinator, index, sensor_name):
         """Initialize the Toyota entity."""
         super().__init__(coordinator)
         self.index = index
+        self.sensor_name = sensor_name
+
         self.vin = self.coordinator.data[self.index][VIN]
         self.alias = self.coordinator.data[self.index][ALIAS]
         self.model = self.coordinator.data[self.index][DETAILS][MODEL]
@@ -54,6 +58,28 @@ class ToyotaEntity(CoordinatorEntity):
             "manufacturer": DOMAIN.capitalize(),
             "Hybrid": self.hybrid,
         }
+
+    @property
+    def name(self):
+        """Return the name of the sensor."""
+        return f"{self.alias} {self.sensor_name}"
+
+    @property
+    def unique_id(self):
+        """Return a unique identifier for this entity."""
+        return f"{self.vin}/{self.name}"
+
+
+class StatisticsBaseEntity(ToyotaBaseEntity, SensorEntity):
+    """Builds on Toyota base entity"""
+
+    _attr_icon = ICON_HISTORY
+    _attr_state_class = STATE_CLASS_MEASUREMENT
+
+    @property
+    def unit_of_measurement(self):
+        """Return the unit of measurement."""
+        return self.mileage_unit
 
     def format_statistics_attributes(self, statistics):
         """Formats and returns statistics attributes."""

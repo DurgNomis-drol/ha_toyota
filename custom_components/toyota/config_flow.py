@@ -34,7 +34,7 @@ DATA_SCHEMA = vol.Schema(
 )
 
 
-class MazdaConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
+class ToyotaConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """Handle a config flow for Toyota Connected Services."""
 
     VERSION = 1

@@ -10,7 +10,7 @@ from mytoyota.exceptions import ToyotaLoginError
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_EMAIL, CONF_PASSWORD, CONF_REGION
-from homeassistant.core import Config, HomeAssistant
+from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 
@@ -41,11 +41,6 @@ async def with_timeout(task, timeout_seconds=10):
     """Run an async task with a timeout."""
     async with async_timeout.timeout(timeout_seconds):
         return await task
-
-
-async def async_setup(_hass: HomeAssistant, _config: Config) -> bool:
-    """Set up this integration using YAML is not supported."""
-    return True
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):

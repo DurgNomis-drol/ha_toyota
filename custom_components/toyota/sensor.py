@@ -15,7 +15,6 @@ from .const import (
     ICON_BATTERY,
     ICON_CAR,
     ICON_FUEL,
-    ICON_HISTORY,
     ICON_ODOMETER,
     LICENSE_PLATE,
     MILEAGE,
@@ -28,7 +27,7 @@ from .const import (
     WEEKLY,
     YEARLY,
 )
-from .entity import ToyotaEntity
+from .entity import StatisticsBaseEntity, ToyotaBaseEntity
 
 
 async def async_setup_entry(hass, config_entry, async_add_devices):
@@ -38,46 +37,45 @@ async def async_setup_entry(hass, config_entry, async_add_devices):
     coordinator = hass.data[DOMAIN][config_entry.entry_id][DATA_COORDINATOR]
 
     for index, _ in enumerate(coordinator.data):
-        sensors.append(ToyotaCarSensor(coordinator, index))
+        sensors.append(ToyotaCarSensor(coordinator, index, "numberplate"))
 
         # If Connected Services is setup for the car, setup additional sensors
         if coordinator.data[index][SERVICES][CONNECTED_SERVICES]:
-            sensors.append(ToyotaOdometerSensor(coordinator, index))
+            sensors.append(ToyotaOdometerSensor(coordinator, index, "odometer"))
             if BATTERY_HEALTH in coordinator.data[index][DETAILS]:
-                sensors.append(ToyotaStarterBatterySensor(coordinator, index))
+                sensors.append(
+                    ToyotaStarterBatterySensor(
+                        coordinator, index, "starter battery health"
+                    )
+                )
             if FUEL in coordinator.data[index][STATUS][ODOMETER]:
-                sensors.append(ToyotaFuelRemainingSensor(coordinator, index))
+                sensors.append(
+                    ToyotaFuelRemainingSensor(coordinator, index, "fuel tank")
+                )
 
             # Statistics sensors
-            sensors.append(ToyotaCurrentWeekSensor(coordinator, index))
-            sensors.append(ToyotaCurrentMonthSensor(coordinator, index))
-            sensors.append(ToyotaCurrentYearSensor(coordinator, index))
+            sensors.append(
+                ToyotaCurrentWeekSensor(coordinator, index, "current week statistics")
+            )
+            sensors.append(
+                ToyotaCurrentMonthSensor(coordinator, index, "current month statistics")
+            )
+            sensors.append(
+                ToyotaCurrentYearSensor(coordinator, index, "current year statistics")
+            )
 
     async_add_devices(sensors, True)
 
 
-class ToyotaCarSensor(ToyotaEntity):
-    """Class for the fuel remaining sensor."""
+class ToyotaCarSensor(ToyotaBaseEntity):
+    """Class for car details and numberplate sensor."""
+
+    _attr_icon = ICON_CAR
 
     @property
-    def name(self):
-        """Return the name of the sensor."""
-        return f"{self.alias}"
-
-    @property
-    def unique_id(self):
-        """Return a unique identifier for this entity."""
-        return f"{self.vin}/car"
-
-    @property
-    def device_state_attributes(self):
+    def extra_state_attributes(self):
         """Return the state attributes."""
         return self.coordinator.data[self.index][DETAILS]
-
-    @property
-    def icon(self):
-        """Return the icon to use in the frontend."""
-        return ICON_CAR
 
     @property
     def state(self):
@@ -89,23 +87,28 @@ class ToyotaCarSensor(ToyotaEntity):
         return STATE_UNKNOWN
 
 
-class ToyotaStarterBatterySensor(ToyotaEntity):
-    """Class for the fuel remaining sensor."""
+class ToyotaOdometerSensor(ToyotaBaseEntity):
+    """Class for the odometer sensor."""
+
+    _attr_icon = ICON_ODOMETER
 
     @property
-    def name(self):
-        """Return the name of the sensor."""
-        return f"{self.alias} starter battery health"
+    def unit_of_measurement(self):
+        """Return the unit of measurement."""
+        return self.mileage_unit
 
     @property
-    def unique_id(self):
-        """Return a unique identifier for this entity."""
-        return f"{self.vin}/starter_battery_condition"
+    def state(self):
+        """Return the state of the sensor."""
 
-    @property
-    def icon(self):
-        """Return the icon to use in the frontend."""
-        return ICON_BATTERY
+        mileage = self.coordinator.data[self.index][STATUS][ODOMETER][MILEAGE]
+        return None if mileage is None else mileage
+
+
+class ToyotaStarterBatterySensor(ToyotaBaseEntity):
+    """Class for the starter battery health sensor."""
+
+    _attr_icon = ICON_BATTERY
 
     @property
     def state(self):
@@ -119,35 +122,18 @@ class ToyotaStarterBatterySensor(ToyotaEntity):
         return None if battery_health is None else battery_health
 
 
-class ToyotaFuelRemainingSensor(ToyotaEntity):
+class ToyotaFuelRemainingSensor(ToyotaBaseEntity):
     """Class for the fuel remaining sensor."""
 
-    @property
-    def name(self):
-        """Return the name of the sensor."""
-        return f"{self.alias} fuel tank"
+    _attr_icon = ICON_FUEL
+    _attr_unit_of_measurement = PERCENTAGE
 
     @property
-    def unique_id(self):
-        """Return a unique identifier for this entity."""
-        return f"{self.vin}/fuel_tank"
-
-    @property
-    def unit_of_measurement(self):
-        """Return the unit of measurement."""
-        return PERCENTAGE
-
-    @property
-    def device_state_attributes(self):
+    def extra_state_attributes(self):
         """Return the state attributes."""
         return {
             FUEL_TYPE: self.coordinator.data[self.index][DETAILS][FUEL_TYPE],
         }
-
-    @property
-    def icon(self):
-        """Return the icon to use in the frontend."""
-        return ICON_FUEL
 
     @property
     def state(self):
@@ -157,52 +143,13 @@ class ToyotaFuelRemainingSensor(ToyotaEntity):
         return None if fuel is None else fuel
 
 
-class ToyotaOdometerSensor(ToyotaEntity):
-    """Class for the fuel remaining sensor."""
+class ToyotaCurrentWeekSensor(StatisticsBaseEntity):
+    """Class for current week statistics sensor."""
+
+    _attr_last_reset = arrow.now().span("week", week_start=7)[0].datetime
 
     @property
-    def name(self):
-        """Return the name of the sensor."""
-        return f"{self.alias} Odometer"
-
-    @property
-    def unique_id(self):
-        """Return a unique identifier for this entity."""
-        return f"{self.vin}/odometer"
-
-    @property
-    def unit_of_measurement(self):
-        """Return the unit of measurement."""
-        return self.mileage_unit
-
-    @property
-    def icon(self):
-        """Return the icon to use in the frontend."""
-        return ICON_ODOMETER
-
-    @property
-    def state(self):
-        """Return the state of the sensor."""
-
-        mileage = self.coordinator.data[self.index][STATUS][ODOMETER][MILEAGE]
-        return None if mileage is None else mileage
-
-
-class ToyotaCurrentWeekSensor(ToyotaEntity):
-    """Class for the fuel remaining sensor."""
-
-    @property
-    def name(self):
-        """Return the name of the sensor."""
-        return f"{self.alias} current week statistics"
-
-    @property
-    def unique_id(self):
-        """Return a unique identifier for this entity."""
-        return f"{self.vin}/current_week_stats"
-
-    @property
-    def device_state_attributes(self):
+    def extra_state_attributes(self):
         """Return the state attributes."""
 
         from_dt = arrow.now().span("week", week_start=7)[0]
@@ -215,16 +162,6 @@ class ToyotaCurrentWeekSensor(ToyotaEntity):
         attributes = self.format_statistics_attributes(statistics)
         attributes.update({"Weeknumber": from_dt.strftime("%V")})
         return attributes
-
-    @property
-    def unit_of_measurement(self):
-        """Return the unit of measurement."""
-        return self.mileage_unit
-
-    @property
-    def icon(self):
-        """Return the icon to use in the frontend."""
-        return ICON_HISTORY
 
     @property
     def state(self):
@@ -242,21 +179,13 @@ class ToyotaCurrentWeekSensor(ToyotaEntity):
         return STATE_UNAVAILABLE if total_distance is None else total_distance
 
 
-class ToyotaCurrentMonthSensor(ToyotaEntity):
-    """Class for the fuel remaining sensor."""
+class ToyotaCurrentMonthSensor(StatisticsBaseEntity):
+    """Class for current month statistics sensor."""
+
+    _attr_last_reset = arrow.now().floor("month").datetime
 
     @property
-    def name(self):
-        """Return the name of the sensor."""
-        return f"{self.alias} current month statistics"
-
-    @property
-    def unique_id(self):
-        """Return a unique identifier for this entity."""
-        return f"{self.vin}/current_month_stats"
-
-    @property
-    def device_state_attributes(self):
+    def extra_state_attributes(self):
         """Return the state attributes."""
 
         from_dt = arrow.now().floor("month")
@@ -270,16 +199,6 @@ class ToyotaCurrentMonthSensor(ToyotaEntity):
         attributes.update({"Month": from_dt.format("MMMM")})
 
         return attributes
-
-    @property
-    def unit_of_measurement(self):
-        """Return the unit of measurement."""
-        return self.mileage_unit
-
-    @property
-    def icon(self):
-        """Return the icon to use in the frontend."""
-        return ICON_HISTORY
 
     @property
     def state(self):
@@ -297,21 +216,13 @@ class ToyotaCurrentMonthSensor(ToyotaEntity):
         return STATE_UNAVAILABLE if total_distance is None else total_distance
 
 
-class ToyotaCurrentYearSensor(ToyotaEntity):
-    """Class for the fuel remaining sensor."""
+class ToyotaCurrentYearSensor(StatisticsBaseEntity):
+    """Class for current year statistics sensor."""
+
+    _attr_last_reset = arrow.now().floor("year").datetime
 
     @property
-    def name(self):
-        """Return the name of the sensor."""
-        return f"{self.alias} current year statistics"
-
-    @property
-    def unique_id(self):
-        """Return a unique identifier for this entity."""
-        return f"{self.vin}/current_year_stats"
-
-    @property
-    def device_state_attributes(self):
+    def extra_state_attributes(self):
         """Return the state attributes."""
 
         from_dt = arrow.now().floor("year")
@@ -325,16 +236,6 @@ class ToyotaCurrentYearSensor(ToyotaEntity):
         attributes.update({"Year": from_dt.format("YYYY")})
 
         return attributes
-
-    @property
-    def unit_of_measurement(self):
-        """Return the unit of measurement."""
-        return self.mileage_unit
-
-    @property
-    def icon(self):
-        """Return the icon to use in the frontend."""
-        return ICON_HISTORY
 
     @property
     def state(self):
