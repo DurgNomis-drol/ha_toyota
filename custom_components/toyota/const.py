@@ -54,22 +54,6 @@ TRIPS = "tripCount"
 SUMMARY = "summary"
 VIN = "vin"
 
-# LIST
-MONTHS = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
-]
-
 # ICONS
 ICON_BATTERY = "mdi:car-battery"
 ICON_CAR = "mdi:car"

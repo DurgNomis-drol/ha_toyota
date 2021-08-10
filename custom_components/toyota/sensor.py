@@ -5,6 +5,7 @@ from homeassistant.const import PERCENTAGE, STATE_UNAVAILABLE, STATE_UNKNOWN
 
 from .const import (
     BATTERY_HEALTH,
+    BUCKET,
     CONNECTED_SERVICES,
     DATA,
     DATA_COORDINATOR,
@@ -146,36 +147,31 @@ class ToyotaFuelRemainingSensor(ToyotaBaseEntity):
 class ToyotaCurrentWeekSensor(StatisticsBaseEntity):
     """Class for current week statistics sensor."""
 
-    _attr_last_reset = arrow.now().span("week", week_start=7)[0].datetime
+    _attr_last_reset = arrow.now().floor("week").datetime
 
     @property
     def extra_state_attributes(self):
         """Return the state attributes."""
+        statistics = None
+        data = self.coordinator.data[self.index][STATISTICS][WEEKLY][0]
+        to_dt = arrow.now().ceil("week").format("YYYY-MM-DD")
 
-        from_dt = arrow.now().span("week", week_start=7)[0]
-
-        statistics = self.coordinator.data[self.index][STATISTICS][WEEKLY]
-
-        if from_dt == arrow.now():
-            statistics = None
+        if DATA in data:
+            statistics = data[DATA]
 
         attributes = self.format_statistics_attributes(statistics)
-        attributes.update({"Weeknumber": from_dt.strftime("%V")})
+        attributes.update({"From": data[BUCKET]["week_start"], "To": to_dt})
         return attributes
 
     @property
     def state(self):
         """Return the state of the sensor."""
-
         total_distance = None
+        data = self.coordinator.data[self.index][STATISTICS][WEEKLY][0]
 
-        if self.coordinator.data[self.index][STATISTICS][WEEKLY] is not None:
-            total_distance = round(
-                self.coordinator.data[self.index][STATISTICS][WEEKLY][DATA][
-                    TOTAL_DISTANCE
-                ],
-                1,
-            )
+        if DATA in data:
+            total_distance = round(data[DATA][TOTAL_DISTANCE], 1)
+
         return STATE_UNAVAILABLE if total_distance is None else total_distance
 
 
@@ -187,32 +183,27 @@ class ToyotaCurrentMonthSensor(StatisticsBaseEntity):
     @property
     def extra_state_attributes(self):
         """Return the state attributes."""
+        statistics = None
+        data = self.coordinator.data[self.index][STATISTICS][MONTHLY][0]
+        from_month = arrow.now().floor("month").format("MMMM")
 
-        from_dt = arrow.now().floor("month")
-
-        statistics = self.coordinator.data[self.index][STATISTICS][MONTHLY]
-
-        if from_dt == arrow.now():
-            statistics = None
+        if DATA in data:
+            statistics = data[DATA]
 
         attributes = self.format_statistics_attributes(statistics)
-        attributes.update({"Month": from_dt.format("MMMM")})
+        attributes.update({"Month": from_month})
 
         return attributes
 
     @property
     def state(self):
         """Return the state of the sensor."""
-
         total_distance = None
+        data = self.coordinator.data[self.index][STATISTICS][MONTHLY][0]
 
-        if self.coordinator.data[self.index][STATISTICS][MONTHLY] is not None:
-            total_distance = round(
-                self.coordinator.data[self.index][STATISTICS][MONTHLY][DATA][
-                    TOTAL_DISTANCE
-                ],
-                1,
-            )
+        if DATA in data:
+            total_distance = round(data[DATA][TOTAL_DISTANCE], 1)
+
         return STATE_UNAVAILABLE if total_distance is None else total_distance
 
 
@@ -224,30 +215,24 @@ class ToyotaCurrentYearSensor(StatisticsBaseEntity):
     @property
     def extra_state_attributes(self):
         """Return the state attributes."""
+        statistics = None
+        data = self.coordinator.data[self.index][STATISTICS][YEARLY][0]
 
-        from_dt = arrow.now().floor("year")
-
-        statistics = self.coordinator.data[self.index][STATISTICS][YEARLY]
-
-        if from_dt == arrow.now():
-            statistics = None
+        if DATA in data:
+            statistics = data[DATA]
 
         attributes = self.format_statistics_attributes(statistics)
-        attributes.update({"Year": from_dt.format("YYYY")})
+        attributes.update({"Year": data[BUCKET]["year"]})
 
         return attributes
 
     @property
     def state(self):
         """Return the state of the sensor."""
-
         total_distance = None
+        data = self.coordinator.data[self.index][STATISTICS][YEARLY][0]
 
-        if self.coordinator.data[self.index][STATISTICS][YEARLY] is not None:
-            total_distance = round(
-                self.coordinator.data[self.index][STATISTICS][YEARLY][DATA][
-                    TOTAL_DISTANCE
-                ],
-                1,
-            )
+        if DATA in data:
+            total_distance = round(data[DATA][TOTAL_DISTANCE], 1)
+
         return STATE_UNAVAILABLE if total_distance is None else total_distance

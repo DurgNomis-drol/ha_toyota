@@ -9,7 +9,6 @@ from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from .const import (
     ALIAS,
     AVERAGE_SPEED,
-    DATA,
     DETAILS,
     DOMAIN,
     EV_DISTANCE,
@@ -86,7 +85,7 @@ class StatisticsBaseEntity(ToyotaBaseEntity, SensorEntity):
 
         def get_average_fuel_consumed(fuel_data):
             if FUEL_CONSUMED in fuel_data:
-                return fuel_data[FUEL_CONSUMED] + "/100" + self.mileage_unit
+                return fuel_data[FUEL_CONSUMED] + "L/100" + self.mileage_unit
             return STATE_UNAVAILABLE
 
         def get_timedelta(time):
@@ -94,21 +93,19 @@ class StatisticsBaseEntity(ToyotaBaseEntity, SensorEntity):
 
         if statistics is not None:
             attributes = {
-                "Average_fuel_consumed": get_average_fuel_consumed(statistics[DATA]),
-                "Number_of_trips": statistics[DATA][TRIPS],
-                "Number_of_night_trips": statistics[DATA][NIGHT_TRIPS],
-                "Total_driving_time": get_timedelta(statistics[DATA][TOTAL_DURATION]),
-                "Average_speed": round(statistics[DATA][AVERAGE_SPEED], 1),
-                "Max_speed": statistics[DATA][MAX_SPEED],
+                "Average_fuel_consumed": get_average_fuel_consumed(statistics),
+                "Number_of_trips": statistics[TRIPS],
+                "Number_of_night_trips": statistics[NIGHT_TRIPS],
+                "Total_driving_time": get_timedelta(statistics[TOTAL_DURATION]),
+                "Average_speed": round(statistics[AVERAGE_SPEED], 1),
+                "Max_speed": statistics[MAX_SPEED],
             }
 
             if self.hybrid:
                 attributes.update(
                     {
-                        "EV_distance_percentage": statistics[DATA][
-                            EV_DISTANCE_PERCENTAGE
-                        ],
-                        "EV_distance": round(statistics[DATA][EV_DISTANCE], 1),
+                        "EV_distance_percentage": statistics[EV_DISTANCE_PERCENTAGE],
+                        "EV_distance": round(statistics[EV_DISTANCE], 1),
                     }
                 )
         else:

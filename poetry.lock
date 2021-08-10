@@ -286,7 +286,7 @@ python-versions = ">=3.6"
 
 [[package]]
 name = "homeassistant"
-version = "2021.8.3"
+version = "2021.8.5"
 description = "Open-source home automation platform running on Python 3."
 category = "main"
 optional = false
@@ -448,7 +448,7 @@ python-versions = "*"
 
 [[package]]
 name = "mytoyota"
-version = "0.3.4"
+version = "0.4.0"
 description = "Python client for Toyota Connected Services."
 category = "main"
 optional = false
@@ -711,7 +711,7 @@ socks = ["PySocks (>=1.5.6,!=1.5.7,<2.0)"]
 
 [[package]]
 name = "virtualenv"
-version = "20.7.0"
+version = "20.7.1"
 description = "Virtual Python Environment builder"
 category = "dev"
 optional = false
@@ -770,7 +770,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "ad11bec14d6a560b50ffc8b2f4d40f31d46bdd65458ff09097e7394d86ab58ba"
+content-hash = "19731ffb5ae193017413545fde89bbf56e2cfc8463b8e49cb18977ab686d1212"
 
 [metadata.files]
 aiohttp = [
@@ -993,8 +993,8 @@ h11 = [
     {file = "h11-0.12.0.tar.gz", hash = "sha256:47222cb6067e4a307d535814917cd98fd0a57b6788ce715755fa2b6c28b56042"},
 ]
 homeassistant = [
-    {file = "homeassistant-2021.8.3-py3-none-any.whl", hash = "sha256:b07c38f51f7c140c51c1decd4f3ce94ad1bb04f1b49090617e6882cd9ddda6db"},
-    {file = "homeassistant-2021.8.3.tar.gz", hash = "sha256:30e14d05aae13be03c7bfbda679e6607190c6dfa60869f612b9f1a45b9b28dcc"},
+    {file = "homeassistant-2021.8.5-py3-none-any.whl", hash = "sha256:e0836155f025d286744809b314a272a06cdd9453292708ce0f979e510e6da678"},
+    {file = "homeassistant-2021.8.5.tar.gz", hash = "sha256:68ebeb81e22c72a8bbbed4dfb8410299a0c1052e2a8a00e2a4081a0c575e382c"},
 ]
 httpcore = [
     {file = "httpcore-0.13.6-py3-none-any.whl", hash = "sha256:db4c0dcb8323494d01b8c6d812d80091a31e520033e7b0120883d6f52da649ff"},
@@ -1131,8 +1131,8 @@ mypy-extensions = [
     {file = "mypy_extensions-0.4.3.tar.gz", hash = "sha256:2d82818f5bb3e369420cb3c4060a7970edba416647068eb4c5343488a6c604a8"},
 ]
 mytoyota = [
-    {file = "mytoyota-0.3.4-py3-none-any.whl", hash = "sha256:05e9f34b78cab64d6d258be81dfbe4e28ae1cc21958038e1a6c9c4e3887094a9"},
-    {file = "mytoyota-0.3.4.tar.gz", hash = "sha256:deac9756e98663b7824424bc6e3e216e4fa692f3521bb204791e2e0ceb09ebec"},
+    {file = "mytoyota-0.4.0-py3-none-any.whl", hash = "sha256:d8428caf61028a58987d15468c43326dcae0cae101af9091d76d819383b30ce7"},
+    {file = "mytoyota-0.4.0.tar.gz", hash = "sha256:4bfeafbda83ea6ae64e315c16acdb6ee39779cdc17de1a45ea853ba1335574dd"},
 ]
 nodeenv = [
     {file = "nodeenv-1.6.0-py2.py3-none-any.whl", hash = "sha256:621e6b7076565ddcacd2db0294c0381e01fd28945ab36bcf00f41c5daf63bef7"},
@@ -1333,8 +1333,8 @@ urllib3 = [
     {file = "urllib3-1.26.6.tar.gz", hash = "sha256:f57b4c16c62fa2760b7e3d97c35b255512fb6b59a259730f36ba32ce9f8e342f"},
 ]
 virtualenv = [
-    {file = "virtualenv-20.7.0-py2.py3-none-any.whl", hash = "sha256:fdfdaaf0979ac03ae7f76d5224a05b58165f3c804f8aa633f3dd6f22fbd435d5"},
-    {file = "virtualenv-20.7.0.tar.gz", hash = "sha256:97066a978431ec096d163e72771df5357c5c898ffdd587048f45e0aecc228094"},
+    {file = "virtualenv-20.7.1-py2.py3-none-any.whl", hash = "sha256:73863dc3be1efe6ee638e77495c0c195a6384ae7b15c561f3ceb2698ae7267c1"},
+    {file = "virtualenv-20.7.1.tar.gz", hash = "sha256:57bcb59c5898818bd555b1e0cfcf668bd6204bc2b53ad0e70a52413bd790f9e4"},
 ]
 voluptuous = [
     {file = "voluptuous-0.12.1-py3-none-any.whl", hash = "sha256:8ace33fcf9e6b1f59406bfaf6b8ec7bcc44266a9f29080b4deb4fe6ff2492386"},

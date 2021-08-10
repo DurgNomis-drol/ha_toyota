@@ -1,9 +1,9 @@
 """Toyota integration"""
+import asyncio
 import asyncio.exceptions as asyncioexceptions
 from datetime import timedelta
 import logging
 
-import arrow
 import async_timeout
 from mytoyota.client import MyT
 from mytoyota.exceptions import ToyotaLoginError
@@ -16,16 +16,13 @@ from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 
 from .const import (
     CONF_LOCALE,
-    DATA,
     DATA_CLIENT,
     DATA_COORDINATOR,
     DOMAIN,
-    HISTOGRAM,
     MONTHLY,
     PLATFORMS,
     STARTUP_MESSAGE,
     STATISTICS,
-    SUMMARY,
     VIN,
     WEEKLY,
     YEARLY,
@@ -73,43 +70,25 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
             cars = await with_timeout(client.get_vehicles())
 
             for car in cars:
+                # Use parallel request to get car data and statistics.
+                vehicle_data = await asyncio.gather(
+                    *[
+                        client.get_vehicle_status(car),
+                        client.get_driving_statistics(car[VIN], interval="isoweek"),
+                        client.get_driving_statistics(car[VIN]),
+                        client.get_driving_statistics(car[VIN], interval="year"),
+                    ]
+                )
+
                 # Vehicle status
-                vehicle = await with_timeout(client.get_vehicle_status(car))
+                vehicle = vehicle_data[0]
 
-                vehicle[STATISTICS] = {}
-
-                # Weekly stats
-                weekly_stats = await with_timeout(
-                    client.get_driving_statistics(car[VIN], interval="week")
-                )
-
-                vehicle[STATISTICS][WEEKLY] = None
-
-                if weekly_stats != "null":
-                    vehicle[STATISTICS][WEEKLY] = weekly_stats[HISTOGRAM][0]
-
-                # Monthly stats
-                monthly_stats = await with_timeout(
-                    client.get_driving_statistics(car[VIN])
-                )
-
-                vehicle[STATISTICS][MONTHLY] = None
-
-                if monthly_stats != "null":
-                    vehicle[STATISTICS][MONTHLY] = monthly_stats[HISTOGRAM][0]
-
-                # Yearly stats
-                yearly_stats = await with_timeout(
-                    client.get_driving_statistics(
-                        car[VIN],
-                        interval="month",
-                        from_date=(arrow.now().floor("year").format("YYYY-MM-DD")),
-                    )
-                )
-                vehicle[STATISTICS][YEARLY] = {}
-
-                if yearly_stats != "null":
-                    vehicle[STATISTICS][YEARLY][DATA] = yearly_stats[SUMMARY]
+                # Vehicle statistics
+                vehicle[STATISTICS] = {
+                    WEEKLY: vehicle_data[1],
+                    MONTHLY: vehicle_data[2],
+                    YEARLY: vehicle_data[3],
+                }
 
                 vehicles.append(vehicle)
 
