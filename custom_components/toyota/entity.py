@@ -85,7 +85,7 @@ class StatisticsBaseEntity(ToyotaBaseEntity, SensorEntity):
 
         def get_average_fuel_consumed(fuel_data):
             if FUEL_CONSUMED in fuel_data:
-                return str(fuel_data[FUEL_CONSUMED]) + "L/100" + self.mileage_unit
+                return fuel_data[FUEL_CONSUMED]
             return STATE_UNAVAILABLE
 
         def get_timedelta(time):
