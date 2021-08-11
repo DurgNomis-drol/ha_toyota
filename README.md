@@ -8,14 +8,10 @@
     This custom integration aims to provide plug-and-play integration for your Toyota vehicle.
 </p>
 
-**[!] Beta version alert.**
-Please note this integration is in the early stage of its development.
-See [Contribution](#contribution) section for more information on how to contribute.
-
 ## About
 
-This is a custom component the retrieves' data from the
-Toyota MyT API and makes them available in Home Assistant as sensors.
+This is a custom integration the retrieves' data from the
+Toyota MyT API and makes them available in Home Assistant as different types of sensors.
 As there is no official API from Toyota, I will try my best to keep
 it working but there are no promises.
 
