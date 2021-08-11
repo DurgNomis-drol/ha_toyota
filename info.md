@@ -4,6 +4,10 @@ This custom integration aims to provide plug-and-play integration for your Toyot
 
 **Disclaimer: Features available dependents on your car model and year.**
 
+### Regions supported
+
+- Europe
+
 ### Features
 
 - Know how much fuel is in your car.
@@ -20,5 +24,6 @@ Go to: Settings -> Integrations -> Add integration and search for Toyota Connect
 
 - Implement battery sensor/information for EV's.
 - Implement HVAC sensor/information.
+- Add support for other regions.
 
 ### [Docs (installation, config, and issues)](https://github.com/DurgNomis-drol/ha_toyota)
