@@ -1,31 +1,32 @@
 """Toyota integration"""
 import asyncio
+import asyncio.exceptions as asyncioexceptions
 from datetime import timedelta
 import logging
 
+import async_timeout
+import httpx
 from mytoyota.client import MyT
-from mytoyota.exceptions import ToyotaLoginError
+from mytoyota.exceptions import ToyotaInternalServerError, ToyotaLoginError
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_EMAIL, CONF_PASSWORD, CONF_REGION
-from homeassistant.core import Config, HomeAssistant
+from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
-from homeassistant.helpers.update_coordinator import (
-    CoordinatorEntity,
-    DataUpdateCoordinator,
-)
+from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
 from .const import (
-    ALIAS,
     CONF_LOCALE,
     DATA_CLIENT,
     DATA_COORDINATOR,
-    DETAILS,
     DOMAIN,
-    MODEL,
+    MONTHLY,
     PLATFORMS,
     STARTUP_MESSAGE,
+    STATISTICS,
     VIN,
+    WEEKLY,
+    YEARLY,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -34,9 +35,10 @@ _LOGGER = logging.getLogger(__name__)
 UPDATE_INTERVAL = timedelta(seconds=300)
 
 
-async def async_setup(_hass: HomeAssistant, _config: Config) -> bool:
-    """Set up this integration using YAML is not supported."""
-    return True
+async def with_timeout(task, timeout_seconds=15):
+    """Run an async task with a timeout."""
+    async with async_timeout.timeout(timeout_seconds):
+        return await task
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
@@ -62,17 +64,55 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     async def async_update_data():
         """Fetch data from Toyota API."""
 
-        vehicles = []
-
         try:
-            vehicles = await client.gather_all_information()
+
+            vehicles = []
+
+            cars = await with_timeout(client.get_vehicles())
+
+            for car in cars:
+                # Use parallel request to get car data and statistics.
+
+                vehicle_data = await asyncio.gather(
+                    *[
+                        client.get_vehicle_status(car),
+                        client.get_driving_statistics(car[VIN], interval="isoweek"),
+                        client.get_driving_statistics(car[VIN]),
+                        client.get_driving_statistics(car[VIN], interval="year"),
+                    ]
+                )
+
+                # Vehicle status
+                vehicle = vehicle_data[0]
+
+                # Vehicle statistics
+                vehicle[STATISTICS] = {
+                    WEEKLY: vehicle_data[1],
+                    MONTHLY: vehicle_data[2],
+                    YEARLY: vehicle_data[3],
+                }
+
+                vehicles.append(vehicle)
+
+            _LOGGER.debug(vehicles)
+            return vehicles
+
         except ToyotaLoginError as ex:
             _LOGGER.error(ex)
-        except Exception as ex:  # pylint: disable=broad-except
-            _LOGGER.error(ex)
+        except ToyotaInternalServerError as ex:
+            raise UpdateFailed(ex) from ex
+        except httpx.ConnectTimeout as ex:
+            raise UpdateFailed("Unable to connect to Toyota Connected Services") from ex
+        except (
+            asyncioexceptions.CancelledError,
+            asyncioexceptions.TimeoutError,
+            httpx.ReadTimeout,
+        ) as ex:
 
-        _LOGGER.debug(vehicles)
-        return vehicles
+            raise UpdateFailed(
+                "Update canceled! Toyota's API was too slow to respond."
+                " Will try again later..."
+            ) from ex
 
     coordinator = DataUpdateCoordinator(
         hass,
@@ -94,47 +134,16 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         raise ConfigEntryNotReady
 
     # Setup components
-    for platform in PLATFORMS:
-        hass.async_create_task(
-            hass.config_entries.async_forward_entry_setup(entry, platform)
-        )
+    hass.config_entries.async_setup_platforms(entry, PLATFORMS)
 
     return True
 
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
     """Unload a config entry."""
-    unload_ok = all(
-        await asyncio.gather(
-            *[
-                hass.config_entries.async_forward_entry_unload(entry, platform)
-                for platform in PLATFORMS
-            ]
-        )
-    )
+    unload_ok = await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
+
     if unload_ok:
         hass.data[DOMAIN].pop(entry.entry_id)
 
     return unload_ok
-
-
-class ToyotaEntity(CoordinatorEntity):
-    """Defines a base Toyota entity."""
-
-    def __init__(self, coordinator, index):
-        """Initialize the Toyota entity."""
-        super().__init__(coordinator)
-        self.index = index
-        self.vin = self.coordinator.data[self.index][VIN]
-        self.alias = self.coordinator.data[self.index][ALIAS]
-        self.details = self.coordinator.data[self.index][DETAILS]
-
-    @property
-    def device_info(self):
-        """Return device info for the Toyota entity."""
-        return {
-            "identifiers": {(DOMAIN, self.vin)},
-            "name": self.alias,
-            "model": self.details[MODEL],
-            "manufacturer": DOMAIN,
-        }

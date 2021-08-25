@@ -13,14 +13,14 @@ import voluptuous as vol
 from homeassistant import config_entries
 from homeassistant.const import CONF_EMAIL, CONF_PASSWORD, CONF_REGION
 
-from .const import CONF_LOCALE, CONF_REGION_SUPPORTED
+from .const import CONF_LOCALE
 
 # https://github.com/PyCQA/pylint/issues/3202
 from .const import DOMAIN  # pylint: disable=unused-import
 
 _LOGGER = logging.getLogger(__name__)
 
-supported_regions = CONF_REGION_SUPPORTED
+supported_regions = MyT.get_supported_regions()
 
 DATA_SCHEMA = vol.Schema(
     {
@@ -34,7 +34,7 @@ DATA_SCHEMA = vol.Schema(
 )
 
 
-class MazdaConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
+class ToyotaConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """Handle a config flow for Toyota Connected Services."""
 
     VERSION = 1

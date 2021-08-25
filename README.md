@@ -8,16 +8,12 @@
     This custom integration aims to provide plug-and-play integration for your Toyota vehicle.
 </p>
 
-**[!] Beta version alert.**
-Please note this integration is in the early stage of its development.
-See [Contribution](#contribution) section for more information on how to contribute.
-
 ## About
 
-This is a custom component the retrieves' data from the
-Toyota MyT API and makes them available in Home Assistant as sensors.
+This is a custom integration the retrieves' data from the
+Toyota MyT API and makes them available in Home Assistant as different types of sensors.
 As there is no official API from Toyota, I will try my best to keep
-it working but there are no promises.
+it working, but there are no promises.
 
 ## Features
 
@@ -25,15 +21,23 @@ Only Europe is supported right now. If you want to help add other regions, pleas
 
 This component will set up the following platforms:
 
-| Platform         | Sample sensor                 | Description                       |
-| ---------------- | ----------------------------- | --------------------------------- |
-| `sensor`         | `sensor.aygo`                 | Static data about your car        |
-| `sensor`         | `sensor.aygo_odometer`        | Odometer information              |
-| `sensor`         | `sensor.aygo_fuel_tank`       | Fuel tank information             |
-| `sensor`         | `sensor.aygo_starter_battery` | Starter battery health            |
-| `device_tracker` | `device_tracker.aygo`         | Shows you last parked information |
+| Platform         | Name                              | Description                       |
+| ---------------- | --------------------------------- | --------------------------------- |
+| `sensor`         | `sensor.aygo`                     | Static data about your car        |
+| `sensor`         | `sensor.aygo_odometer`            | Odometer information              |
+| `sensor`         | `sensor.aygo_fuel_tank`           | Fuel tank information             |
+| `sensor`         | `sensor.aygo_starter_battery`     | Starter battery health            |
+| `sensor`         | `sensor.aygo_current_week_stats`  | Statistics for current week       |
+| `sensor`         | `sensor.aygo_current_month_stats` | Statistics for current month      |
+| `sensor`         | `sensor.aygo_current_year_stats`  | Statistics for current year       |
+| `device_tracker` | `device_tracker.aygo`             | Shows you last parked information |
 
-**Sensors displaying statistical information are coming soon...**
+### Notes about statistics sensors
+
+Be aware that weeks start on Sundays and not Mondays. This is not possible to change due to limitation on Toyota's end.
+
+When starting a new week, month or year, it will not show any information before your first trip. Even though a new month starts on the 1, you will need to wait for the 2 of the month before it is able to show you current month stats. This due to a limitation in Toyota API. This limitation also applies to weeks.
+Due to this, this integration will list sensors as unavailable when no data is available.
 
 ## Getting started
 
@@ -43,9 +47,14 @@ Use Home Assistant build 2021.3 or above.
 
 If you can confirm that it is working as advertised on older version please open a PR.
 
-**Note: It is _only_ tested against latest, but should work on older versions too.**
+**Note:** It is **_only_** tested against latest, but should work on older versions too.
 
-**Note: Future updates may change which version are required.**
+**Note:** Future updates may change which version are required.
+
+### HACS installation (Recommended)
+
+Open HACS and search for `Toyota Connected Services` under integrations.
+You can choose to install a specific version or from master (Not recommended).
 
 ### Manual Installation
 

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "toyota"
-version = "0.2.0"
+version = "1.0.0"
 description = "Toyota Connected Services integration for Home Assistant"
 authors = ["DurgNomis-drol <simongrud@gmail.com>"]
 license = "MIT"
@@ -8,7 +8,8 @@ license = "MIT"
 [tool.poetry.dependencies]
 python = "^3.8"
 homeassistant = "^2021.3.3"
-mytoyota = "0.2.2"
+mytoyota = "0.4.1"
+arrow = "^1.1.1"
 
 [tool.poetry.dev-dependencies]
 pre-commit = "^2.11.1"

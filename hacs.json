@@ -1,0 +1,6 @@
+{
+  "name": "Toyota Connected Services",
+  "domains": ["device_tracker", "sensor"],
+  "homeassistant": "2021.4.0",
+  "iot_class": ["Cloud Polling"]
+}
