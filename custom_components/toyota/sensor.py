@@ -101,8 +101,10 @@ class ToyotaOdometerSensor(ToyotaBaseEntity):
     @property
     def state(self):
         """Return the state of the sensor."""
+        mileage = None
 
-        mileage = self.coordinator.data[self.index][STATUS][ODOMETER][MILEAGE]
+        if ODOMETER in self.coordinator.data[self.index][STATUS]:
+            mileage = self.coordinator.data[self.index][STATUS][ODOMETER][MILEAGE]
         return None if mileage is None else mileage
 
 
@@ -139,28 +141,34 @@ class ToyotaFuelRemainingSensor(ToyotaBaseEntity):
     @property
     def state(self):
         """Return the state of the sensor."""
+        fuel = None
 
-        fuel = self.coordinator.data[self.index][STATUS][ODOMETER][FUEL]
+        if ODOMETER in self.coordinator.data[self.index][STATUS]:
+            fuel = self.coordinator.data[self.index][STATUS][ODOMETER][FUEL]
         return None if fuel is None else fuel
 
 
 class ToyotaCurrentWeekSensor(StatisticsBaseEntity):
     """Class for current week statistics sensor."""
 
-    _attr_last_reset = arrow.now().floor("week").datetime
-
     @property
     def extra_state_attributes(self):
         """Return the state attributes."""
         statistics = None
         data = self.coordinator.data[self.index][STATISTICS][WEEKLY][0]
+        from_dt = arrow.now().floor("week").format("YYYY-MM-DD")
         to_dt = arrow.now().ceil("week").format("YYYY-MM-DD")
 
         if DATA in data:
             statistics = data[DATA]
 
         attributes = self.format_statistics_attributes(statistics)
-        attributes.update({"From": data[BUCKET]["week_start"], "To": to_dt})
+        attributes.update(
+            {
+                "From": data[BUCKET]["week_start"] if BUCKET in data else from_dt,
+                "To": to_dt,
+            }
+        )
         return attributes
 
     @property
@@ -177,8 +185,6 @@ class ToyotaCurrentWeekSensor(StatisticsBaseEntity):
 
 class ToyotaCurrentMonthSensor(StatisticsBaseEntity):
     """Class for current month statistics sensor."""
-
-    _attr_last_reset = arrow.now().floor("month").datetime
 
     @property
     def extra_state_attributes(self):
@@ -210,19 +216,20 @@ class ToyotaCurrentMonthSensor(StatisticsBaseEntity):
 class ToyotaCurrentYearSensor(StatisticsBaseEntity):
     """Class for current year statistics sensor."""
 
-    _attr_last_reset = arrow.now().floor("year").datetime
-
     @property
     def extra_state_attributes(self):
         """Return the state attributes."""
         statistics = None
         data = self.coordinator.data[self.index][STATISTICS][YEARLY][0]
+        from_year = arrow.now().floor("year").format("YYYY-MM-DD")
 
         if DATA in data:
             statistics = data[DATA]
 
         attributes = self.format_statistics_attributes(statistics)
-        attributes.update({"Year": data[BUCKET]["year"]})
+        attributes.update(
+            {"Year": data[BUCKET]["year"] if BUCKET in data else from_year}
+        )
 
         return attributes
 

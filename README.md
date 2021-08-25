@@ -13,7 +13,7 @@
 This is a custom integration the retrieves' data from the
 Toyota MyT API and makes them available in Home Assistant as different types of sensors.
 As there is no official API from Toyota, I will try my best to keep
-it working but there are no promises.
+it working, but there are no promises.
 
 ## Features
 
@@ -50,6 +50,11 @@ If you can confirm that it is working as advertised on older version please open
 **Note:** It is **_only_** tested against latest, but should work on older versions too.
 
 **Note:** Future updates may change which version are required.
+
+### HACS installation (Recommended)
+
+Open HACS and search for `Toyota Connected Services` under integrations.
+You can choose to install a specific version or from master (Not recommended).
 
 ### Manual Installation
 

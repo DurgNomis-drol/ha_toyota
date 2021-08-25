@@ -42,7 +42,7 @@ class ToyotaBaseEntity(CoordinatorEntity):
         self.model = self.coordinator.data[self.index][DETAILS][MODEL]
         self.hybrid = self.coordinator.data[self.index][DETAILS][HYBRID]
         self.mileage_unit = ""
-        if "odometer" in self.coordinator.data[self.index][STATUS]:
+        if ODOMETER in self.coordinator.data[self.index][STATUS]:
             self.mileage_unit = self.coordinator.data[self.index][STATUS][ODOMETER][
                 MILEAGE_UNIT
             ]

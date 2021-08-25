@@ -3,7 +3,6 @@ import logging
 
 from homeassistant.components.device_tracker import SOURCE_TYPE_GPS
 from homeassistant.components.device_tracker.config_entry import TrackerEntity
-from homeassistant.const import STATE_UNAVAILABLE
 
 from .const import (
     CONNECTED_SERVICES,
@@ -39,20 +38,20 @@ class ToyotaParkingTracker(ToyotaBaseEntity, TrackerEntity):
     @property
     def latitude(self):
         """Return latitude value of the device."""
-        return (
-            float(self.coordinator.data[self.index][STATUS][PARKING]["event"]["lat"])
-            if self.coordinator.data[self.index][STATUS][PARKING]
-            else STATE_UNAVAILABLE
-        )
+        if PARKING in self.coordinator.data[self.index][STATUS]:
+            return float(
+                self.coordinator.data[self.index][STATUS][PARKING]["event"]["lat"]
+            )
+        return None
 
     @property
     def longitude(self):
         """Return longitude value of the device."""
-        return (
-            float(self.coordinator.data[self.index][STATUS][PARKING]["event"]["lon"])
-            if self.coordinator.data[self.index][STATUS][PARKING]
-            else STATE_UNAVAILABLE
-        )
+        if PARKING in self.coordinator.data[self.index][STATUS]:
+            return float(
+                self.coordinator.data[self.index][STATUS][PARKING]["event"]["lon"]
+            )
+        return None
 
     @property
     def source_type(self):
@@ -62,4 +61,6 @@ class ToyotaParkingTracker(ToyotaBaseEntity, TrackerEntity):
     @property
     def entity_picture(self):
         """Return entity picture."""
-        return self.coordinator.data[self.index][DETAILS][IMAGE]
+        if IMAGE in self.coordinator.data[self.index][DETAILS]:
+            return self.coordinator.data[self.index][DETAILS][IMAGE]
+        return None

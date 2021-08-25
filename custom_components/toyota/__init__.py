@@ -5,14 +5,15 @@ from datetime import timedelta
 import logging
 
 import async_timeout
+import httpx
 from mytoyota.client import MyT
-from mytoyota.exceptions import ToyotaLoginError
+from mytoyota.exceptions import ToyotaInternalServerError, ToyotaLoginError
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_EMAIL, CONF_PASSWORD, CONF_REGION
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
-from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
+from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
 from .const import (
     CONF_LOCALE,
@@ -34,7 +35,7 @@ _LOGGER = logging.getLogger(__name__)
 UPDATE_INTERVAL = timedelta(seconds=300)
 
 
-async def with_timeout(task, timeout_seconds=10):
+async def with_timeout(task, timeout_seconds=15):
     """Run an async task with a timeout."""
     async with async_timeout.timeout(timeout_seconds):
         return await task
@@ -71,6 +72,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
             for car in cars:
                 # Use parallel request to get car data and statistics.
+
                 vehicle_data = await asyncio.gather(
                     *[
                         client.get_vehicle_status(car),
@@ -97,11 +99,20 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
         except ToyotaLoginError as ex:
             _LOGGER.error(ex)
-        except (asyncioexceptions.CancelledError, asyncioexceptions.TimeoutError):
-            _LOGGER.warning(
+        except ToyotaInternalServerError as ex:
+            raise UpdateFailed(ex) from ex
+        except httpx.ConnectTimeout as ex:
+            raise UpdateFailed("Unable to connect to Toyota Connected Services") from ex
+        except (
+            asyncioexceptions.CancelledError,
+            asyncioexceptions.TimeoutError,
+            httpx.ReadTimeout,
+        ) as ex:
+
+            raise UpdateFailed(
                 "Update canceled! Toyota's API was too slow to respond."
                 " Will try again later..."
-            )
+            ) from ex
 
     coordinator = DataUpdateCoordinator(
         hass,
