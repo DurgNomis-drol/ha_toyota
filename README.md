@@ -43,7 +43,7 @@ Due to this, this integration will list sensors as unavailable when no data is a
 
 ### Prerequisites
 
-Use Home Assistant build 2021.3 or above.
+Use Home Assistant build 2021.4 or above.
 
 If you can confirm that it is working as advertised on older version please open a PR.
 

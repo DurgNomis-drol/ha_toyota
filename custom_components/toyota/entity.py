@@ -7,9 +7,7 @@ from homeassistant.const import STATE_UNAVAILABLE
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from .const import (
-    ALIAS,
     AVERAGE_SPEED,
-    DETAILS,
     DOMAIN,
     EV_DISTANCE,
     EV_DISTANCE_PERCENTAGE,
@@ -17,14 +15,10 @@ from .const import (
     HYBRID,
     ICON_HISTORY,
     MAX_SPEED,
-    MILEAGE_UNIT,
     MODEL,
     NIGHT_TRIPS,
-    ODOMETER,
-    STATUS,
     TOTAL_DURATION,
     TRIPS,
-    VIN,
 )
 
 
@@ -37,36 +31,27 @@ class ToyotaBaseEntity(CoordinatorEntity):
         self.index = index
         self.sensor_name = sensor_name
 
-        self.vin = self.coordinator.data[self.index][VIN]
-        self.alias = self.coordinator.data[self.index][ALIAS]
-        self.model = self.coordinator.data[self.index][DETAILS][MODEL]
-        self.hybrid = self.coordinator.data[self.index][DETAILS][HYBRID]
-        self.mileage_unit = ""
-        if ODOMETER in self.coordinator.data[self.index][STATUS]:
-            self.mileage_unit = self.coordinator.data[self.index][STATUS][ODOMETER][
-                MILEAGE_UNIT
-            ]
+        self.vehicle = self.coordinator.data[self.index]
 
     @property
     def device_info(self):
         """Return device info for the Toyota entity."""
         return {
-            "identifiers": {(DOMAIN, self.vin)},
-            "name": self.alias,
-            "model": self.model,
+            "identifiers": {(DOMAIN, self.vehicle.vin)},
+            "name": self.vehicle.alias,
+            "model": self.vehicle.details[MODEL],
             "manufacturer": DOMAIN.capitalize(),
-            "Hybrid": self.hybrid,
         }
 
     @property
     def name(self):
         """Return the name of the sensor."""
-        return f"{self.alias} {self.sensor_name}"
+        return f"{self.vehicle.alias} {self.sensor_name}"
 
     @property
     def unique_id(self):
         """Return a unique identifier for this entity."""
-        return f"{self.vin}/{self.name}"
+        return f"{self.vehicle.vin}/{self.name}"
 
 
 class StatisticsBaseEntity(ToyotaBaseEntity, SensorEntity):
@@ -78,7 +63,7 @@ class StatisticsBaseEntity(ToyotaBaseEntity, SensorEntity):
     @property
     def unit_of_measurement(self):
         """Return the unit of measurement."""
-        return self.mileage_unit
+        return self.vehicle.odometer.unit
 
     def format_statistics_attributes(self, statistics):
         """Formats and returns statistics attributes."""
@@ -101,7 +86,7 @@ class StatisticsBaseEntity(ToyotaBaseEntity, SensorEntity):
                 "Max_speed": statistics[MAX_SPEED],
             }
 
-            if self.hybrid:
+            if self.vehicle.details[HYBRID]:
                 attributes.update(
                     {
                         "EV_distance_percentage": statistics[EV_DISTANCE_PERCENTAGE],
@@ -118,7 +103,7 @@ class StatisticsBaseEntity(ToyotaBaseEntity, SensorEntity):
                 "Max_speed": "0",
             }
 
-            if self.hybrid:
+            if self.vehicle.details[HYBRID]:
                 attributes.update(
                     {
                         "EV_distance_percentage": "0",

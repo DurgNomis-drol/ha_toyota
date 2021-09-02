@@ -6,27 +6,18 @@ from homeassistant.const import PERCENTAGE, STATE_UNAVAILABLE, STATE_UNKNOWN
 from .const import (
     BATTERY_HEALTH,
     BUCKET,
-    CONNECTED_SERVICES,
     DATA,
     DATA_COORDINATOR,
-    DETAILS,
     DOMAIN,
-    FUEL,
     FUEL_TYPE,
     ICON_BATTERY,
     ICON_CAR,
     ICON_FUEL,
     ICON_ODOMETER,
     LICENSE_PLATE,
-    MILEAGE,
-    MONTHLY,
-    ODOMETER,
-    SERVICES,
-    STATISTICS,
+    PERIODE_START,
     STATUS,
     TOTAL_DISTANCE,
-    WEEKLY,
-    YEARLY,
 )
 from .entity import StatisticsBaseEntity, ToyotaBaseEntity
 
@@ -41,15 +32,15 @@ async def async_setup_entry(hass, config_entry, async_add_devices):
         sensors.append(ToyotaCarSensor(coordinator, index, "numberplate"))
 
         # If Connected Services is setup for the car, setup additional sensors
-        if coordinator.data[index][SERVICES][CONNECTED_SERVICES]:
+        if coordinator.data[index].is_connected:
             sensors.append(ToyotaOdometerSensor(coordinator, index, "odometer"))
-            if BATTERY_HEALTH in coordinator.data[index][DETAILS]:
+            if BATTERY_HEALTH in coordinator.data[index].details:
                 sensors.append(
                     ToyotaStarterBatterySensor(
                         coordinator, index, "starter battery health"
                     )
                 )
-            if FUEL in coordinator.data[index][STATUS][ODOMETER]:
+            if coordinator.data[index].odometer.fuel:
                 sensors.append(
                     ToyotaFuelRemainingSensor(coordinator, index, "fuel tank")
                 )
@@ -76,13 +67,13 @@ class ToyotaCarSensor(ToyotaBaseEntity):
     @property
     def extra_state_attributes(self):
         """Return the state attributes."""
-        return self.coordinator.data[self.index][DETAILS]
+        return self.coordinator.data[self.index].details
 
     @property
     def state(self):
         """Return the state of the sensor."""
-        if LICENSE_PLATE in self.coordinator.data[self.index][DETAILS]:
-            license_plate = self.coordinator.data[self.index][DETAILS][LICENSE_PLATE]
+        if LICENSE_PLATE in self.coordinator.data[self.index].details:
+            license_plate = self.coordinator.data[self.index].details[LICENSE_PLATE]
             return None if license_plate is None else license_plate
 
         return STATE_UNKNOWN
@@ -96,15 +87,15 @@ class ToyotaOdometerSensor(ToyotaBaseEntity):
     @property
     def unit_of_measurement(self):
         """Return the unit of measurement."""
-        return self.mileage_unit
+        return self.vehicle.odometer.unit
 
     @property
     def state(self):
         """Return the state of the sensor."""
         mileage = None
 
-        if ODOMETER in self.coordinator.data[self.index][STATUS]:
-            mileage = self.coordinator.data[self.index][STATUS][ODOMETER][MILEAGE]
+        if self.coordinator.data[self.index].odometer:
+            mileage = self.coordinator.data[self.index].odometer.mileage
         return None if mileage is None else mileage
 
 
@@ -117,12 +108,12 @@ class ToyotaStarterBatterySensor(ToyotaBaseEntity):
     def state(self):
         """Return the state of the sensor."""
 
-        battery_health = (
-            self.coordinator.data[self.index][DETAILS][BATTERY_HEALTH]
+        return (
+            self.coordinator.data[self.index]
+            .details[BATTERY_HEALTH]
             .lower()
             .capitalize()
         )
-        return None if battery_health is None else battery_health
 
 
 class ToyotaFuelRemainingSensor(ToyotaBaseEntity):
@@ -135,17 +126,13 @@ class ToyotaFuelRemainingSensor(ToyotaBaseEntity):
     def extra_state_attributes(self):
         """Return the state attributes."""
         return {
-            FUEL_TYPE: self.coordinator.data[self.index][DETAILS][FUEL_TYPE],
+            FUEL_TYPE: self.vehicle.details[FUEL_TYPE],
         }
 
     @property
     def state(self):
         """Return the state of the sensor."""
-        fuel = None
-
-        if ODOMETER in self.coordinator.data[self.index][STATUS]:
-            fuel = self.coordinator.data[self.index][STATUS][ODOMETER][FUEL]
-        return None if fuel is None else fuel
+        return self.coordinator.data[self.index][STATUS].odometer.fuel
 
 
 class ToyotaCurrentWeekSensor(StatisticsBaseEntity):
@@ -155,7 +142,7 @@ class ToyotaCurrentWeekSensor(StatisticsBaseEntity):
     def extra_state_attributes(self):
         """Return the state attributes."""
         statistics = None
-        data = self.coordinator.data[self.index][STATISTICS][WEEKLY][0]
+        data = self.coordinator.data[self.index].statistics.weekly[0]
         from_dt = arrow.now().floor("week").format("YYYY-MM-DD")
         to_dt = arrow.now().ceil("week").format("YYYY-MM-DD")
 
@@ -165,7 +152,7 @@ class ToyotaCurrentWeekSensor(StatisticsBaseEntity):
         attributes = self.format_statistics_attributes(statistics)
         attributes.update(
             {
-                "From": data[BUCKET]["week_start"] if BUCKET in data else from_dt,
+                "From": data[BUCKET][PERIODE_START] if BUCKET in data else from_dt,
                 "To": to_dt,
             }
         )
@@ -175,7 +162,7 @@ class ToyotaCurrentWeekSensor(StatisticsBaseEntity):
     def state(self):
         """Return the state of the sensor."""
         total_distance = None
-        data = self.coordinator.data[self.index][STATISTICS][WEEKLY][0]
+        data = self.coordinator.data[self.index].statistics.weekly[0]
 
         if DATA in data:
             total_distance = round(data[DATA][TOTAL_DISTANCE], 1)
@@ -190,7 +177,7 @@ class ToyotaCurrentMonthSensor(StatisticsBaseEntity):
     def extra_state_attributes(self):
         """Return the state attributes."""
         statistics = None
-        data = self.coordinator.data[self.index][STATISTICS][MONTHLY][0]
+        data = self.coordinator.data[self.index].statistics.monthly[0]
         from_month = arrow.now().floor("month").format("MMMM")
 
         if DATA in data:
@@ -205,7 +192,7 @@ class ToyotaCurrentMonthSensor(StatisticsBaseEntity):
     def state(self):
         """Return the state of the sensor."""
         total_distance = None
-        data = self.coordinator.data[self.index][STATISTICS][MONTHLY][0]
+        data = self.coordinator.data[self.index].statistics.monthly[0]
 
         if DATA in data:
             total_distance = round(data[DATA][TOTAL_DISTANCE], 1)
@@ -220,8 +207,8 @@ class ToyotaCurrentYearSensor(StatisticsBaseEntity):
     def extra_state_attributes(self):
         """Return the state attributes."""
         statistics = None
-        data = self.coordinator.data[self.index][STATISTICS][YEARLY][0]
-        from_year = arrow.now().floor("year").format("YYYY-MM-DD")
+        data = self.coordinator.data[self.index].statistics.yearly[0]
+        from_year = arrow.now().floor("year").format("YYYY")
 
         if DATA in data:
             statistics = data[DATA]
@@ -237,7 +224,7 @@ class ToyotaCurrentYearSensor(StatisticsBaseEntity):
     def state(self):
         """Return the state of the sensor."""
         total_distance = None
-        data = self.coordinator.data[self.index][STATISTICS][YEARLY][0]
+        data = self.coordinator.data[self.index].statistics.yearly[0]
 
         if DATA in data:
             total_distance = round(data[DATA][TOTAL_DISTANCE], 1)

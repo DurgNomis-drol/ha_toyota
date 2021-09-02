@@ -4,16 +4,7 @@ import logging
 from homeassistant.components.device_tracker import SOURCE_TYPE_GPS
 from homeassistant.components.device_tracker.config_entry import TrackerEntity
 
-from .const import (
-    CONNECTED_SERVICES,
-    DATA_COORDINATOR,
-    DETAILS,
-    DOMAIN,
-    IMAGE,
-    PARKING,
-    SERVICES,
-    STATUS,
-)
+from .const import DATA_COORDINATOR, DOMAIN, IMAGE
 from .entity import ToyotaBaseEntity
 
 _LOGGER = logging.getLogger(__name__)
@@ -26,7 +17,7 @@ async def async_setup_entry(hass, config_entry, async_add_devices):
     coordinator = hass.data[DOMAIN][config_entry.entry_id][DATA_COORDINATOR]
 
     for index, _ in enumerate(coordinator.data):
-        if coordinator.data[index][SERVICES][CONNECTED_SERVICES]:
+        if coordinator.data[index].is_connected:
             tracker.append(ToyotaParkingTracker(coordinator, index, "parking location"))
 
     async_add_devices(tracker, True)
@@ -38,20 +29,13 @@ class ToyotaParkingTracker(ToyotaBaseEntity, TrackerEntity):
     @property
     def latitude(self):
         """Return latitude value of the device."""
-        if PARKING in self.coordinator.data[self.index][STATUS]:
-            return float(
-                self.coordinator.data[self.index][STATUS][PARKING]["event"]["lat"]
-            )
-        return None
+
+        return self.coordinator.data[self.index].parking.latitude
 
     @property
     def longitude(self):
         """Return longitude value of the device."""
-        if PARKING in self.coordinator.data[self.index][STATUS]:
-            return float(
-                self.coordinator.data[self.index][STATUS][PARKING]["event"]["lon"]
-            )
-        return None
+        return self.coordinator.data[self.index].parking.longitude
 
     @property
     def source_type(self):
@@ -61,6 +45,6 @@ class ToyotaParkingTracker(ToyotaBaseEntity, TrackerEntity):
     @property
     def entity_picture(self):
         """Return entity picture."""
-        if IMAGE in self.coordinator.data[self.index][DETAILS]:
-            return self.coordinator.data[self.index][DETAILS][IMAGE]
+        if IMAGE in self.vehicle.details:
+            return self.vehicle.details[IMAGE]
         return None
