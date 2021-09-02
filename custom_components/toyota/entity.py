@@ -25,6 +25,8 @@ from .const import (
 class ToyotaBaseEntity(CoordinatorEntity):
     """Defines a base Toyota entity."""
 
+    _attr_state_class = STATE_CLASS_MEASUREMENT
+
     def __init__(self, coordinator, index, sensor_name):
         """Initialize the Toyota entity."""
         super().__init__(coordinator)
@@ -58,7 +60,6 @@ class StatisticsBaseEntity(ToyotaBaseEntity, SensorEntity):
     """Builds on Toyota base entity"""
 
     _attr_icon = ICON_HISTORY
-    _attr_state_class = STATE_CLASS_MEASUREMENT
 
     @property
     def unit_of_measurement(self):
