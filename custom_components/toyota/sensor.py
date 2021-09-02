@@ -16,7 +16,6 @@ from .const import (
     ICON_ODOMETER,
     LICENSE_PLATE,
     PERIODE_START,
-    STATUS,
     TOTAL_DISTANCE,
 )
 from .entity import StatisticsBaseEntity, ToyotaBaseEntity
@@ -132,7 +131,7 @@ class ToyotaFuelRemainingSensor(ToyotaBaseEntity):
     @property
     def state(self):
         """Return the state of the sensor."""
-        return self.coordinator.data[self.index][STATUS].odometer.fuel
+        return self.coordinator.data[self.index].odometer.fuel
 
 
 class ToyotaCurrentWeekSensor(StatisticsBaseEntity):
