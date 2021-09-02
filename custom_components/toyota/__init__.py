@@ -7,7 +7,7 @@ import logging
 import async_timeout
 import httpx
 from mytoyota.client import MyT
-from mytoyota.exceptions import ToyotaInternalServerError, ToyotaLoginError
+from mytoyota.exceptions import ToyotaApiError, ToyotaInternalError, ToyotaLoginError
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_EMAIL, CONF_PASSWORD, CONF_REGION
@@ -20,13 +20,8 @@ from .const import (
     DATA_CLIENT,
     DATA_COORDINATOR,
     DOMAIN,
-    MONTHLY,
     PLATFORMS,
     STARTUP_MESSAGE,
-    STATISTICS,
-    VIN,
-    WEEKLY,
-    YEARLY,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -73,24 +68,19 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
             for car in cars:
                 # Use parallel request to get car data and statistics.
 
-                vehicle_data = await asyncio.gather(
+                vehicle = await client.get_vehicle_status(car)
+
+                data = await asyncio.gather(
                     *[
-                        client.get_vehicle_status(car),
-                        client.get_driving_statistics(car[VIN], interval="isoweek"),
-                        client.get_driving_statistics(car[VIN]),
-                        client.get_driving_statistics(car[VIN], interval="year"),
+                        client.get_driving_statistics(vehicle.vin, interval="isoweek"),
+                        client.get_driving_statistics(vehicle.vin),
+                        client.get_driving_statistics(vehicle.vin, interval="year"),
                     ]
                 )
 
-                # Vehicle status
-                vehicle = vehicle_data[0]
-
-                # Vehicle statistics
-                vehicle[STATISTICS] = {
-                    WEEKLY: vehicle_data[1],
-                    MONTHLY: vehicle_data[2],
-                    YEARLY: vehicle_data[3],
-                }
+                vehicle.statistics.weekly = data[0]
+                vehicle.statistics.monthly = data[1]
+                vehicle.statistics.yearly = data[2]
 
                 vehicles.append(vehicle)
 
@@ -99,7 +89,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
         except ToyotaLoginError as ex:
             _LOGGER.error(ex)
-        except ToyotaInternalServerError as ex:
+        except ToyotaInternalError as ex:
+            _LOGGER.debug(ex)
+        except ToyotaApiError as ex:
             raise UpdateFailed(ex) from ex
         except httpx.ConnectTimeout as ex:
             raise UpdateFailed("Unable to connect to Toyota Connected Services") from ex
