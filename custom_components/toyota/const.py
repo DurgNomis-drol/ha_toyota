@@ -1,6 +1,6 @@
 """Constants for the Toyota Connected Services integration."""
 
-PLATFORMS = ["sensor", "device_tracker"]
+PLATFORMS = ["binary_sensor", "sensor", "device_tracker"]
 
 DOMAIN = "toyota"
 NAME = "Toyota Connected Services"

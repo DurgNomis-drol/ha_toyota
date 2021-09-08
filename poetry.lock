@@ -448,11 +448,11 @@ python-versions = "*"
 
 [[package]]
 name = "mytoyota"
-version = "0.5.1"
+version = "0.5.3"
 description = "Python client for Toyota Connected Services."
 category = "main"
 optional = false
-python-versions = ">=3.8,<4.0"
+python-versions = ">=3.7,<4.0"
 
 [package.dependencies]
 arrow = ">=1.1.1,<2.0.0"
@@ -489,7 +489,7 @@ test = ["appdirs (==1.4.4)", "pytest (>=6)", "pytest-cov (>=2.7)", "pytest-mock 
 
 [[package]]
 name = "pre-commit"
-version = "2.14.1"
+version = "2.15.0"
 description = "A framework for managing and maintaining multi-language pre-commit hooks."
 category = "dev"
 optional = false
@@ -771,7 +771,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "e13710d2cdfca139bef834e2406e4fec45d6411d0579f21db063433b46aaab8f"
+content-hash = "984735c472cbbf8a93a57538cabfd7110a7d917d59ce1f890583dd04358ef728"
 
 [metadata.files]
 aiohttp = [
@@ -1132,8 +1132,8 @@ mypy-extensions = [
     {file = "mypy_extensions-0.4.3.tar.gz", hash = "sha256:2d82818f5bb3e369420cb3c4060a7970edba416647068eb4c5343488a6c604a8"},
 ]
 mytoyota = [
-    {file = "mytoyota-0.5.1-py3-none-any.whl", hash = "sha256:0b98fb0f5a47b2e108c3a002e632ef3e0ee288c1cc3a9972d19bed86fd1b9c7e"},
-    {file = "mytoyota-0.5.1.tar.gz", hash = "sha256:ee5b5eb40360ad648d5952b0741970d182669e27323d654d5e62d1f6a2b0603e"},
+    {file = "mytoyota-0.5.3-py3-none-any.whl", hash = "sha256:6b00f4b2729bd8b2f1a901d99491747ac51eff4d49172234a6e914b54c72f08d"},
+    {file = "mytoyota-0.5.3.tar.gz", hash = "sha256:d5d686637e67ed076a5a87bf4eaf279f8ab68c39f0cebd1defda745bae279c57"},
 ]
 nodeenv = [
     {file = "nodeenv-1.6.0-py2.py3-none-any.whl", hash = "sha256:621e6b7076565ddcacd2db0294c0381e01fd28945ab36bcf00f41c5daf63bef7"},
@@ -1148,8 +1148,8 @@ platformdirs = [
     {file = "platformdirs-2.3.0.tar.gz", hash = "sha256:15b056538719b1c94bdaccb29e5f81879c7f7f0f4a153f46086d155dffcd4f0f"},
 ]
 pre-commit = [
-    {file = "pre_commit-2.14.1-py2.py3-none-any.whl", hash = "sha256:a22d12a02da4d8df314187dfe7a61bda6291d57992060522feed30c8cd658b68"},
-    {file = "pre_commit-2.14.1.tar.gz", hash = "sha256:7977a3103927932d4823178cbe4719ab55bb336f42a9f3bb2776cff99007a117"},
+    {file = "pre_commit-2.15.0-py2.py3-none-any.whl", hash = "sha256:a4ed01000afcb484d9eb8d504272e642c4c4099bbad3a6b27e519bd6a3e928a6"},
+    {file = "pre_commit-2.15.0.tar.gz", hash = "sha256:3c25add78dbdfb6a28a651780d5c311ac40dd17f160eb3954a0c59da40a505a7"},
 ]
 pycodestyle = [
     {file = "pycodestyle-2.7.0-py2.py3-none-any.whl", hash = "sha256:514f76d918fcc0b55c6680472f0a37970994e07bbb80725808c17089be302068"},
