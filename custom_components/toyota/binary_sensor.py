@@ -1,6 +1,7 @@
 """Binary sensor platform for Toyota integration"""
 
 from homeassistant.components.binary_sensor import (
+    DEVICE_CLASS_LIGHT,
     DEVICE_CLASS_WINDOW,
     BinarySensorEntity,
 )
@@ -21,17 +22,26 @@ async def async_setup_entry(hass, config_entry, async_add_devices):
             coordinator.data[index].is_connected
             and coordinator.data[index].status is not None
         ):
-            binary_sensors.append(
-                ToyotaWindowBinarySensor(coordinator, index, "driverseat_window")
+            # Add window sensors
+            binary_sensors.extend(
+                [
+                    ToyotaWindowBinarySensor(coordinator, index, "driverseat_window"),
+                    ToyotaWindowBinarySensor(
+                        coordinator, index, "passengerseat_window"
+                    ),
+                    ToyotaWindowBinarySensor(
+                        coordinator, index, "rightrearseat_window"
+                    ),
+                    ToyotaWindowBinarySensor(coordinator, index, "leftrearseat_window"),
+                ]
             )
-            binary_sensors.append(
-                ToyotaWindowBinarySensor(coordinator, index, "passengerseat_window")
-            )
-            binary_sensors.append(
-                ToyotaWindowBinarySensor(coordinator, index, "rightrearseat_window")
-            )
-            binary_sensors.append(
-                ToyotaWindowBinarySensor(coordinator, index, "leftrearseat_window")
+            # Add light sensors
+            binary_sensors.extend(
+                [
+                    ToyotaLightBinarySensor(coordinator, index, "front_lights"),
+                    ToyotaLightBinarySensor(coordinator, index, "back_lights"),
+                    ToyotaLightBinarySensor(coordinator, index, "hazard_lights"),
+                ]
             )
 
     async_add_devices(binary_sensors, True)
@@ -57,7 +67,7 @@ class ToyotaWindowBinarySensor(ToyotaBaseEntity, BinarySensorEntity):
 
     @property
     def is_on(self):
-        """Return true if the binary_sensor is on."""
+        """Return true if th window is down open."""
 
         window = getattr(
             self.coordinator.data[self.index].status.windows,
@@ -68,3 +78,33 @@ class ToyotaWindowBinarySensor(ToyotaBaseEntity, BinarySensorEntity):
             return False
 
         return True
+
+
+class ToyotaLightBinarySensor(ToyotaBaseEntity, BinarySensorEntity):
+    """Class for Light sensor"""
+
+    _attr_device_class = DEVICE_CLASS_LIGHT
+
+    @property
+    def extra_state_attributes(self):
+        """Return the state attributes."""
+
+        light = getattr(
+            self.coordinator.data[self.index].status.lights,
+            self.sensor_name.split("_")[0],
+        )
+
+        return {
+            "warning": light.warning,
+        }
+
+    @property
+    def is_on(self):
+        """Return true if light is on."""
+
+        light = getattr(
+            self.coordinator.data[self.index].status.lights,
+            self.sensor_name.split("_")[0],
+        )
+
+        return not light.off
