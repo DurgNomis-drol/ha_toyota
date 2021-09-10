@@ -1,0 +1,23 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Servicios conectados de Toyota",
+        "description": "Ingrese su dirección de correo electrónico y contraseña para la aplicación de MyT abajo",
+        "data": {
+          "email": "Dirección de correo electonico",
+          "password": "Contraseña",
+          "locale": "Codigo internacional en la forma (es-es)",
+          "region": "Región (Actualmente cubrimos solo a Europa)"
+        }
+      }
+    },
+    "error": {
+      "invalid_username": "La dirección del correo correo electrónico tiene que contener un @.",
+      "region_not_supported": "La región no está soportado por ahora",
+      "invalid_auth": "Correo electrónico/Contraseña incorrecta.",
+      "invalid_locale": "El codigo de la idioma no és vàlido.",
+      "unknown": "Error inesperado."
+    }
+  }
+}
