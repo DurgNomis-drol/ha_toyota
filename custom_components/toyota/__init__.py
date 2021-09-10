@@ -5,6 +5,7 @@ from datetime import timedelta
 import logging
 
 import async_timeout
+import httpcore
 import httpx
 from mytoyota.client import MyT
 from mytoyota.exceptions import ToyotaApiError, ToyotaInternalError, ToyotaLoginError
@@ -93,7 +94,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
             _LOGGER.debug(ex)
         except ToyotaApiError as ex:
             raise UpdateFailed(ex) from ex
-        except httpx.ConnectTimeout as ex:
+        except (httpx.ConnectTimeout, httpcore.ConnectTimeout) as ex:
             raise UpdateFailed("Unable to connect to Toyota Connected Services") from ex
         except (
             asyncioexceptions.CancelledError,
