@@ -2,7 +2,7 @@
   "config": {
     "step": {
       "user": {
-        "title": "Sericios conectados de Toyota",
+        "title": "Servicios conectados de Toyota",
         "description": "Ingrese su dirección de correo electrónico y contraseña para la aplicación de MyT abajo",
         "data": {
           "email": "Dirección de correo electonico",
