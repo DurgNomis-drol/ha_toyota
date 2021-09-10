@@ -25,22 +25,22 @@ async def async_setup_entry(hass, config_entry, async_add_devices):
             # Add window sensors
             binary_sensors.extend(
                 [
-                    ToyotaWindowBinarySensor(coordinator, index, "driverseat_window"),
+                    ToyotaWindowBinarySensor(coordinator, index, "driverseat window"),
                     ToyotaWindowBinarySensor(
-                        coordinator, index, "passengerseat_window"
+                        coordinator, index, "passengerseat window"
                     ),
                     ToyotaWindowBinarySensor(
-                        coordinator, index, "rightrearseat_window"
+                        coordinator, index, "rightrearseat window"
                     ),
-                    ToyotaWindowBinarySensor(coordinator, index, "leftrearseat_window"),
+                    ToyotaWindowBinarySensor(coordinator, index, "leftrearseat window"),
                 ]
             )
             # Add light sensors
             binary_sensors.extend(
                 [
-                    ToyotaLightBinarySensor(coordinator, index, "front_lights"),
-                    ToyotaLightBinarySensor(coordinator, index, "back_lights"),
-                    ToyotaLightBinarySensor(coordinator, index, "hazard_lights"),
+                    ToyotaLightBinarySensor(coordinator, index, "front lights"),
+                    ToyotaLightBinarySensor(coordinator, index, "back lights"),
+                    ToyotaLightBinarySensor(coordinator, index, "hazard lights"),
                 ]
             )
 
@@ -58,7 +58,7 @@ class ToyotaWindowBinarySensor(ToyotaBaseEntity, BinarySensorEntity):
 
         window = getattr(
             self.coordinator.data[self.index].status.windows,
-            self.sensor_name.split("_")[0],
+            self.sensor_name.split(" ")[0],
         )
 
         return {
@@ -71,7 +71,7 @@ class ToyotaWindowBinarySensor(ToyotaBaseEntity, BinarySensorEntity):
 
         window = getattr(
             self.coordinator.data[self.index].status.windows,
-            self.sensor_name.split("_")[0],
+            self.sensor_name.split(" ")[0],
         )
 
         if window.state == "close":
@@ -91,7 +91,7 @@ class ToyotaLightBinarySensor(ToyotaBaseEntity, BinarySensorEntity):
 
         light = getattr(
             self.coordinator.data[self.index].status.lights,
-            self.sensor_name.split("_")[0],
+            self.sensor_name.split(" ")[0],
         )
 
         return {
@@ -104,7 +104,7 @@ class ToyotaLightBinarySensor(ToyotaBaseEntity, BinarySensorEntity):
 
         light = getattr(
             self.coordinator.data[self.index].status.lights,
-            self.sensor_name.split("_")[0],
+            self.sensor_name.split(" ")[0],
         )
 
         return not light.off
