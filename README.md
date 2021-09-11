@@ -1,3 +1,9 @@
+[![GitHub Workflow Status][workflow-shield]][workflow]
+[![GitHub Release][releases-shield]][releases]
+[![hacs][hacsbadge]][hacs]
+[![GitHub Activity][commits-shield]][commits]
+[![Installs][installs-shield]][installs]
+
 <p align="center">
     <img src="https://brands.home-assistant.io/_/toyota/icon@2x.png" alt="logo" height="200">
 </p>
@@ -113,3 +119,14 @@ By contributing, you agree that your contributions will be licensed under its MI
 ## Credits
 
 Under the hood this integration uses the [mytoyota](https://github.com/DurgNomis-drol/mytoyota) python package.
+
+[hacs]: https://hacs.xyz
+[hacsbadge]: https://img.shields.io/badge/HACS-Default-orange.svg?style=for-the-badge
+[releases-shield]: https://img.shields.io/github/release/DurgNomis-drol/ha_toyota.svg?style=for-the-badge
+[releases]: https://github.com/DurgNomis-drol/ha_toyota/releases
+[workflow-shield]: https://img.shields.io/github/workflow/status/DurgNomis-drol/ha_toyota/Linting?style=for-the-badge
+[workflow]: https://github.com/DurgNomis-drol/ha_toyota/actions
+[installs-shield]: https://img.shields.io/endpoint?style=for-the-badge&url=https%3A%2F%2Ftoyota-installs-for-shield-io-b910bxm1lt58.runkit.sh%2F
+[installs]: https://analytics.home-assistant.io/custom_integrations.json
+[commits-shield]: https://img.shields.io/github/commit-activity/y/DurgNomis-drol/ha_toyota.svg?style=for-the-badge
+[commits]: https://github.com/DurgNomis-drol/ha_toyota/commits/master
