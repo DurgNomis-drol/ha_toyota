@@ -1,6 +1,8 @@
 {
   "name": "Toyota Connected Services",
-  "domains": ["device_tracker", "sensor"],
+  "domains": ["device_tracker", "sensor", "binary_sensor"],
   "homeassistant": "2021.4.0",
-  "iot_class": ["Cloud Polling"]
+  "iot_class": ["Cloud Polling"],
+  "zip_release": true,
+  "filename": "toyota.zip"
 }
