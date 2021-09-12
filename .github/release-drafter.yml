@@ -1,3 +1,6 @@
+name-template: "v$RESOLVED_VERSION 🌈"
+tag-template: "v$RESOLVED_VERSION"
+sort-direction: ascending
 categories:
   - title: "🚀 Features"
     labels:
