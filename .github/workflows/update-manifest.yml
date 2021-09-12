@@ -1,0 +1,21 @@
+name: Release
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  update_manifest_version:
+    name: Prepare release asset
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v2
+
+      - name: Get version
+        id: version
+        uses: home-assistant/actions/helpers/version@master
+
+      - name: "Set version number"
+        run: |
+          python3 ${{ github.workspace }}/.github/scripts/update_manifest.py --version ${{ steps.version.outputs.version }}
