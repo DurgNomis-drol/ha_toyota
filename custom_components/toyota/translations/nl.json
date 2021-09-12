@@ -1,0 +1,23 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Toyota Connected Services",
+        "description": "Voer uw e-mailadres en wachtwoord voor MyT in hieronder.",
+        "data": {
+          "email": "E-mail",
+          "password": "Wachtwoord",
+          "locale": "Taalcode in deze vorm (nl-nl)",
+          "region": "Regio (Alleen Europe is op dit moment ondersteund)"
+        }
+      }
+    },
+    "error": {
+      "invalid_username": "E-mail moet een @ bevatten.",
+      "region_not_supported": "Regio is niet ondersteund.",
+      "invalid_auth": "E-mail/wachtwoord is ongeldig.",
+      "invalid_locale": "Taalcode is ongeldig.",
+      "unknown": "Onverwachte fout."
+    }
+  }
+}
