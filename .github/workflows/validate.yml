@@ -1,4 +1,4 @@
-name: Home Assistant
+name: Validate
 
 on:
   push:
