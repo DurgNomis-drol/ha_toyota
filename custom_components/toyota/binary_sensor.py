@@ -18,31 +18,36 @@ async def async_setup_entry(hass, config_entry, async_add_devices):
 
     for index, _ in enumerate(coordinator.data):
 
-        if (
-            coordinator.data[index].is_connected
-            and coordinator.data[index].status is not None
-        ):
-            # Add window sensors
-            binary_sensors.extend(
-                [
-                    ToyotaWindowBinarySensor(coordinator, index, "driverseat window"),
-                    ToyotaWindowBinarySensor(
-                        coordinator, index, "passengerseat window"
-                    ),
-                    ToyotaWindowBinarySensor(
-                        coordinator, index, "rightrearseat window"
-                    ),
-                    ToyotaWindowBinarySensor(coordinator, index, "leftrearseat window"),
-                ]
-            )
-            # Add light sensors
-            binary_sensors.extend(
-                [
-                    ToyotaLightBinarySensor(coordinator, index, "front lights"),
-                    ToyotaLightBinarySensor(coordinator, index, "back lights"),
-                    ToyotaLightBinarySensor(coordinator, index, "hazard lights"),
-                ]
-            )
+        if coordinator.data[index].is_connected:
+
+            if coordinator.data[index].status.windows:
+                # Add window sensors if available
+                binary_sensors.extend(
+                    [
+                        ToyotaWindowBinarySensor(
+                            coordinator, index, "driverseat window"
+                        ),
+                        ToyotaWindowBinarySensor(
+                            coordinator, index, "passengerseat window"
+                        ),
+                        ToyotaWindowBinarySensor(
+                            coordinator, index, "rightrearseat window"
+                        ),
+                        ToyotaWindowBinarySensor(
+                            coordinator, index, "leftrearseat window"
+                        ),
+                    ]
+                )
+
+            if coordinator.data[index].status.lights:
+                # Add light sensors if available
+                binary_sensors.extend(
+                    [
+                        ToyotaLightBinarySensor(coordinator, index, "front lights"),
+                        ToyotaLightBinarySensor(coordinator, index, "back lights"),
+                        ToyotaLightBinarySensor(coordinator, index, "hazard lights"),
+                    ]
+                )
 
     async_add_devices(binary_sensors, True)
 
