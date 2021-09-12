@@ -25,22 +25,41 @@ it working, but there are no promises.
 
 Only Europe is supported right now. If you want to help add other regions, please open an issue over at [`mytoyota`](https://github.com/DurgNomis-drol/mytoyota).
 
-This component will set up the following platforms:
+**Disclaimer: Features available dependents on your car model and year.**
 
-| Platform         | Name                              | Description                       |
-| ---------------- | --------------------------------- | --------------------------------- |
-| `sensor`         | `sensor.aygo`                     | Static data about your car        |
-| `sensor`         | `sensor.aygo_odometer`            | Odometer information              |
-| `sensor`         | `sensor.aygo_fuel_tank`           | Fuel tank information             |
-| `sensor`         | `sensor.aygo_starter_battery`     | Starter battery health            |
-| `sensor`         | `sensor.aygo_current_week_stats`  | Statistics for current week       |
-| `sensor`         | `sensor.aygo_current_month_stats` | Statistics for current month      |
-| `sensor`         | `sensor.aygo_current_year_stats`  | Statistics for current year       |
-| `device_tracker` | `device_tracker.aygo`             | Shows you last parked information |
+### Overview
+
+- Numberplate and starter battery sensors
+- Fuel and odometer information
+- Current week, month and year statistics.
+- Window and lights sensors
+
+### Binary sensor(s)
+
+| <div style="width:250px">Name</div> | Description                                                                                 |
+| ----------------------------------- | ------------------------------------------------------------------------------------------- |
+| `binary_sensor.corolla_*_window`    | Window sensor, one is created for driverseat. passengerseat, leftrearseat and rightrearseat |
+| `binary_sensor.corolla_*_lights`    | Light sensor, one is created for front, back and hazard lights                              |
+
+### Device tracker(s)
+
+| <div style="width:250px">Name</div> | Description                       |
+| ----------------------------------- | --------------------------------- |
+| `device_tracker.corolla`            | Shows you last parked information |
+
+### Sensor(s)
+
+| <div style="width:250px">Name</div>  | Description                  |
+| ------------------------------------ | ---------------------------- |
+| `sensor.corolla`                     | Static data about your car   |
+| `sensor.corolla_odometer`            | Odometer information         |
+| `sensor.corolla_fuel_tank`           | Fuel tank information        |
+| `sensor.aygo_starter_battery`        | Starter battery health       |
+| `sensor.corolla_current_week_stats`  | Statistics for current week  |
+| `sensor.corolla_current_month_stats` | Statistics for current month |
+| `sensor.corolla_current_year_stats`  | Statistics for current year  |
 
 ### Notes about statistics sensors
-
-Be aware that weeks start on Sundays and not Mondays. This is not possible to change due to limitation on Toyota's end.
 
 When starting a new week, month or year, it will not show any information before your first trip. Even though a new month starts on the 1, you will need to wait for the 2 of the month before it is able to show you current month stats. This due to a limitation in Toyota API. This limitation also applies to weeks.
 Due to this, this integration will list sensors as unavailable when no data is available.
