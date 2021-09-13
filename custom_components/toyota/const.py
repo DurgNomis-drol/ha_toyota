@@ -39,12 +39,14 @@ TRIPS = "tripCount"
 
 # ICONS
 ICON_BATTERY = "mdi:car-battery"
-ICON_CAR = "mdi:car"
+ICON_CAR = "mdi:car-info"
 ICON_FUEL = "mdi:gas-station"
 ICON_ODOMETER = "mdi:counter"
 ICON_PARKING = "mdi:map-marker"
 ICON_HISTORY = "mdi:history"
-
+ICON_CAR_DOOR = "mdi:car-door"
+ICON_CAR_DOOR_LOCK = "mdi:car-door-lock"
+ICON_CAR_LIGHTS = "mdi:car-parking-lights"
 
 STARTUP_MESSAGE = f"""
 -------------------------------------------------------------------
