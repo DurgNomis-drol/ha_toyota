@@ -7,7 +7,6 @@
         "data": {
           "email": "Dirección de correo electonico",
           "password": "Contraseña",
-          "locale": "Codigo internacional en la forma (es-es)",
           "region": "Región (Actualmente cubrimos solo a Europa)"
         }
       }

@@ -7,7 +7,6 @@
         "data": {
           "email": "Email",
           "password": "Password",
-          "locale": "Language code in this style (da-dk)",
           "region": "Region (Only Europe is supported right now)"
         }
       }

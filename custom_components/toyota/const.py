@@ -7,7 +7,6 @@ NAME = "Toyota Connected Services"
 ISSUES_URL = "https://github.com/DurgNomis-drol/ha_toyota/issues"
 
 # CONF
-CONF_LOCALE = "locale"
 CONF_REGION_SUPPORTED = [
     "europe",
 ]
