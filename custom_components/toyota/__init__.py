@@ -16,14 +16,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
-from .const import (
-    CONF_LOCALE,
-    DATA_CLIENT,
-    DATA_COORDINATOR,
-    DOMAIN,
-    PLATFORMS,
-    STARTUP_MESSAGE,
-)
+from .const import DATA_CLIENT, DATA_COORDINATOR, DOMAIN, PLATFORMS, STARTUP_MESSAGE
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -45,13 +38,12 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
     email = entry.data[CONF_EMAIL]
     password = entry.data[CONF_PASSWORD]
-    locale = entry.data[CONF_LOCALE]
     region = entry.data[CONF_REGION]
 
     client = MyT(
         username=email,
         password=password,
-        locale=locale,
+        locale="en-gb",
         region=region.lower(),
     )
 

@@ -7,7 +7,6 @@
         "data": {
           "email": "Email",
           "password": "Adgangskode",
-          "locale": "Landekode i denne stil (da-dk)",
           "region": "Region (Kun Europa er understøttet lige nu)"
         }
       }

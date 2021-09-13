@@ -7,7 +7,6 @@
         "data": {
           "email": "Correu electrònic",
           "password": "Contrasenya",
-          "locale": "Codi international de la llengua en format (ct-es)",
           "region": "Regió (Per ara unicament donem soport a Europa)"
         }
       }

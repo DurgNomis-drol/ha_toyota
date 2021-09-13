@@ -13,8 +13,6 @@ import voluptuous as vol
 from homeassistant import config_entries
 from homeassistant.const import CONF_EMAIL, CONF_PASSWORD, CONF_REGION
 
-from .const import CONF_LOCALE
-
 # https://github.com/PyCQA/pylint/issues/3202
 from .const import DOMAIN  # pylint: disable=unused-import
 
@@ -26,7 +24,6 @@ DATA_SCHEMA = vol.Schema(
     {
         vol.Required(CONF_EMAIL): str,
         vol.Required(CONF_PASSWORD): str,
-        vol.Required(CONF_LOCALE): str,
         vol.Required(CONF_REGION): vol.In(
             [region.capitalize() for region in supported_regions]
         ),
@@ -48,13 +45,12 @@ class ToyotaConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             await self.async_set_unique_id(user_input[CONF_EMAIL].lower())
 
             try:
-                locale = user_input[CONF_LOCALE]
                 region = user_input[CONF_REGION]
 
                 client = MyT(
                     username=user_input[CONF_EMAIL],
                     password=user_input[CONF_PASSWORD],
-                    locale=locale.lower(),
+                    locale="en-gb",
                     region=region.lower(),
                 )
 

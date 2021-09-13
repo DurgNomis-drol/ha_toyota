@@ -7,7 +7,6 @@
         "data": {
           "email": "E-mail",
           "password": "Wachtwoord",
-          "locale": "Taalcode in deze vorm (nl-nl)",
           "region": "Regio (Alleen Europe is op dit moment ondersteund)"
         }
       }
