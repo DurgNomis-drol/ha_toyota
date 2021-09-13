@@ -14,6 +14,8 @@ from .const import (
     ICON_CAR_DOOR,
     ICON_CAR_DOOR_LOCK,
     ICON_CAR_LIGHTS,
+    LAST_UPDATED,
+    WARNING,
 )
 from .entity import ToyotaBaseEntity
 
@@ -115,8 +117,8 @@ class ToyotaDoorBinarySensor(ToyotaBaseEntity, BinarySensorEntity):
         )
 
         return {
-            "warning": door.warning,
-            "last_updated": self.coordinator.data[self.index].status.last_updated,
+            WARNING: door.warning,
+            LAST_UPDATED: self.coordinator.data[self.index].status.last_updated,
         }
 
     @property
@@ -147,8 +149,8 @@ class ToyotaDoorLockBinarySensor(ToyotaBaseEntity, BinarySensorEntity):
         )
 
         return {
-            "warning": door.warning,
-            "last_updated": self.coordinator.data[self.index].status.last_updated,
+            WARNING: door.warning,
+            LAST_UPDATED: self.coordinator.data[self.index].status.last_updated,
         }
 
     @property
@@ -179,8 +181,8 @@ class ToyotaLightBinarySensor(ToyotaBaseEntity, BinarySensorEntity):
         )
 
         return {
-            "warning": light.warning,
-            "last_updated": self.coordinator.data[self.index].status.last_updated,
+            WARNING: light.warning,
+            LAST_UPDATED: self.coordinator.data[self.index].status.last_updated,
         }
 
     @property
@@ -205,7 +207,7 @@ class ToyotaOverAllStatusBinarySensor(ToyotaBaseEntity, BinarySensorEntity):
         """Return the state attributes."""
 
         return {
-            "last_updated": self.coordinator.data[self.index].status.last_updated,
+            LAST_UPDATED: self.coordinator.data[self.index].status.last_updated,
         }
 
     @property
@@ -230,8 +232,8 @@ class ToyotaWindowBinarySensor(ToyotaBaseEntity, BinarySensorEntity):
         )
 
         return {
-            "warning": window.warning,
-            "last_updated": self.coordinator.data[self.index].status.last_updated,
+            WARNING: window.warning,
+            LAST_UPDATED: self.coordinator.data[self.index].status.last_updated,
         }
 
     @property
