@@ -2,6 +2,8 @@ name-template: "v$RESOLVED_VERSION 🌈"
 tag-template: "v$RESOLVED_VERSION"
 sort-direction: ascending
 categories:
+  - title: "⚠ Breaking changes"
+    label: "breaking change"
   - title: "🚀 Features"
     labels:
       - "feature"
@@ -20,6 +22,4 @@ categories:
 change-template: "- $TITLE @$AUTHOR (#$NUMBER)"
 change-title-escapes: '\<*_&' # You can add # and @ to disable mentions, and add ` to disable code blocks.
 template: |
-  ## Changes
-
   $CHANGES
