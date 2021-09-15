@@ -12,7 +12,7 @@ ISSUES_URL = "https://github.com/DurgNomis-drol/ha_toyota/issues"
 CONF_REGION_SUPPORTED = [
     "europe",
 ]
-CONF_UNIT_SYSTEM_IMPERIAL_MPG = "imperial_mpg"
+CONF_UNIT_SYSTEM_IMPERIAL_LITERS = "imperial_liters"
 CONF_USE_LITERS_PER_100_MILES = "use_liters"
 
 # DEFAULTS

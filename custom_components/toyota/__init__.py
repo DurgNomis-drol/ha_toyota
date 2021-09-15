@@ -24,14 +24,13 @@ from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
 from .const import (
-    CONF_UNIT_SYSTEM_IMPERIAL_MPG,
     CONF_USE_LITERS_PER_100_MILES,
     DATA_CLIENT,
     DATA_COORDINATOR,
     DEFAULT_LOCALE,
     DOMAIN,
     PLATFORMS,
-    STARTUP_MESSAGE,
+    STARTUP_MESSAGE, CONF_UNIT_SYSTEM_IMPERIAL_LITERS,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -84,10 +83,10 @@ async def async_setup_entry(  # pylint: disable=too-many-statements
                     _LOGGER.debug("The car is reporting data in imperial")
                     if use_liters:
                         _LOGGER.debug("Get statistics in imperial and L/100 miles")
-                        unit = CONF_UNIT_SYSTEM_IMPERIAL
+                        unit = CONF_UNIT_SYSTEM_IMPERIAL_LITERS
                     else:
                         _LOGGER.debug("Get statistics in imperial and MPG")
-                        unit = CONF_UNIT_SYSTEM_IMPERIAL_MPG
+                        unit = CONF_UNIT_SYSTEM_IMPERIAL
                 else:
                     _LOGGER.debug("The car is reporting data in metric")
                     unit = CONF_UNIT_SYSTEM_METRIC

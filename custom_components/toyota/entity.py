@@ -71,7 +71,7 @@ class StatisticsBaseEntity(ToyotaBaseEntity, SensorEntity):
 
         def get_average_fuel_consumed(fuel_data):
             if FUEL_CONSUMED in fuel_data:
-                return fuel_data[FUEL_CONSUMED]
+                return round(fuel_data[FUEL_CONSUMED], 2)
             return STATE_UNAVAILABLE
 
         def get_timedelta(time):
@@ -84,7 +84,7 @@ class StatisticsBaseEntity(ToyotaBaseEntity, SensorEntity):
                 "Number_of_night_trips": statistics[NIGHT_TRIPS],
                 "Total_driving_time": get_timedelta(statistics[TOTAL_DURATION]),
                 "Average_speed": round(statistics[AVERAGE_SPEED], 1),
-                "Max_speed": statistics[MAX_SPEED],
+                "Max_speed": round(statistics[MAX_SPEED], 1),
             }
 
             if self.vehicle.details[HYBRID]:
