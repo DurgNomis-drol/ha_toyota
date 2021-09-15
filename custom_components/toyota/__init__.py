@@ -11,12 +11,13 @@ from mytoyota.client import MyT
 from mytoyota.exceptions import ToyotaApiError, ToyotaInternalError, ToyotaLoginError
 
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import CONF_EMAIL, CONF_PASSWORD, CONF_REGION
+from homeassistant.const import CONF_EMAIL, CONF_PASSWORD, CONF_REGION, LENGTH_MILES, CONF_UNIT_SYSTEM_METRIC, \
+    CONF_UNIT_SYSTEM_IMPERIAL
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
-from .const import DATA_CLIENT, DATA_COORDINATOR, DOMAIN, PLATFORMS, STARTUP_MESSAGE
+from .const import DATA_CLIENT, DATA_COORDINATOR, DOMAIN, PLATFORMS, STARTUP_MESSAGE, CONF_USE_LITERS_PER_100_MILES
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -39,6 +40,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     email = entry.data[CONF_EMAIL]
     password = entry.data[CONF_PASSWORD]
     region = entry.data[CONF_REGION]
+    use_liters = entry.options.get(CONF_USE_LITERS_PER_100_MILES, False)
 
     client = MyT(
         username=email,
@@ -59,15 +61,22 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
             cars = await with_timeout(client.get_vehicles())
 
             for car in cars:
-                # Use parallel request to get car data and statistics.
-
                 vehicle = await client.get_vehicle_status(car)
 
+                unit = CONF_UNIT_SYSTEM_METRIC
+
+                if vehicle.odometer.unit == LENGTH_MILES:
+                    if use_liters:
+                        unit = CONF_UNIT_SYSTEM_IMPERIAL
+                    else:
+                        unit = CONF_UNIT_SYSTEM_IMPERIAL + "_mpg"
+
+                # Use parallel request to get car statistics.
                 data = await asyncio.gather(
                     *[
-                        client.get_driving_statistics(vehicle.vin, interval="isoweek"),
-                        client.get_driving_statistics(vehicle.vin),
-                        client.get_driving_statistics(vehicle.vin, interval="year"),
+                        client.get_driving_statistics(vehicle.vin, interval="isoweek", unit=unit),
+                        client.get_driving_statistics(vehicle.vin, unit=unit),
+                        client.get_driving_statistics(vehicle.vin, interval="year", unit=unit),
                     ]
                 )
 

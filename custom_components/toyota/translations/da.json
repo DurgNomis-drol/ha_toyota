@@ -18,5 +18,14 @@
       "invalid_locale": "Landekode format er ikke korrekt.",
       "unknown": "Uventet fejl."
     }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "data": {
+          "use_liters": "Vis i liter (L/100 mil) i stedet for MPG. Gælder kun for biler der reportere deres data i mil."
+        }
+      }
+    }
   }
 }

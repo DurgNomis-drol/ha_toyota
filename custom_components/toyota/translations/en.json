@@ -18,5 +18,14 @@
       "invalid_locale": "Language code is not valid.",
       "unknown": "Unexpected error."
     }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "data": {
+          "use_liters": "Use liters (L/100 miles) instead of MPG. Only applicable if you car reports data in miles (Imperial unit system)."
+        }
+      }
+    }
   }
 }

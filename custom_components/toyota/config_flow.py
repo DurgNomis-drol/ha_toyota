@@ -1,6 +1,7 @@
 """Config flow for Toyota Connected Services integration."""
 import logging
 
+from homeassistant.core import callback
 from mytoyota.client import MyT
 from mytoyota.exceptions import (
     ToyotaInvalidUsername,
@@ -14,7 +15,7 @@ from homeassistant import config_entries
 from homeassistant.const import CONF_EMAIL, CONF_PASSWORD, CONF_REGION
 
 # https://github.com/PyCQA/pylint/issues/3202
-from .const import DOMAIN  # pylint: disable=unused-import
+from .const import DOMAIN, DATA_COORDINATOR, CONF_USE_LITERS_PER_100_MILES  # pylint: disable=unused-import
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -78,4 +79,43 @@ class ToyotaConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
         return self.async_show_form(
             step_id="user", data_schema=DATA_SCHEMA, errors=errors
+        )
+
+    @staticmethod
+    @callback
+    def async_get_options_flow(config_entry):
+        return ToyotaOptionsFlowHandler(config_entry)
+
+
+class ToyotaOptionsFlowHandler(config_entries.OptionsFlow):
+    """Config flow options handler for Toyota Connected Services."""
+
+    def __init__(self, config_entry):
+        """Initialize options flow."""
+        self.config_entry = config_entry
+        # Cast from MappingProxy to dict to allow update.
+        self.options = dict(config_entry.options)
+
+    async def async_step_init(
+        self, user_input=None
+    ):
+        """Manage the options."""
+        if user_input is not None:
+            self.options.update(user_input)
+            return self.async_create_entry(
+                title=self.config_entry.data.get(CONF_EMAIL), data=self.options
+            )
+
+        return self.async_show_form(
+            step_id="init",
+            data_schema=vol.Schema(
+                {
+                    vol.Optional(
+                        CONF_USE_LITERS_PER_100_MILES,
+                        default=self.config_entry.options.get(
+                            CONF_USE_LITERS_PER_100_MILES, False
+                        ),
+                    ): bool,
+                }
+            ),
         )
