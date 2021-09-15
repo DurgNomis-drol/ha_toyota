@@ -11,12 +11,28 @@ from mytoyota.client import MyT
 from mytoyota.exceptions import ToyotaApiError, ToyotaInternalError, ToyotaLoginError
 
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import CONF_EMAIL, CONF_PASSWORD, CONF_REGION
+from homeassistant.const import (
+    CONF_EMAIL,
+    CONF_PASSWORD,
+    CONF_REGION,
+    CONF_UNIT_SYSTEM_IMPERIAL,
+    CONF_UNIT_SYSTEM_METRIC,
+    LENGTH_MILES,
+)
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
-from .const import DATA_CLIENT, DATA_COORDINATOR, DOMAIN, PLATFORMS, STARTUP_MESSAGE
+from .const import (
+    CONF_UNIT_SYSTEM_IMPERIAL_LITERS,
+    CONF_USE_LITERS_PER_100_MILES,
+    DATA_CLIENT,
+    DATA_COORDINATOR,
+    DEFAULT_LOCALE,
+    DOMAIN,
+    PLATFORMS,
+    STARTUP_MESSAGE,
+)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -30,7 +46,9 @@ async def with_timeout(task, timeout_seconds=15):
         return await task
 
 
-async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
+async def async_setup_entry(  # pylint: disable=too-many-statements
+    hass: HomeAssistant, entry: ConfigEntry
+):
     """Set up Toyota Connected Services from a config entry."""
     if hass.data.get(DOMAIN) is None:
         hass.data.setdefault(DOMAIN, {})
@@ -39,11 +57,12 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     email = entry.data[CONF_EMAIL]
     password = entry.data[CONF_PASSWORD]
     region = entry.data[CONF_REGION]
+    use_liters = entry.options.get(CONF_USE_LITERS_PER_100_MILES, False)
 
     client = MyT(
         username=email,
         password=password,
-        locale="en-gb",
+        locale=DEFAULT_LOCALE,
         region=region.lower(),
     )
 
@@ -59,15 +78,30 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
             cars = await with_timeout(client.get_vehicles())
 
             for car in cars:
-                # Use parallel request to get car data and statistics.
-
                 vehicle = await client.get_vehicle_status(car)
 
+                if vehicle.odometer.unit == LENGTH_MILES:
+                    _LOGGER.debug("The car is reporting data in imperial")
+                    if use_liters:
+                        _LOGGER.debug("Get statistics in imperial and L/100 miles")
+                        unit = CONF_UNIT_SYSTEM_IMPERIAL_LITERS
+                    else:
+                        _LOGGER.debug("Get statistics in imperial and MPG")
+                        unit = CONF_UNIT_SYSTEM_IMPERIAL
+                else:
+                    _LOGGER.debug("The car is reporting data in metric")
+                    unit = CONF_UNIT_SYSTEM_METRIC
+
+                # Use parallel request to get car statistics.
                 data = await asyncio.gather(
                     *[
-                        client.get_driving_statistics(vehicle.vin, interval="isoweek"),
-                        client.get_driving_statistics(vehicle.vin),
-                        client.get_driving_statistics(vehicle.vin, interval="year"),
+                        client.get_driving_statistics(
+                            vehicle.vin, interval="isoweek", unit=unit
+                        ),
+                        client.get_driving_statistics(vehicle.vin, unit=unit),
+                        client.get_driving_statistics(
+                            vehicle.vin, interval="year", unit=unit
+                        ),
                     ]
                 )
 
