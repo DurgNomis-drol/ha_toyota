@@ -1,7 +1,6 @@
 """Config flow for Toyota Connected Services integration."""
 import logging
 
-from homeassistant.core import callback
 from mytoyota.client import MyT
 from mytoyota.exceptions import (
     ToyotaInvalidUsername,
@@ -13,9 +12,13 @@ import voluptuous as vol
 
 from homeassistant import config_entries
 from homeassistant.const import CONF_EMAIL, CONF_PASSWORD, CONF_REGION
+from homeassistant.core import callback
 
 # https://github.com/PyCQA/pylint/issues/3202
-from .const import DOMAIN, DATA_COORDINATOR, CONF_USE_LITERS_PER_100_MILES  # pylint: disable=unused-import
+from .const import (  # pylint: disable=unused-import
+    CONF_USE_LITERS_PER_100_MILES,
+    DOMAIN,
+)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -96,9 +99,7 @@ class ToyotaOptionsFlowHandler(config_entries.OptionsFlow):
         # Cast from MappingProxy to dict to allow update.
         self.options = dict(config_entry.options)
 
-    async def async_step_init(
-        self, user_input=None
-    ):
+    async def async_step_init(self, user_input=None):
         """Manage the options."""
         if user_input is not None:
             self.options.update(user_input)

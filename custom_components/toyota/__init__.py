@@ -11,13 +11,26 @@ from mytoyota.client import MyT
 from mytoyota.exceptions import ToyotaApiError, ToyotaInternalError, ToyotaLoginError
 
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import CONF_EMAIL, CONF_PASSWORD, CONF_REGION, LENGTH_MILES, CONF_UNIT_SYSTEM_METRIC, \
-    CONF_UNIT_SYSTEM_IMPERIAL
+from homeassistant.const import (
+    CONF_EMAIL,
+    CONF_PASSWORD,
+    CONF_REGION,
+    CONF_UNIT_SYSTEM_IMPERIAL,
+    CONF_UNIT_SYSTEM_METRIC,
+    LENGTH_MILES,
+)
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
-from .const import DATA_CLIENT, DATA_COORDINATOR, DOMAIN, PLATFORMS, STARTUP_MESSAGE, CONF_USE_LITERS_PER_100_MILES
+from .const import (
+    CONF_USE_LITERS_PER_100_MILES,
+    DATA_CLIENT,
+    DATA_COORDINATOR,
+    DOMAIN,
+    PLATFORMS,
+    STARTUP_MESSAGE,
+)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -74,9 +87,13 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
                 # Use parallel request to get car statistics.
                 data = await asyncio.gather(
                     *[
-                        client.get_driving_statistics(vehicle.vin, interval="isoweek", unit=unit),
+                        client.get_driving_statistics(
+                            vehicle.vin, interval="isoweek", unit=unit
+                        ),
                         client.get_driving_statistics(vehicle.vin, unit=unit),
-                        client.get_driving_statistics(vehicle.vin, interval="year", unit=unit),
+                        client.get_driving_statistics(
+                            vehicle.vin, interval="year", unit=unit
+                        ),
                     ]
                 )
 
