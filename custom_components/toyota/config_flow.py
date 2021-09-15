@@ -17,7 +17,7 @@ from homeassistant.core import callback
 # https://github.com/PyCQA/pylint/issues/3202
 from .const import (  # pylint: disable=unused-import
     CONF_USE_LITERS_PER_100_MILES,
-    DOMAIN,
+    DOMAIN, DEFAULT_LOCALE,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -54,7 +54,7 @@ class ToyotaConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 client = MyT(
                     username=user_input[CONF_EMAIL],
                     password=user_input[CONF_PASSWORD],
-                    locale="en-gb",
+                    locale=DEFAULT_LOCALE,
                     region=region.lower(),
                 )
 

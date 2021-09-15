@@ -29,7 +29,7 @@ from .const import (
     DATA_COORDINATOR,
     DOMAIN,
     PLATFORMS,
-    STARTUP_MESSAGE,
+    STARTUP_MESSAGE, CONF_UNIT_SYSTEM_IMPERIAL_MPG, DEFAULT_LOCALE,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -58,7 +58,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     client = MyT(
         username=email,
         password=password,
-        locale="en-gb",
+        locale=DEFAULT_LOCALE,
         region=region.lower(),
     )
 
@@ -82,7 +82,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
                     if use_liters:
                         unit = CONF_UNIT_SYSTEM_IMPERIAL
                     else:
-                        unit = "imperial_mpg"
+                        unit = CONF_UNIT_SYSTEM_IMPERIAL_MPG
 
                 # Use parallel request to get car statistics.
                 data = await asyncio.gather(
