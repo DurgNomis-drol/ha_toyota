@@ -82,7 +82,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
                     if use_liters:
                         unit = CONF_UNIT_SYSTEM_IMPERIAL
                     else:
-                        unit = CONF_UNIT_SYSTEM_IMPERIAL + "_mpg"
+                        unit = "imperial_mpg"
 
                 # Use parallel request to get car statistics.
                 data = await asyncio.gather(
