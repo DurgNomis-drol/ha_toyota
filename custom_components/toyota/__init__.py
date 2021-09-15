@@ -76,13 +76,17 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
             for car in cars:
                 vehicle = await client.get_vehicle_status(car)
 
-                unit = CONF_UNIT_SYSTEM_METRIC
-
                 if vehicle.odometer.unit == LENGTH_MILES:
+                    _LOGGER.debug("The car is reporting data in imperial")
                     if use_liters:
+                        _LOGGER.debug("Get statistics in imperial and L/100 miles")
                         unit = CONF_UNIT_SYSTEM_IMPERIAL
                     else:
+                        _LOGGER.debug("Get statistics in imperial and MPG")
                         unit = CONF_UNIT_SYSTEM_IMPERIAL_MPG
+                else:
+                    _LOGGER.debug("The car is reporting data in metric")
+                    unit = CONF_UNIT_SYSTEM_METRIC
 
                 # Use parallel request to get car statistics.
                 data = await asyncio.gather(
