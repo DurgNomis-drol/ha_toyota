@@ -24,13 +24,14 @@ from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
 from .const import (
+    CONF_UNIT_SYSTEM_IMPERIAL_LITERS,
     CONF_USE_LITERS_PER_100_MILES,
     DATA_CLIENT,
     DATA_COORDINATOR,
     DEFAULT_LOCALE,
     DOMAIN,
     PLATFORMS,
-    STARTUP_MESSAGE, CONF_UNIT_SYSTEM_IMPERIAL_LITERS,
+    STARTUP_MESSAGE,
 )
 
 _LOGGER = logging.getLogger(__name__)
