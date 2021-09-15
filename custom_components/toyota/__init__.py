@@ -24,12 +24,14 @@ from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
 from .const import (
+    CONF_UNIT_SYSTEM_IMPERIAL_MPG,
     CONF_USE_LITERS_PER_100_MILES,
     DATA_CLIENT,
     DATA_COORDINATOR,
+    DEFAULT_LOCALE,
     DOMAIN,
     PLATFORMS,
-    STARTUP_MESSAGE, CONF_UNIT_SYSTEM_IMPERIAL_MPG, DEFAULT_LOCALE,
+    STARTUP_MESSAGE,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -44,7 +46,9 @@ async def with_timeout(task, timeout_seconds=15):
         return await task
 
 
-async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
+async def async_setup_entry(  # pylint: disable=too-many-statements
+    hass: HomeAssistant, entry: ConfigEntry
+):
     """Set up Toyota Connected Services from a config entry."""
     if hass.data.get(DOMAIN) is None:
         hass.data.setdefault(DOMAIN, {})

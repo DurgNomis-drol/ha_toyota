@@ -1,11 +1,7 @@
 """Constants for the Toyota Connected Services integration."""
 
 # PLATFORMS SUPPORTED
-PLATFORMS = [
-    "binary_sensor",
-    "sensor",
-    "device_tracker"
-]
+PLATFORMS = ["binary_sensor", "sensor", "device_tracker"]
 
 # INTEGRATION ATTRIBUTES
 DOMAIN = "toyota"

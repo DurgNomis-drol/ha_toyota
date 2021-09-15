@@ -17,7 +17,8 @@ from homeassistant.core import callback
 # https://github.com/PyCQA/pylint/issues/3202
 from .const import (  # pylint: disable=unused-import
     CONF_USE_LITERS_PER_100_MILES,
-    DOMAIN, DEFAULT_LOCALE,
+    DEFAULT_LOCALE,
+    DOMAIN,
 )
 
 _LOGGER = logging.getLogger(__name__)
