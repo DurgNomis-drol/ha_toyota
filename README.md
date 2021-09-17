@@ -25,7 +25,7 @@ it working, but there are no promises.
 
 Only Europe is supported right now. If you want to help add other regions, please open an issue over at [`mytoyota`](https://github.com/DurgNomis-drol/mytoyota).
 
-**Disclaimer: Features available dependents on your car model and year.**
+**Disclaimer: Features available depends on your car model and year.**
 
 ### Overview
 
@@ -33,31 +33,38 @@ Only Europe is supported right now. If you want to help add other regions, pleas
 - Fuel and odometer information
 - Current week, month and year statistics.
 - Window and lights sensors
+- Door and door lock sensors, including hood and trunk sensor.
+- Is key in car and over all status sensor.
 
 ### Binary sensor(s)
 
-| <div style="width:250px">Name</div> | Description                                                                                 |
-| ----------------------------------- | ------------------------------------------------------------------------------------------- |
-| `binary_sensor.corolla_*_window`    | Window sensor, one is created for driverseat. passengerseat, leftrearseat and rightrearseat |
-| `binary_sensor.corolla_*_lights`    | Light sensor, one is created for front, back and hazard lights                              |
+| <div style="width:250px">Name</div>     | Description                                                                                  |
+| --------------------------------------- | -------------------------------------------------------------------------------------------- |
+| `binary_sensor.corolla_hood`            | If the hood is open of not.                                                                  |
+| `binary_sensor.corolla_*_door`          | Door sensor, one is created for driverseat. passengerseat, leftrearseat and rightrearseat.   |
+| `binary_sensor.corolla_*_lock`          | Lock sensor, one is created for door, hood and trunk.                                        |
+| `binary_sensor.corolla_*_lights`        | Light sensor, one is created for front, back and hazard lights.                              |
+| `binary_sensor.corolla_over_all_status` | Over all status of the vehicle, if warning is true for a sensor, this will show it.          |
+| `binary_sensor.corolla_key_in_car`      | If key is in the car.                                                                        |
+| `binary_sensor.corolla_*_window`        | Window sensor, one is created for driverseat. passengerseat, leftrearseat and rightrearseat. |
 
 ### Device tracker(s)
 
-| <div style="width:250px">Name</div> | Description                       |
-| ----------------------------------- | --------------------------------- |
-| `device_tracker.corolla`            | Shows you last parked information |
+| <div style="width:250px">Name</div> | Description                        |
+| ----------------------------------- | ---------------------------------- |
+| `device_tracker.corolla`            | Shows you last parked information. |
 
 ### Sensor(s)
 
-| <div style="width:250px">Name</div>  | Description                  |
-| ------------------------------------ | ---------------------------- |
-| `sensor.corolla`                     | Static data about your car   |
-| `sensor.corolla_odometer`            | Odometer information         |
-| `sensor.corolla_fuel_tank`           | Fuel tank information        |
-| `sensor.aygo_starter_battery`        | Starter battery health       |
-| `sensor.corolla_current_week_stats`  | Statistics for current week  |
-| `sensor.corolla_current_month_stats` | Statistics for current month |
-| `sensor.corolla_current_year_stats`  | Statistics for current year  |
+| <div style="width:250px">Name</div>  | Description                   |
+| ------------------------------------ | ----------------------------- |
+| `sensor.corolla`                     | Static data about your car.   |
+| `sensor.corolla_odometer`            | Odometer information.         |
+| `sensor.corolla_fuel_tank`           | Fuel tank information.        |
+| `sensor.aygo_starter_battery`        | Starter battery health.       |
+| `sensor.corolla_current_week_stats`  | Statistics for current week.  |
+| `sensor.corolla_current_month_stats` | Statistics for current month. |
+| `sensor.corolla_current_year_stats`  | Statistics for current year.  |
 
 ### Notes about statistics sensors
 
