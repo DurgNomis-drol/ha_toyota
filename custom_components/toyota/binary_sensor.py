@@ -14,6 +14,7 @@ from .const import (
     ICON_CAR_DOOR,
     ICON_CAR_DOOR_LOCK,
     ICON_CAR_LIGHTS,
+    ICON_KEY,
     LAST_UPDATED,
     WARNING,
 )
@@ -98,6 +99,12 @@ async def async_setup_entry(hass, config_entry, async_add_devices):
                     ]
                 )
 
+            if coordinator.data[index].status.key:
+                # Add key in car sensor if available
+                binary_sensors.extend(
+                    [ToyotaKeyBinarySensor(coordinator, index, "key_in_car")]
+                )
+
     async_add_devices(binary_sensors, True)
 
 
@@ -163,6 +170,24 @@ class ToyotaDoorLockBinarySensor(ToyotaBaseEntity, BinarySensorEntity):
         )
 
         return not door.locked
+
+
+class ToyotaKeyBinarySensor(ToyotaBaseEntity, BinarySensorEntity):
+    """Class for key in car binary sensor"""
+
+    _attr_icon = ICON_KEY
+
+    @property
+    def extra_state_attributes(self):
+        """Return the state attributes."""
+        return {
+            WARNING: self.coordinator.data[self.index].status.key.warning,
+        }
+
+    @property
+    def is_on(self):
+        """Return true if key is in car."""
+        return self.coordinator.data[self.index].status.key.in_car
 
 
 class ToyotaLightBinarySensor(ToyotaBaseEntity, BinarySensorEntity):
