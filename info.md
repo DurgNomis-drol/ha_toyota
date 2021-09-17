@@ -14,6 +14,9 @@ This custom integration aims to provide plug-and-play integration for your Toyot
 - Read your odometer to see how far your car haven driven totally.
 - See your numberplate and other details about your car.
 - Weekly, monthly and yearly statistics.
+- Window and lights sensors.
+- Door and door lock sensors, including hood and trunk sensor.
+- Is key in car and over all status sensor.
 - And more...
 
 ### Installations
