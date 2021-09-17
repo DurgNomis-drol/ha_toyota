@@ -155,7 +155,7 @@ class ToyotaCurrentWeekSensor(StatisticsBaseEntity):
         if DATA in data:
             statistics = data[DATA]
 
-        attributes = self.format_statistics_attributes(statistics)
+        attributes = self.get_statistics_attributes(statistics)
         attributes.update(
             {
                 "From": data[BUCKET][PERIODE_START] if BUCKET in data else from_dt,
@@ -189,7 +189,7 @@ class ToyotaCurrentMonthSensor(StatisticsBaseEntity):
         if DATA in data:
             statistics = data[DATA]
 
-        attributes = self.format_statistics_attributes(statistics)
+        attributes = self.get_statistics_attributes(statistics)
         attributes.update({"Month": from_month})
 
         return attributes
@@ -219,7 +219,7 @@ class ToyotaCurrentYearSensor(StatisticsBaseEntity):
         if DATA in data:
             statistics = data[DATA]
 
-        attributes = self.format_statistics_attributes(statistics)
+        attributes = self.get_statistics_attributes(statistics)
         attributes.update(
             {"Year": data[BUCKET]["year"] if BUCKET in data else from_year}
         )
