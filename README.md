@@ -66,10 +66,39 @@ Only Europe is supported right now. If you want to help add other regions, pleas
 | `sensor.corolla_current_month_stats` | Statistics for current month. |
 | `sensor.corolla_current_year_stats`  | Statistics for current year.  |
 
-### Notes about statistics sensors
+### Statistics sensors
+
+#### Important
 
 When starting a new week, month or year, it will not show any information before your first trip. Even though a new month starts on the 1, you will need to wait for the 2 of the month before it is able to show you current month stats. This due to a limitation in Toyota API. This limitation also applies to weeks.
 Due to this, this integration will list sensors as unavailable when no data is available.
+
+#### Attributes available
+
+**Disclaimer: Attributes available depends on your car model and year.**
+
+All values will show zero if no data is available for the periode.
+
+| Attribute | Description |
+| --------- | ----------- |
+| `Highway_distance` | Distance driven on Highway/Motorway. |
+| `Highway_percentage` | Percentage driven on Highway/Motorway. |
+| `Number_of_trips` | Number of trips performed. A trip is started when you start the engine. |
+| `Number_of_night_trips` | Number of trips performed at night. |
+| `Total_driving_time` | Total time driven. |
+| `Average_speed` | Average speed. |
+| `Max_speed` | Max speed achieved. |
+| `Hard_acceleration_count` | Hard accelerations counter. Can be very sensitive. |
+| `Hard_braking_count` | Hard braking counter. Can be very sensitive. |
+| `Average_fuel_consumed` | Average fuel consumed. If car is in km then this will show L/100km. If in mi then it will show Mpg. |
+| `Coaching_advice_most_occurrence` | Coaching advice most occurrence. |
+| `Average_driver_score` | Average driver score. |
+| `Average_driver_score_accelerations` | Average driver score for accelerations. |
+| `Average_driver_score_braking` | Average driver score for braking. |
+| `EV_distance` | Distance which have been driven on electric. |
+| `EV_distance_percentage` | Percentage of the distance driven on electric. |
+| `EV_driving_time` | Driving time on electric. |
+| `EV_duration_percentage` | Percentage of the driving time on electric. |
 
 ## Getting started
 
