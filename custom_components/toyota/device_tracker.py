@@ -17,7 +17,9 @@ async def async_setup_entry(hass, config_entry, async_add_devices):
     coordinator = hass.data[DOMAIN][config_entry.entry_id][DATA_COORDINATOR]
 
     for index, _ in enumerate(coordinator.data):
-        if coordinator.data[index].is_connected:
+
+        vehicle = coordinator.data[index]
+        if vehicle.is_connected:
             tracker.append(ToyotaParkingTracker(coordinator, index, "parking location"))
 
     async_add_devices(tracker, True)
@@ -29,13 +31,14 @@ class ToyotaParkingTracker(ToyotaBaseEntity, TrackerEntity):
     @property
     def latitude(self):
         """Return latitude value of the device."""
-
-        return self.coordinator.data[self.index].parking.latitude
+        parking = self.coordinator.data[self.index].parking
+        return parking.latitude if parking else None
 
     @property
     def longitude(self):
         """Return longitude value of the device."""
-        return self.coordinator.data[self.index].parking.longitude
+        parking = self.coordinator.data[self.index].parking
+        return parking.longitude if parking else None
 
     @property
     def source_type(self):

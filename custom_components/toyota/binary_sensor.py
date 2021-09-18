@@ -29,9 +29,11 @@ async def async_setup_entry(hass, config_entry, async_add_devices):
 
     for index, _ in enumerate(coordinator.data):
 
-        if coordinator.data[index].is_connected:
+        vehicle = coordinator.data[index]
 
-            if coordinator.data[index].status.overallstatus:
+        if vehicle.is_connected:
+
+            if vehicle.status.overallstatus:
                 binary_sensors.extend(
                     [
                         ToyotaOverAllStatusBinarySensor(
@@ -40,7 +42,7 @@ async def async_setup_entry(hass, config_entry, async_add_devices):
                     ]
                 )
 
-            if coordinator.data[index].status.windows:
+            if vehicle.status.windows:
                 # Add window sensors if available
                 binary_sensors.extend(
                     [
@@ -59,7 +61,7 @@ async def async_setup_entry(hass, config_entry, async_add_devices):
                     ]
                 )
 
-            if coordinator.data[index].status.lights:
+            if vehicle.status.lights:
                 # Add light sensors if available
                 binary_sensors.extend(
                     [
@@ -69,11 +71,18 @@ async def async_setup_entry(hass, config_entry, async_add_devices):
                     ]
                 )
 
-            if coordinator.data[index].status.doors:
+            if vehicle.status.hood:
+                # Add hood sensor if available
+                binary_sensors.extend(
+                    [
+                        ToyotaHoodBinarySensor(coordinator, index, "hood"),
+                    ]
+                )
+
+            if vehicle.status.doors:
                 # Add door sensors if available
                 binary_sensors.extend(
                     [
-                        ToyotaDoorBinarySensor(coordinator, index, "hood"),
                         ToyotaDoorBinarySensor(coordinator, index, "driverseat door"),
                         ToyotaDoorLockBinarySensor(
                             coordinator, index, "driverseat lock"
@@ -94,18 +103,38 @@ async def async_setup_entry(hass, config_entry, async_add_devices):
                         ToyotaDoorLockBinarySensor(
                             coordinator, index, "rightrearseat lock"
                         ),
-                        ToyotaDoorBinarySensor(coordinator, index, "tailgate door"),
-                        ToyotaDoorLockBinarySensor(coordinator, index, "tailgate lock"),
+                        ToyotaDoorBinarySensor(coordinator, index, "trunk door"),
+                        ToyotaDoorLockBinarySensor(coordinator, index, "trunk lock"),
                     ]
                 )
 
-            if coordinator.data[index].status.key:
+            if vehicle.status.key:
                 # Add key in car sensor if available
                 binary_sensors.extend(
                     [ToyotaKeyBinarySensor(coordinator, index, "key_in_car")]
                 )
 
     async_add_devices(binary_sensors, True)
+
+
+class ToyotaHoodBinarySensor(ToyotaBaseEntity, BinarySensorEntity):
+    """Class for the hood sensor"""
+
+    _attr_device_class = DEVICE_CLASS_DOOR
+    _attr_icon = ICON_CAR_DOOR
+
+    @property
+    def extra_state_attributes(self):
+        """Return the state attributes."""
+        return {
+            WARNING: self.coordinator.data[self.index].status.hood.warning,
+            LAST_UPDATED: self.coordinator.data[self.index].status.last_updated,
+        }
+
+    @property
+    def is_on(self):
+        """Return true if the hood is open."""
+        return not self.coordinator.data[self.index].status.hood.closed
 
 
 class ToyotaDoorBinarySensor(ToyotaBaseEntity, BinarySensorEntity):
@@ -130,7 +159,7 @@ class ToyotaDoorBinarySensor(ToyotaBaseEntity, BinarySensorEntity):
 
     @property
     def is_on(self):
-        """Return true if the door is down open."""
+        """Return true if the door is open."""
 
         door = getattr(
             self.coordinator.data[self.index].status.doors,
@@ -162,7 +191,7 @@ class ToyotaDoorLockBinarySensor(ToyotaBaseEntity, BinarySensorEntity):
 
     @property
     def is_on(self):
-        """Return true if the door is down open."""
+        """Return true if the door is unlocked."""
 
         door = getattr(
             self.coordinator.data[self.index].status.doors,
@@ -263,7 +292,7 @@ class ToyotaWindowBinarySensor(ToyotaBaseEntity, BinarySensorEntity):
 
     @property
     def is_on(self):
-        """Return true if the window is down open."""
+        """Return true if the window is down."""
 
         window = getattr(
             self.coordinator.data[self.index].status.windows,

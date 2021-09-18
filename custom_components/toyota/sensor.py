@@ -28,31 +28,38 @@ async def async_setup_entry(hass, config_entry, async_add_devices):
     coordinator = hass.data[DOMAIN][config_entry.entry_id][DATA_COORDINATOR]
 
     for index, _ in enumerate(coordinator.data):
+
+        vehicle = coordinator.data[index]
+
         sensors.append(ToyotaCarSensor(coordinator, index, "numberplate"))
 
         # If Connected Services is setup for the car, setup additional sensors
-        if coordinator.data[index].is_connected:
-            sensors.append(ToyotaOdometerSensor(coordinator, index, "odometer"))
-            if BATTERY_HEALTH in coordinator.data[index].details:
+        if vehicle.is_connected:
+
+            if BATTERY_HEALTH in vehicle.details:
                 sensors.append(
                     ToyotaStarterBatterySensor(
                         coordinator, index, "starter battery health"
                     )
                 )
-            if coordinator.data[index].odometer.fuel:
+            if vehicle.odometer.fuel:
                 sensors.append(
                     ToyotaFuelRemainingSensor(coordinator, index, "fuel tank")
                 )
 
-            # Statistics sensors
-            sensors.append(
-                ToyotaCurrentWeekSensor(coordinator, index, "current week statistics")
-            )
-            sensors.append(
-                ToyotaCurrentMonthSensor(coordinator, index, "current month statistics")
-            )
-            sensors.append(
-                ToyotaCurrentYearSensor(coordinator, index, "current year statistics")
+            sensors.extend(
+                [
+                    ToyotaOdometerSensor(coordinator, index, "odometer"),
+                    ToyotaCurrentWeekSensor(
+                        coordinator, index, "current week statistics"
+                    ),
+                    ToyotaCurrentMonthSensor(
+                        coordinator, index, "current month statistics"
+                    ),
+                    ToyotaCurrentYearSensor(
+                        coordinator, index, "current year statistics"
+                    ),
+                ]
             )
 
     async_add_devices(sensors, True)
