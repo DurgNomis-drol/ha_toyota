@@ -38,15 +38,15 @@ Only Europe is supported right now. If you want to help add other regions, pleas
 
 ### Binary sensor(s)
 
-| <div style="width:250px">Name</div>     | Description                                                                                  |
-| --------------------------------------- | -------------------------------------------------------------------------------------------- |
-| `binary_sensor.corolla_hood`            | If the hood is open of not.                                                                  |
-| `binary_sensor.corolla_*_door`          | Door sensor, one is created for driverseat. passengerseat, leftrearseat and rightrearseat.   |
-| `binary_sensor.corolla_*_lock`          | Lock sensor, one is created for door, hood and trunk.                                        |
-| `binary_sensor.corolla_*_lights`        | Light sensor, one is created for front, back and hazard lights.                              |
-| `binary_sensor.corolla_over_all_status` | Over all status of the vehicle, if warning is true for a sensor, this will show it.          |
-| `binary_sensor.corolla_key_in_car`      | If key is in the car.                                                                        |
-| `binary_sensor.corolla_*_window`        | Window sensor, one is created for driverseat. passengerseat, leftrearseat and rightrearseat. |
+| <div style="width:250px">Name</div>     | Description                                                                         |
+| --------------------------------------- | ----------------------------------------------------------------------------------- |
+| `binary_sensor.corolla_hood`            | If the hood is open of not.                                                         |
+| `binary_sensor.corolla_*_door`          | Door sensor, one is created for each door and trunk.                                |
+| `binary_sensor.corolla_*_lock`          | Lock sensor, one is created for each door and trunk.                                |
+| `binary_sensor.corolla_*_lights`        | Light sensor, one is created for front, back and hazard lights.                     |
+| `binary_sensor.corolla_over_all_status` | Over all status of the vehicle, if warning is true for a sensor, this will show it. |
+| `binary_sensor.corolla_key_in_car`      | If key is in the car.                                                               |
+| `binary_sensor.corolla_*_window`        | Window sensor, one is created for window.                                           |
 
 ### Device tracker(s)
 
@@ -108,7 +108,7 @@ git clone https://github.com/DurgNomis-drol/ha_toyota.git
 ```
 
 2. Create the symlink to `toyota` in the configuration directory.
-   If you have non standard directory for configuration, use it instead.
+   If you have non-standard directory for configuration, use it instead.
 
 ```shell
 ln -s ha_toyota/custom_components/toyota ~/.homeassistant/custom_components/toyota
@@ -128,7 +128,7 @@ ln -s ha_toyota/custom_components/toyota ~/.homeassistant/custom_components/toyo
 - From the configuration menu select: [Integrations](https://my.home-assistant.io/redirect/integrations).
 - In the bottom right, click on the [Add Integration](https://my.home-assistant.io/redirect/config_flow_start?domain=toyota) button.
 - From the list, search and select “Toyota Connected Services”.
-- Follow the instruction on screen to complete the set up.
+- Follow the instruction on screen to complete the set-up.
 - After completing, the Toyota Connected Services integration will be immediately available for use.
 
 ## Contribution
