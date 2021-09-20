@@ -147,15 +147,11 @@ class ToyotaCurrentWeekSensor(StatisticsBaseEntity):
     @property
     def extra_state_attributes(self):
         """Return the state attributes."""
-        statistics = None
         data = self.coordinator.data[self.index].statistics.weekly[0]
         from_dt = arrow.now().floor("week").format("YYYY-MM-DD")
         to_dt = arrow.now().ceil("week").format("YYYY-MM-DD")
 
-        if DATA in data:
-            statistics = data[DATA]
-
-        attributes = self.format_statistics_attributes(statistics)
+        attributes = self.get_statistics_attributes(data.get(DATA, {}))
         attributes.update(
             {
                 "From": data[BUCKET][PERIODE_START] if BUCKET in data else from_dt,
@@ -182,14 +178,10 @@ class ToyotaCurrentMonthSensor(StatisticsBaseEntity):
     @property
     def extra_state_attributes(self):
         """Return the state attributes."""
-        statistics = None
         data = self.coordinator.data[self.index].statistics.monthly[0]
         from_month = arrow.now().floor("month").format("MMMM")
 
-        if DATA in data:
-            statistics = data[DATA]
-
-        attributes = self.format_statistics_attributes(statistics)
+        attributes = self.get_statistics_attributes(data.get(DATA, {}))
         attributes.update({"Month": from_month})
 
         return attributes
@@ -212,14 +204,10 @@ class ToyotaCurrentYearSensor(StatisticsBaseEntity):
     @property
     def extra_state_attributes(self):
         """Return the state attributes."""
-        statistics = None
         data = self.coordinator.data[self.index].statistics.yearly[0]
         from_year = arrow.now().floor("year").format("YYYY")
 
-        if DATA in data:
-            statistics = data[DATA]
-
-        attributes = self.format_statistics_attributes(statistics)
+        attributes = self.get_statistics_attributes(data.get(DATA, {}))
         attributes.update(
             {"Year": data[BUCKET]["year"] if BUCKET in data else from_year}
         )
