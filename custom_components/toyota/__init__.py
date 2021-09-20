@@ -20,7 +20,7 @@ from homeassistant.const import (
     LENGTH_MILES,
 )
 from homeassistant.core import HomeAssistant
-from homeassistant.exceptions import ConfigEntryNotReady
+from homeassistant.exceptions import ConfigEntryAuthFailed, ConfigEntryNotReady
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
 from .const import (
@@ -66,7 +66,14 @@ async def async_setup_entry(  # pylint: disable=too-many-statements
         region=region.lower(),
     )
 
-    await client.login()
+    try:
+        await client.login()
+    except ToyotaLoginError as ex:
+        raise ConfigEntryAuthFailed(ex) from ex
+    except (httpx.ConnectTimeout, httpcore.ConnectTimeout) as ex:
+        raise ConfigEntryNotReady(
+            "Unable to connect to Toyota Connected Services"
+        ) from ex
 
     async def async_update_data():
         """Fetch data from Toyota API."""
