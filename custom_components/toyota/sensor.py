@@ -42,7 +42,7 @@ async def async_setup_entry(hass, config_entry, async_add_devices):
                         coordinator, index, "starter battery health"
                     )
                 )
-            if vehicle.odometer.fuel:
+            if vehicle.energy.level:
                 sensors.append(
                     ToyotaFuelRemainingSensor(coordinator, index, "fuel tank")
                 )
@@ -123,7 +123,7 @@ class ToyotaStarterBatterySensor(ToyotaBaseEntity):
 
 
 class ToyotaFuelRemainingSensor(ToyotaBaseEntity):
-    """Class for the fuel remaining sensor."""
+    """Class for the fuel/energy remaining sensor."""
 
     _attr_icon = ICON_FUEL
     _attr_unit_of_measurement = PERCENTAGE
@@ -132,13 +132,13 @@ class ToyotaFuelRemainingSensor(ToyotaBaseEntity):
     def extra_state_attributes(self):
         """Return the state attributes."""
         return {
-            FUEL_TYPE: self.vehicle.details[FUEL_TYPE],
+            FUEL_TYPE: self.vehicle.energy.type,
         }
 
     @property
     def state(self):
         """Return the state of the sensor."""
-        return self.coordinator.data[self.index].odometer.fuel
+        return self.coordinator.data[self.index].energy.level
 
 
 class ToyotaCurrentWeekSensor(StatisticsBaseEntity):

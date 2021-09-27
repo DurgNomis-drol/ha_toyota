@@ -33,7 +33,7 @@ async def async_setup_entry(hass, config_entry, async_add_devices):
 
         if vehicle.is_connected:
 
-            if vehicle.status.overallstatus:
+            if vehicle.sensors.overallstatus:
                 binary_sensors.extend(
                     [
                         ToyotaOverAllStatusBinarySensor(
@@ -42,7 +42,7 @@ async def async_setup_entry(hass, config_entry, async_add_devices):
                     ]
                 )
 
-            if vehicle.status.windows:
+            if vehicle.sensors.windows:
                 # Add window sensors if available
                 binary_sensors.extend(
                     [
@@ -61,7 +61,7 @@ async def async_setup_entry(hass, config_entry, async_add_devices):
                     ]
                 )
 
-            if vehicle.status.lights:
+            if vehicle.sensors.lights:
                 # Add light sensors if available
                 binary_sensors.extend(
                     [
@@ -71,7 +71,7 @@ async def async_setup_entry(hass, config_entry, async_add_devices):
                     ]
                 )
 
-            if vehicle.status.hood:
+            if vehicle.sensors.hood:
                 # Add hood sensor if available
                 binary_sensors.extend(
                     [
@@ -79,7 +79,7 @@ async def async_setup_entry(hass, config_entry, async_add_devices):
                     ]
                 )
 
-            if vehicle.status.doors:
+            if vehicle.sensors.doors:
                 # Add door sensors if available
                 binary_sensors.extend(
                     [
@@ -108,7 +108,7 @@ async def async_setup_entry(hass, config_entry, async_add_devices):
                     ]
                 )
 
-            if vehicle.status.key:
+            if vehicle.sensors.key:
                 # Add key in car sensor if available
                 binary_sensors.extend(
                     [ToyotaKeyBinarySensor(coordinator, index, "key_in_car")]
@@ -127,14 +127,14 @@ class ToyotaHoodBinarySensor(ToyotaBaseEntity, BinarySensorEntity):
     def extra_state_attributes(self):
         """Return the state attributes."""
         return {
-            WARNING: self.coordinator.data[self.index].status.hood.warning,
-            LAST_UPDATED: self.coordinator.data[self.index].status.last_updated,
+            WARNING: self.coordinator.data[self.index].sensors.hood.warning,
+            LAST_UPDATED: self.coordinator.data[self.index].sensors.last_updated,
         }
 
     @property
     def is_on(self):
         """Return true if the hood is open."""
-        return not self.coordinator.data[self.index].status.hood.closed
+        return not self.coordinator.data[self.index].sensors.hood.closed
 
 
 class ToyotaDoorBinarySensor(ToyotaBaseEntity, BinarySensorEntity):
@@ -148,13 +148,13 @@ class ToyotaDoorBinarySensor(ToyotaBaseEntity, BinarySensorEntity):
         """Return the state attributes."""
 
         door = getattr(
-            self.coordinator.data[self.index].status.doors,
+            self.coordinator.data[self.index].sensors.doors,
             self.sensor_name.split(" ")[0],
         )
 
         return {
             WARNING: door.warning,
-            LAST_UPDATED: self.coordinator.data[self.index].status.last_updated,
+            LAST_UPDATED: self.coordinator.data[self.index].sensors.last_updated,
         }
 
     @property
@@ -162,7 +162,7 @@ class ToyotaDoorBinarySensor(ToyotaBaseEntity, BinarySensorEntity):
         """Return true if the door is open."""
 
         door = getattr(
-            self.coordinator.data[self.index].status.doors,
+            self.coordinator.data[self.index].sensors.doors,
             self.sensor_name.split(" ")[0],
         )
 
@@ -180,13 +180,13 @@ class ToyotaDoorLockBinarySensor(ToyotaBaseEntity, BinarySensorEntity):
         """Return the state attributes."""
 
         door = getattr(
-            self.coordinator.data[self.index].status.doors,
+            self.coordinator.data[self.index].sensors.doors,
             self.sensor_name.split(" ")[0],
         )
 
         return {
             WARNING: door.warning,
-            LAST_UPDATED: self.coordinator.data[self.index].status.last_updated,
+            LAST_UPDATED: self.coordinator.data[self.index].sensors.last_updated,
         }
 
     @property
@@ -194,7 +194,7 @@ class ToyotaDoorLockBinarySensor(ToyotaBaseEntity, BinarySensorEntity):
         """Return true if the door is unlocked."""
 
         door = getattr(
-            self.coordinator.data[self.index].status.doors,
+            self.coordinator.data[self.index].sensors.doors,
             self.sensor_name.split(" ")[0],
         )
 
@@ -210,13 +210,13 @@ class ToyotaKeyBinarySensor(ToyotaBaseEntity, BinarySensorEntity):
     def extra_state_attributes(self):
         """Return the state attributes."""
         return {
-            WARNING: self.coordinator.data[self.index].status.key.warning,
+            WARNING: self.coordinator.data[self.index].sensors.key.warning,
         }
 
     @property
     def is_on(self):
         """Return true if key is in car."""
-        return self.coordinator.data[self.index].status.key.in_car
+        return self.coordinator.data[self.index].sensors.key.in_car
 
 
 class ToyotaLightBinarySensor(ToyotaBaseEntity, BinarySensorEntity):
@@ -230,13 +230,13 @@ class ToyotaLightBinarySensor(ToyotaBaseEntity, BinarySensorEntity):
         """Return the state attributes."""
 
         light = getattr(
-            self.coordinator.data[self.index].status.lights,
+            self.coordinator.data[self.index].sensors.lights,
             self.sensor_name.split(" ")[0],
         )
 
         return {
             WARNING: light.warning,
-            LAST_UPDATED: self.coordinator.data[self.index].status.last_updated,
+            LAST_UPDATED: self.coordinator.data[self.index].sensors.last_updated,
         }
 
     @property
@@ -244,7 +244,7 @@ class ToyotaLightBinarySensor(ToyotaBaseEntity, BinarySensorEntity):
         """Return true if light is on."""
 
         light = getattr(
-            self.coordinator.data[self.index].status.lights,
+            self.coordinator.data[self.index].sensors.lights,
             self.sensor_name.split(" ")[0],
         )
 
@@ -261,14 +261,14 @@ class ToyotaOverAllStatusBinarySensor(ToyotaBaseEntity, BinarySensorEntity):
         """Return the state attributes."""
 
         return {
-            LAST_UPDATED: self.coordinator.data[self.index].status.last_updated,
+            LAST_UPDATED: self.coordinator.data[self.index].sensors.last_updated,
         }
 
     @property
     def is_on(self):
         """Return true if a overallstatus is not OK."""
 
-        return not self.coordinator.data[self.index].status.overallstatus == "OK"
+        return not self.coordinator.data[self.index].sensors.overallstatus == "OK"
 
 
 class ToyotaWindowBinarySensor(ToyotaBaseEntity, BinarySensorEntity):
@@ -281,13 +281,13 @@ class ToyotaWindowBinarySensor(ToyotaBaseEntity, BinarySensorEntity):
         """Return the state attributes."""
 
         window = getattr(
-            self.coordinator.data[self.index].status.windows,
+            self.coordinator.data[self.index].sensors.windows,
             self.sensor_name.split(" ")[0],
         )
 
         return {
             WARNING: window.warning,
-            LAST_UPDATED: self.coordinator.data[self.index].status.last_updated,
+            LAST_UPDATED: self.coordinator.data[self.index].sensors.last_updated,
         }
 
     @property
@@ -295,7 +295,7 @@ class ToyotaWindowBinarySensor(ToyotaBaseEntity, BinarySensorEntity):
         """Return true if the window is down."""
 
         window = getattr(
-            self.coordinator.data[self.index].status.windows,
+            self.coordinator.data[self.index].sensors.windows,
             self.sensor_name.split(" ")[0],
         )
 
