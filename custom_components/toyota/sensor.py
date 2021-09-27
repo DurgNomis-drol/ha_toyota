@@ -180,11 +180,6 @@ class ToyotaEVSensor(ToyotaBaseEntity):
     _attr_icon = ICON_EV
 
     @property
-    def unit_of_measurement(self):
-        """Return the unit of measurement."""
-        return self.vehicle.odometer.unit
-
-    @property
     def extra_state_attributes(self):
         """Return the state attributes."""
 
