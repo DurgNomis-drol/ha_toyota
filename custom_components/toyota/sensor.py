@@ -16,7 +16,7 @@ from .const import (
     ICON_ODOMETER,
     LICENSE_PLATE,
     PERIODE_START,
-    TOTAL_DISTANCE,
+    TOTAL_DISTANCE, ICON_RANGE, LAST_UPDATED, ICON_EV,
 )
 from .entity import StatisticsBaseEntity, ToyotaBaseEntity
 
@@ -45,6 +45,16 @@ async def async_setup_entry(hass, config_entry, async_add_devices):
             if vehicle.energy.level:
                 sensors.append(
                     ToyotaFuelRemainingSensor(coordinator, index, "fuel tank")
+                )
+
+            if vehicle.energy.range:
+                sensors.append(
+                    ToyotaRangeSensor(coordinator, index, "range")
+                )
+
+            if vehicle.energy.chargeinfo:
+                sensors.append(
+                    ToyotaEVSensor(coordinator, index, "EV battery")
                 )
 
             sensors.extend(
@@ -139,6 +149,59 @@ class ToyotaFuelRemainingSensor(ToyotaBaseEntity):
     def state(self):
         """Return the state of the sensor."""
         return self.coordinator.data[self.index].energy.level
+
+
+class ToyotaRangeSensor(ToyotaBaseEntity):
+    """Class for range sensor."""
+    _attr_icon = ICON_RANGE
+
+    @property
+    def unit_of_measurement(self):
+        """Return the unit of measurement."""
+        return self.vehicle.odometer.unit
+
+    @property
+    def extra_state_attributes(self):
+        """Return the state attributes."""
+        return {
+            "Range_with_aircon_on": self.coordinator.data[self.index].energy.range_with_aircon,
+            LAST_UPDATED: self.coordinator.data[self.index].energy.last_updated,
+        }
+
+    @property
+    def state(self):
+        """Return remaining range."""
+
+        return self.coordinator.data[self.index].energy.range
+
+
+class ToyotaEVSensor(ToyotaBaseEntity):
+    """Class for EV sensor."""
+    _attr_icon = ICON_EV
+
+    @property
+    def unit_of_measurement(self):
+        """Return the unit of measurement."""
+        return self.vehicle.odometer.unit
+
+    @property
+    def extra_state_attributes(self):
+        """Return the state attributes."""
+
+        attribute = {
+            "Start_time": self.coordinator.data[self.index].energy.chargeinfo.get("ChargeStartTime", None),
+            "End_time": self.coordinator.data[self.index].energy.chargeinfo.get("ChargeEndTime", None),
+            "Remaining_time": self.coordinator.data[self.index].energy.chargeinfo.get("RemainingChargeTime", None),
+            "Remaining_amount": self.coordinator.data[self.index].energy.chargeinfo.get("ChargeRemainingAmount", None),
+        }
+
+        return attribute
+
+    @property
+    def state(self):
+        """Return battery information for EV's."""
+
+        return self.coordinator.data[self.index].energy.chargeinfo.get("status", None)
 
 
 class ToyotaCurrentWeekSensor(StatisticsBaseEntity):
