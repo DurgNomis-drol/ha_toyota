@@ -12,11 +12,14 @@ from .const import (
     FUEL_TYPE,
     ICON_BATTERY,
     ICON_CAR,
+    ICON_EV,
     ICON_FUEL,
     ICON_ODOMETER,
+    ICON_RANGE,
+    LAST_UPDATED,
     LICENSE_PLATE,
     PERIODE_START,
-    TOTAL_DISTANCE, ICON_RANGE, LAST_UPDATED, ICON_EV,
+    TOTAL_DISTANCE,
 )
 from .entity import StatisticsBaseEntity, ToyotaBaseEntity
 
@@ -48,14 +51,10 @@ async def async_setup_entry(hass, config_entry, async_add_devices):
                 )
 
             if vehicle.energy.range:
-                sensors.append(
-                    ToyotaRangeSensor(coordinator, index, "range")
-                )
+                sensors.append(ToyotaRangeSensor(coordinator, index, "range"))
 
             if vehicle.energy.chargeinfo:
-                sensors.append(
-                    ToyotaEVSensor(coordinator, index, "EV battery")
-                )
+                sensors.append(ToyotaEVSensor(coordinator, index, "EV battery"))
 
             sensors.extend(
                 [
@@ -153,6 +152,7 @@ class ToyotaFuelRemainingSensor(ToyotaBaseEntity):
 
 class ToyotaRangeSensor(ToyotaBaseEntity):
     """Class for range sensor."""
+
     _attr_icon = ICON_RANGE
 
     @property
@@ -164,7 +164,9 @@ class ToyotaRangeSensor(ToyotaBaseEntity):
     def extra_state_attributes(self):
         """Return the state attributes."""
         return {
-            "Range_with_aircon_on": self.coordinator.data[self.index].energy.range_with_aircon,
+            "Range_with_aircon_on": self.coordinator.data[
+                self.index
+            ].energy.range_with_aircon,
             LAST_UPDATED: self.coordinator.data[self.index].energy.last_updated,
         }
 
@@ -177,6 +179,7 @@ class ToyotaRangeSensor(ToyotaBaseEntity):
 
 class ToyotaEVSensor(ToyotaBaseEntity):
     """Class for EV sensor."""
+
     _attr_icon = ICON_EV
 
     @property
@@ -184,10 +187,18 @@ class ToyotaEVSensor(ToyotaBaseEntity):
         """Return the state attributes."""
 
         attribute = {
-            "Start_time": self.coordinator.data[self.index].energy.chargeinfo.get("ChargeStartTime", None),
-            "End_time": self.coordinator.data[self.index].energy.chargeinfo.get("ChargeEndTime", None),
-            "Remaining_time": self.coordinator.data[self.index].energy.chargeinfo.get("RemainingChargeTime", None),
-            "Remaining_amount": self.coordinator.data[self.index].energy.chargeinfo.get("ChargeRemainingAmount", None),
+            "Start_time": self.coordinator.data[self.index].energy.chargeinfo.get(
+                "ChargeStartTime", None
+            ),
+            "End_time": self.coordinator.data[self.index].energy.chargeinfo.get(
+                "ChargeEndTime", None
+            ),
+            "Remaining_time": self.coordinator.data[self.index].energy.chargeinfo.get(
+                "RemainingChargeTime", None
+            ),
+            "Remaining_amount": self.coordinator.data[self.index].energy.chargeinfo.get(
+                "ChargeRemainingAmount", None
+            ),
         }
 
         return attribute
