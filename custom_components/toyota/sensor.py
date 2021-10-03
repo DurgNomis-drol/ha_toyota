@@ -86,7 +86,7 @@ class ToyotaCarSensor(ToyotaBaseEntity):
         return self.coordinator.data[self.index].details
 
     @property
-    def native_value(self) -> StateType:
+    def state(self) -> StateType:
         """Return the state of the sensor."""
         if LICENSE_PLATE in self.coordinator.data[self.index].details:
             license_plate = self.coordinator.data[self.index].details[LICENSE_PLATE]
@@ -106,7 +106,7 @@ class ToyotaOdometerSensor(ToyotaBaseEntity):
         return self.vehicle.odometer.unit
 
     @property
-    def native_value(self) -> StateType:
+    def state(self) -> StateType:
         """Return the state of the sensor."""
         mileage = None
 
@@ -121,7 +121,7 @@ class ToyotaStarterBatterySensor(ToyotaBaseEntity):
     _attr_icon = ICON_BATTERY
 
     @property
-    def native_value(self) -> StateType:
+    def state(self) -> StateType:
         """Return the state of the sensor."""
 
         return (
@@ -136,7 +136,7 @@ class ToyotaFuelRemainingSensor(ToyotaBaseEntity):
     """Class for the fuel/energy remaining sensor."""
 
     _attr_icon = ICON_FUEL
-    _attr_native_unit_of_measurement = PERCENTAGE
+    _attr_unit_of_measurement = PERCENTAGE
 
     @property
     def extra_state_attributes(self):
@@ -146,7 +146,7 @@ class ToyotaFuelRemainingSensor(ToyotaBaseEntity):
         }
 
     @property
-    def native_value(self) -> StateType:
+    def state(self) -> StateType:
         """Return the state of the sensor."""
         return self.coordinator.data[self.index].energy.level
 
