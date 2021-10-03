@@ -71,7 +71,7 @@ class StatisticsBaseEntity(ToyotaBaseEntity, SensorEntity):
     _attr_icon = ICON_HISTORY
 
     @property
-    def unit_of_measurement(self):
+    def native_unit_of_measurement(self):
         """Return the unit of measurement."""
         return self.vehicle.odometer.unit
 

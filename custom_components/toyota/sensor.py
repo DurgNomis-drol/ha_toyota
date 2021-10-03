@@ -2,6 +2,7 @@
 import arrow
 
 from homeassistant.const import PERCENTAGE, STATE_UNAVAILABLE, STATE_UNKNOWN
+from homeassistant.helpers.typing import StateType
 
 from .const import (
     BATTERY_HEALTH,
@@ -85,7 +86,7 @@ class ToyotaCarSensor(ToyotaBaseEntity):
         return self.coordinator.data[self.index].details
 
     @property
-    def state(self):
+    def native_value(self) -> StateType:
         """Return the state of the sensor."""
         if LICENSE_PLATE in self.coordinator.data[self.index].details:
             license_plate = self.coordinator.data[self.index].details[LICENSE_PLATE]
@@ -105,7 +106,7 @@ class ToyotaOdometerSensor(ToyotaBaseEntity):
         return self.vehicle.odometer.unit
 
     @property
-    def state(self):
+    def native_value(self) -> StateType:
         """Return the state of the sensor."""
         mileage = None
 
@@ -120,7 +121,7 @@ class ToyotaStarterBatterySensor(ToyotaBaseEntity):
     _attr_icon = ICON_BATTERY
 
     @property
-    def state(self):
+    def native_value(self) -> StateType:
         """Return the state of the sensor."""
 
         return (
@@ -135,7 +136,7 @@ class ToyotaFuelRemainingSensor(ToyotaBaseEntity):
     """Class for the fuel/energy remaining sensor."""
 
     _attr_icon = ICON_FUEL
-    _attr_unit_of_measurement = PERCENTAGE
+    _attr_native_unit_of_measurement = PERCENTAGE
 
     @property
     def extra_state_attributes(self):
@@ -145,7 +146,7 @@ class ToyotaFuelRemainingSensor(ToyotaBaseEntity):
         }
 
     @property
-    def state(self):
+    def native_value(self) -> StateType:
         """Return the state of the sensor."""
         return self.coordinator.data[self.index].energy.level
 
@@ -230,7 +231,7 @@ class ToyotaCurrentWeekSensor(StatisticsBaseEntity):
         return attributes
 
     @property
-    def state(self):
+    def native_value(self) -> StateType:
         """Return the state of the sensor."""
         total_distance = None
         data = self.coordinator.data[self.index].statistics.weekly[0]
@@ -256,7 +257,7 @@ class ToyotaCurrentMonthSensor(StatisticsBaseEntity):
         return attributes
 
     @property
-    def state(self):
+    def native_value(self) -> StateType:
         """Return the state of the sensor."""
         total_distance = None
         data = self.coordinator.data[self.index].statistics.monthly[0]
@@ -284,7 +285,7 @@ class ToyotaCurrentYearSensor(StatisticsBaseEntity):
         return attributes
 
     @property
-    def state(self):
+    def native_value(self) -> StateType:
         """Return the state of the sensor."""
         total_distance = None
         data = self.coordinator.data[self.index].statistics.yearly[0]
