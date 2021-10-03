@@ -62,11 +62,13 @@ ICON_CAR = "mdi:car-info"
 ICON_CAR_DOOR = "mdi:car-door"
 ICON_CAR_DOOR_LOCK = "mdi:car-door-lock"
 ICON_CAR_LIGHTS = "mdi:car-parking-lights"
+ICON_EV = "mdi:car-electric"
 ICON_FUEL = "mdi:gas-station"
 ICON_HISTORY = "mdi:history"
 ICON_KEY = "mdi:car-key"
 ICON_ODOMETER = "mdi:counter"
 ICON_PARKING = "mdi:map-marker"
+ICON_RANGE = "mdi:map-marker-distance"
 
 # STARTUP LOG MESSAGE
 STARTUP_MESSAGE = f"""
