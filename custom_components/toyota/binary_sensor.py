@@ -14,7 +14,9 @@ from .const import (
     ICON_CAR_DOOR,
     ICON_CAR_DOOR_LOCK,
     ICON_CAR_LIGHTS,
+    ICON_FRONT_DEFOGGER,
     ICON_KEY,
+    ICON_REAR_DEFOGGER,
     LAST_UPDATED,
     WARNING,
 )
@@ -112,6 +114,15 @@ async def async_setup_entry(hass, config_entry, async_add_devices):
                 # Add key in car sensor if available
                 binary_sensors.extend(
                     [ToyotaKeyBinarySensor(coordinator, index, "key_in_car")]
+                )
+
+            if vehicle.hvac and vehicle.hvac.legacy:
+                # Add defogger sensors if hvac is set to legacy
+                binary_sensors.extend(
+                    [
+                        ToyotaFrontDefoggerSensor(coordinator, index, "front defogger"),
+                        ToyotaRearDefoggerSensor(coordinator, index, "rear defogger"),
+                    ]
                 )
 
     async_add_devices(binary_sensors, True)
@@ -303,3 +314,27 @@ class ToyotaWindowBinarySensor(ToyotaBaseEntity, BinarySensorEntity):
             return False
 
         return True
+
+
+class ToyotaFrontDefoggerSensor(ToyotaBaseEntity, BinarySensorEntity):
+    """Class for HVAC sensor"""
+
+    _attr_icon = ICON_FRONT_DEFOGGER
+
+    @property
+    def is_on(self):
+        """Return true if the defogger is on."""
+
+        return self.coordinator.data[self.index].hvac.front_defogger
+
+
+class ToyotaRearDefoggerSensor(ToyotaBaseEntity, BinarySensorEntity):
+    """Class for HVAC sensor"""
+
+    _attr_icon = ICON_REAR_DEFOGGER
+
+    @property
+    def is_on(self):
+        """Return true if the defogger is on."""
+
+        return self.coordinator.data[self.index].hvac.front_defogger

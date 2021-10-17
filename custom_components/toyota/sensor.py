@@ -1,7 +1,13 @@
 """Sensor platform for Toyota sensor integration."""
 import arrow
 
-from homeassistant.const import PERCENTAGE, STATE_UNAVAILABLE, STATE_UNKNOWN
+from homeassistant.const import (
+    DEVICE_CLASS_TEMPERATURE,
+    PERCENTAGE,
+    STATE_UNAVAILABLE,
+    STATE_UNKNOWN,
+    TEMP_CELSIUS,
+)
 from homeassistant.helpers.typing import StateType
 
 from .const import (
@@ -71,6 +77,9 @@ async def async_setup_entry(hass, config_entry, async_add_devices):
                     ),
                 ]
             )
+
+            if vehicle.hvac:
+                sensors.append(ToyotaHVACSensor(coordinator, index, "hvac"))
 
     async_add_devices(sensors, True)
 
@@ -209,6 +218,62 @@ class ToyotaEVSensor(ToyotaBaseEntity):
         """Return battery information for EV's."""
 
         return self.coordinator.data[self.index].energy.chargeinfo.get("status", None)
+
+
+class ToyotaHVACSensor(ToyotaBaseEntity):
+    """Class for hvac temperature sensor"""
+
+    _attr_device_class = DEVICE_CLASS_TEMPERATURE
+    _attr_native_unit_of_measurement = TEMP_CELSIUS
+
+    @property
+    def extra_state_attributes(self):
+        """Return the state attributes."""
+
+        hvac = self.coordinator.data[self.index].hvac
+
+        attributes = {
+            "target_temperature": hvac.target_temperature,
+            LAST_UPDATED: hvac.last_updated,
+            "legacy": hvac.legacy,
+        }
+
+        if hvac.legacy:
+            attributes.update(
+                {
+                    "blower_status": hvac.blower_on,
+                }
+            )
+        else:
+            attributes.update(
+                {
+                    "started_at": hvac.started_at,
+                    "status": hvac.status,
+                    "type": hvac.type,
+                    "duration": hvac.duration,
+                    "options": hvac.options,
+                    "command_id": hvac.options,
+                }
+            )
+
+        return attributes
+
+    @property
+    def native_value(self):
+        """Return current temperature."""
+        return self.coordinator.data[self.index].hvac.current_temperature
+
+
+class ToyotaTargetTemperatureSensor(ToyotaBaseEntity):
+    """Class for hvac temperature sensor"""
+
+    _attr_device_class = DEVICE_CLASS_TEMPERATURE
+    _attr_native_unit_of_measurement = TEMP_CELSIUS
+
+    @property
+    def native_value(self):
+        """Return current temperature."""
+        return self.coordinator.data[self.index].hvac.target_temperature
 
 
 class ToyotaCurrentWeekSensor(StatisticsBaseEntity):
