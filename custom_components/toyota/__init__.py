@@ -87,34 +87,35 @@ async def async_setup_entry(  # pylint: disable=too-many-statements
             for car in cars:
                 vehicle = await client.get_vehicle_status(car)
 
-                if vehicle.odometer.unit == LENGTH_MILES:
-                    _LOGGER.debug("The car is reporting data in imperial")
-                    if use_liters:
-                        _LOGGER.debug("Get statistics in imperial and L/100 miles")
-                        unit = CONF_UNIT_SYSTEM_IMPERIAL_LITERS
+                if vehicle.is_connected:
+                    if vehicle.odometer.unit == LENGTH_MILES:
+                        _LOGGER.debug("The car is reporting data in imperial")
+                        if use_liters:
+                            _LOGGER.debug("Get statistics in imperial and L/100 miles")
+                            unit = CONF_UNIT_SYSTEM_IMPERIAL_LITERS
+                        else:
+                            _LOGGER.debug("Get statistics in imperial and MPG")
+                            unit = CONF_UNIT_SYSTEM_IMPERIAL
                     else:
-                        _LOGGER.debug("Get statistics in imperial and MPG")
-                        unit = CONF_UNIT_SYSTEM_IMPERIAL
-                else:
-                    _LOGGER.debug("The car is reporting data in metric")
-                    unit = CONF_UNIT_SYSTEM_METRIC
+                        _LOGGER.debug("The car is reporting data in metric")
+                        unit = CONF_UNIT_SYSTEM_METRIC
 
-                # Use parallel request to get car statistics.
-                data = await asyncio.gather(
-                    *[
-                        client.get_driving_statistics(
-                            vehicle.vin, interval="isoweek", unit=unit
-                        ),
-                        client.get_driving_statistics(vehicle.vin, unit=unit),
-                        client.get_driving_statistics(
-                            vehicle.vin, interval="year", unit=unit
-                        ),
-                    ]
-                )
+                    # Use parallel request to get car statistics.
+                    data = await asyncio.gather(
+                        *[
+                            client.get_driving_statistics(
+                                vehicle.vin, interval="isoweek", unit=unit
+                            ),
+                            client.get_driving_statistics(vehicle.vin, unit=unit),
+                            client.get_driving_statistics(
+                                vehicle.vin, interval="year", unit=unit
+                            ),
+                        ]
+                    )
 
-                vehicle.statistics.weekly = data[0]
-                vehicle.statistics.monthly = data[1]
-                vehicle.statistics.yearly = data[2]
+                    vehicle.statistics.weekly = data[0]
+                    vehicle.statistics.monthly = data[1]
+                    vehicle.statistics.yearly = data[2]
 
                 vehicles.append(vehicle)
 
