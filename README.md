@@ -30,9 +30,9 @@ Only Europe is supported right now. If you want to help add other regions, pleas
 ### Overview
 
 - Numberplate and starter battery sensors
-- Fuel and odometer information
+- Fuel, battery and odometer information
 - Current week, month and year statistics.
-- Window and lights sensors
+- HVAC, Window and lights sensors
 - Door and door lock sensors, including hood and trunk sensor.
 - Is key in car and over all status sensor.
 
@@ -41,6 +41,7 @@ Only Europe is supported right now. If you want to help add other regions, pleas
 | <div style="width:250px">Name</div>     | Description                                                                         |
 | --------------------------------------- | ----------------------------------------------------------------------------------- |
 | `binary_sensor.corolla_hood`            | If the hood is open of not.                                                         |
+| `binary_sensor.corolla_*_defogger`      | Defogger is on sensor, one is created for front and rear if available               |
 | `binary_sensor.corolla_*_door`          | Door sensor, one is created for each door and trunk.                                |
 | `binary_sensor.corolla_*_lock`          | Lock sensor, one is created for each door and trunk.                                |
 | `binary_sensor.corolla_*_lights`        | Light sensor, one is created for front, back and hazard lights.                     |
@@ -56,15 +57,18 @@ Only Europe is supported right now. If you want to help add other regions, pleas
 
 ### Sensor(s)
 
-| <div style="width:250px">Name</div>  | Description                   |
-| ------------------------------------ | ----------------------------- |
-| `sensor.corolla`                     | Static data about your car.   |
-| `sensor.corolla_odometer`            | Odometer information.         |
-| `sensor.corolla_fuel_tank`           | Fuel tank information.        |
-| `sensor.aygo_starter_battery`        | Starter battery health.       |
-| `sensor.corolla_current_week_stats`  | Statistics for current week.  |
-| `sensor.corolla_current_month_stats` | Statistics for current month. |
-| `sensor.corolla_current_year_stats`  | Statistics for current year.  |
+| <div style="width:250px">Name</div>  | Description                                                              |
+| ------------------------------------ | ------------------------------------------------------------------------ |
+| `sensor.corolla`                     | Static data about your car.                                              |
+| `sensor.corolla_hvac`                | EV battery information                                                   |
+| `sensor.corolla_fuel_tank`           | Fuel tank information.                                                   |
+| `sensor.corolla_hvac`                | HVAC sensor showing current and target temperature, including other data |
+| `sensor.corolla_odometer`            | Odometer information.                                                    |
+| `sensor.corolla_range`               | Remaining range sensor                                                   |
+| `sensor.aygo_starter_battery`        | Starter battery health.                                                  |
+| `sensor.corolla_current_week_stats`  | Statistics for current week.                                             |
+| `sensor.corolla_current_month_stats` | Statistics for current month.                                            |
+| `sensor.corolla_current_year_stats`  | Statistics for current year.                                             |
 
 ### Statistics sensors
 
