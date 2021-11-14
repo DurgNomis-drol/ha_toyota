@@ -4,7 +4,6 @@ import logging
 from mytoyota.client import MyT
 from mytoyota.exceptions import (
     ToyotaInvalidUsername,
-    ToyotaLocaleNotValid,
     ToyotaLoginError,
     ToyotaRegionNotSupported,
 )
