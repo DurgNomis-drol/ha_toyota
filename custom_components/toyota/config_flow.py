@@ -57,6 +57,7 @@ class ToyotaConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     password=user_input[CONF_PASSWORD],
                     locale=DEFAULT_LOCALE,
                     region=region.lower(),
+                    disable_locale_check=True,
                 )
 
                 await client.login()
@@ -64,9 +65,9 @@ class ToyotaConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             except ToyotaLoginError as ex:
                 errors["base"] = "invalid_auth"
                 _LOGGER.error(ex)
-            except ToyotaLocaleNotValid as ex:
-                errors["base"] = "invalid_locale"
-                _LOGGER.error(ex)
+            # except ToyotaLocaleNotValid as ex:
+            #     errors["base"] = "invalid_locale"
+            #     _LOGGER.error(ex)
             except ToyotaRegionNotSupported as ex:
                 errors["base"] = "region_not_supported"
                 _LOGGER.error("Region not supported - %s", ex)

@@ -64,6 +64,7 @@ async def async_setup_entry(  # pylint: disable=too-many-statements
         password=password,
         locale=DEFAULT_LOCALE,
         region=region.lower(),
+        disable_locale_check=True,
     )
 
     try:
