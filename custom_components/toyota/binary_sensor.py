@@ -1,5 +1,4 @@
 """Binary sensor platform for Toyota integration"""
-
 from homeassistant.components.binary_sensor import (
     DEVICE_CLASS_DOOR,
     DEVICE_CLASS_LIGHT,
@@ -7,6 +6,7 @@ from homeassistant.components.binary_sensor import (
     DEVICE_CLASS_WINDOW,
     BinarySensorEntity,
 )
+from homeassistant.const import ENTITY_CATEGORY_DIAGNOSTIC
 
 from .const import (
     DATA_COORDINATOR,
@@ -133,6 +133,7 @@ class ToyotaHoodBinarySensor(ToyotaBaseEntity, BinarySensorEntity):
 
     _attr_device_class = DEVICE_CLASS_DOOR
     _attr_icon = ICON_CAR_DOOR
+    _attr_entity_category = ENTITY_CATEGORY_DIAGNOSTIC
 
     @property
     def extra_state_attributes(self):
@@ -153,6 +154,7 @@ class ToyotaDoorBinarySensor(ToyotaBaseEntity, BinarySensorEntity):
 
     _attr_device_class = DEVICE_CLASS_DOOR
     _attr_icon = ICON_CAR_DOOR
+    _attr_entity_category = ENTITY_CATEGORY_DIAGNOSTIC
 
     @property
     def extra_state_attributes(self):
@@ -185,6 +187,7 @@ class ToyotaDoorLockBinarySensor(ToyotaBaseEntity, BinarySensorEntity):
 
     _attr_device_class = DEVICE_CLASS_DOOR
     _attr_icon = ICON_CAR_DOOR_LOCK
+    _attr_entity_category = ENTITY_CATEGORY_DIAGNOSTIC
 
     @property
     def extra_state_attributes(self):
@@ -216,6 +219,7 @@ class ToyotaKeyBinarySensor(ToyotaBaseEntity, BinarySensorEntity):
     """Class for key in car binary sensor"""
 
     _attr_icon = ICON_KEY
+    _attr_entity_category = ENTITY_CATEGORY_DIAGNOSTIC
 
     @property
     def extra_state_attributes(self):
@@ -235,6 +239,7 @@ class ToyotaLightBinarySensor(ToyotaBaseEntity, BinarySensorEntity):
 
     _attr_device_class = DEVICE_CLASS_LIGHT
     _attr_icon = ICON_CAR_LIGHTS
+    _attr_entity_category = ENTITY_CATEGORY_DIAGNOSTIC
 
     @property
     def extra_state_attributes(self):
@@ -266,6 +271,7 @@ class ToyotaOverAllStatusBinarySensor(ToyotaBaseEntity, BinarySensorEntity):
     """Class for the overall warning sensor"""
 
     _attr_device_class = DEVICE_CLASS_PROBLEM
+    _attr_entity_category = ENTITY_CATEGORY_DIAGNOSTIC
 
     @property
     def extra_state_attributes(self):
@@ -286,6 +292,7 @@ class ToyotaWindowBinarySensor(ToyotaBaseEntity, BinarySensorEntity):
     """Class for Window sensor"""
 
     _attr_device_class = DEVICE_CLASS_WINDOW
+    _attr_entity_category = ENTITY_CATEGORY_DIAGNOSTIC
 
     @property
     def extra_state_attributes(self):
@@ -320,6 +327,7 @@ class ToyotaFrontDefoggerSensor(ToyotaBaseEntity, BinarySensorEntity):
     """Class for HVAC sensor"""
 
     _attr_icon = ICON_FRONT_DEFOGGER
+    _attr_entity_category = ENTITY_CATEGORY_DIAGNOSTIC
 
     @property
     def is_on(self):
@@ -332,6 +340,7 @@ class ToyotaRearDefoggerSensor(ToyotaBaseEntity, BinarySensorEntity):
     """Class for HVAC sensor"""
 
     _attr_icon = ICON_REAR_DEFOGGER
+    _attr_entity_category = ENTITY_CATEGORY_DIAGNOSTIC
 
     @property
     def is_on(self):

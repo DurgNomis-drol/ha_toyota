@@ -3,6 +3,7 @@
 from datetime import timedelta
 
 from homeassistant.components.sensor import STATE_CLASS_MEASUREMENT, SensorEntity
+from homeassistant.const import ENTITY_CATEGORY_DIAGNOSTIC
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from .const import (
@@ -69,6 +70,7 @@ class StatisticsBaseEntity(ToyotaBaseEntity, SensorEntity):
     """Builds on Toyota base entity"""
 
     _attr_icon = ICON_HISTORY
+    _attr_entity_category = ENTITY_CATEGORY_DIAGNOSTIC
 
     @property
     def native_unit_of_measurement(self):
