@@ -271,7 +271,6 @@ class ToyotaOverAllStatusBinarySensor(ToyotaBaseEntity, BinarySensorEntity):
     """Class for the overall warning sensor"""
 
     _attr_device_class = DEVICE_CLASS_PROBLEM
-    _attr_entity_category = ENTITY_CATEGORY_DIAGNOSTIC
 
     @property
     def extra_state_attributes(self):
@@ -327,7 +326,6 @@ class ToyotaFrontDefoggerSensor(ToyotaBaseEntity, BinarySensorEntity):
     """Class for HVAC sensor"""
 
     _attr_icon = ICON_FRONT_DEFOGGER
-    _attr_entity_category = ENTITY_CATEGORY_DIAGNOSTIC
 
     @property
     def is_on(self):
@@ -340,7 +338,6 @@ class ToyotaRearDefoggerSensor(ToyotaBaseEntity, BinarySensorEntity):
     """Class for HVAC sensor"""
 
     _attr_icon = ICON_REAR_DEFOGGER
-    _attr_entity_category = ENTITY_CATEGORY_DIAGNOSTIC
 
     @property
     def is_on(self):
