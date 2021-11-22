@@ -3,6 +3,7 @@ import arrow
 
 from homeassistant.const import (
     DEVICE_CLASS_TEMPERATURE,
+    ENTITY_CATEGORY_DIAGNOSTIC,
     PERCENTAGE,
     STATE_UNAVAILABLE,
     STATE_UNKNOWN,
@@ -88,6 +89,7 @@ class ToyotaCarSensor(ToyotaBaseEntity):
     """Class for car details and numberplate sensor."""
 
     _attr_icon = ICON_CAR
+    _attr_entity_category = ENTITY_CATEGORY_DIAGNOSTIC
 
     @property
     def extra_state_attributes(self):
