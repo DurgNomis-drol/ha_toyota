@@ -331,7 +331,7 @@ class ToyotaFrontDefoggerSensor(ToyotaBaseEntity, BinarySensorEntity):
     def is_on(self):
         """Return true if the defogger is on."""
 
-        return self.coordinator.data[self.index].hvac.front_defogger
+        return self.coordinator.data[self.index].hvac.front_defogger_on
 
 
 class ToyotaRearDefoggerSensor(ToyotaBaseEntity, BinarySensorEntity):
@@ -343,4 +343,4 @@ class ToyotaRearDefoggerSensor(ToyotaBaseEntity, BinarySensorEntity):
     def is_on(self):
         """Return true if the defogger is on."""
 
-        return self.coordinator.data[self.index].hvac.front_defogger
+        return self.coordinator.data[self.index].hvac.rear_defogger_on
