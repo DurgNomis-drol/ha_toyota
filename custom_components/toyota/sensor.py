@@ -158,8 +158,9 @@ class ToyotaFuelRemainingSensor(ToyotaBaseEntity):
 
     @property
     def state(self) -> StateType:
-        """Return the state of the sensor."""
-        return self.coordinator.data[self.index].energy.level
+        """Return fuellevel/battery capacity of the vehicle."""
+        level = self.coordinator.data[self.index].energy.level
+        return round(level, 1) if level else None
 
 
 class ToyotaRangeSensor(ToyotaBaseEntity):
