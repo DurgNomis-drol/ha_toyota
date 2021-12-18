@@ -8,7 +8,7 @@ import async_timeout
 import httpcore
 import httpx
 from mytoyota.client import MyT
-from mytoyota.exceptions import ToyotaApiError, ToyotaInternalError, ToyotaLoginError
+from mytoyota.exceptions import ToyotaApiError, ToyotaLoginError
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import (
@@ -71,10 +71,10 @@ async def async_setup_entry(  # pylint: disable=too-many-statements
         await client.login()
     except ToyotaLoginError as ex:
         raise ConfigEntryAuthFailed(ex) from ex
+    except ToyotaApiError as ex:
+        raise ConfigEntryNotReady(ex) from ex
     except (httpx.ConnectTimeout, httpcore.ConnectTimeout) as ex:
-        raise ConfigEntryNotReady(
-            "Unable to connect to Toyota Connected Services"
-        ) from ex
+        raise ConfigEntryNotReady("Unable to connect to servers") from ex
 
     async def async_update_data():
         """Fetch data from Toyota API."""
@@ -125,12 +125,10 @@ async def async_setup_entry(  # pylint: disable=too-many-statements
 
         except ToyotaLoginError as ex:
             _LOGGER.error(ex)
-        except ToyotaInternalError as ex:
-            _LOGGER.debug(ex)
         except ToyotaApiError as ex:
             raise UpdateFailed(ex) from ex
         except (httpx.ConnectTimeout, httpcore.ConnectTimeout) as ex:
-            raise UpdateFailed("Unable to connect to Toyota Connected Services") from ex
+            raise UpdateFailed("Unable to connect to servers") from ex
         except (
             asyncioexceptions.CancelledError,
             asyncioexceptions.TimeoutError,
@@ -138,8 +136,7 @@ async def async_setup_entry(  # pylint: disable=too-many-statements
         ) as ex:
 
             raise UpdateFailed(
-                "Update canceled! Toyota's API was too slow to respond."
-                " Will try again later..."
+                "Servers was too slow to respond." " Will try again later..."
             ) from ex
 
     coordinator = DataUpdateCoordinator(
