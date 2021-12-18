@@ -1,9 +1,6 @@
 """Binary sensor platform for Toyota integration"""
 from homeassistant.components.binary_sensor import (
-    DEVICE_CLASS_DOOR,
-    DEVICE_CLASS_LIGHT,
-    DEVICE_CLASS_PROBLEM,
-    DEVICE_CLASS_WINDOW,
+    BinarySensorDeviceClass,
     BinarySensorEntity,
 )
 from homeassistant.const import ENTITY_CATEGORY_DIAGNOSTIC
@@ -131,7 +128,7 @@ async def async_setup_entry(hass, config_entry, async_add_devices):
 class ToyotaHoodBinarySensor(ToyotaBaseEntity, BinarySensorEntity):
     """Class for the hood sensor"""
 
-    _attr_device_class = DEVICE_CLASS_DOOR
+    _attr_device_class = BinarySensorDeviceClass.DOOR
     _attr_icon = ICON_CAR_DOOR
     _attr_entity_category = ENTITY_CATEGORY_DIAGNOSTIC
 
@@ -152,7 +149,7 @@ class ToyotaHoodBinarySensor(ToyotaBaseEntity, BinarySensorEntity):
 class ToyotaDoorBinarySensor(ToyotaBaseEntity, BinarySensorEntity):
     """Class for door sensor"""
 
-    _attr_device_class = DEVICE_CLASS_DOOR
+    _attr_device_class = BinarySensorDeviceClass.DOOR
     _attr_icon = ICON_CAR_DOOR
     _attr_entity_category = ENTITY_CATEGORY_DIAGNOSTIC
 
@@ -185,7 +182,7 @@ class ToyotaDoorBinarySensor(ToyotaBaseEntity, BinarySensorEntity):
 class ToyotaDoorLockBinarySensor(ToyotaBaseEntity, BinarySensorEntity):
     """Class for door locked sensor"""
 
-    _attr_device_class = DEVICE_CLASS_DOOR
+    _attr_device_class = BinarySensorDeviceClass.DOOR
     _attr_icon = ICON_CAR_DOOR_LOCK
     _attr_entity_category = ENTITY_CATEGORY_DIAGNOSTIC
 
@@ -237,7 +234,7 @@ class ToyotaKeyBinarySensor(ToyotaBaseEntity, BinarySensorEntity):
 class ToyotaLightBinarySensor(ToyotaBaseEntity, BinarySensorEntity):
     """Class for Light sensor"""
 
-    _attr_device_class = DEVICE_CLASS_LIGHT
+    _attr_device_class = BinarySensorDeviceClass.LIGHT
     _attr_icon = ICON_CAR_LIGHTS
     _attr_entity_category = ENTITY_CATEGORY_DIAGNOSTIC
 
@@ -270,7 +267,7 @@ class ToyotaLightBinarySensor(ToyotaBaseEntity, BinarySensorEntity):
 class ToyotaOverAllStatusBinarySensor(ToyotaBaseEntity, BinarySensorEntity):
     """Class for the overall warning sensor"""
 
-    _attr_device_class = DEVICE_CLASS_PROBLEM
+    _attr_device_class = BinarySensorDeviceClass.PROBLEM
 
     @property
     def extra_state_attributes(self):
@@ -290,7 +287,7 @@ class ToyotaOverAllStatusBinarySensor(ToyotaBaseEntity, BinarySensorEntity):
 class ToyotaWindowBinarySensor(ToyotaBaseEntity, BinarySensorEntity):
     """Class for Window sensor"""
 
-    _attr_device_class = DEVICE_CLASS_WINDOW
+    _attr_device_class = BinarySensorDeviceClass.WINDOW
     _attr_entity_category = ENTITY_CATEGORY_DIAGNOSTIC
 
     @property

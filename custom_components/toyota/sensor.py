@@ -1,8 +1,8 @@
 """Sensor platform for Toyota sensor integration."""
 import arrow
 
+from homeassistant.components.sensor import SensorDeviceClass
 from homeassistant.const import (
-    DEVICE_CLASS_TEMPERATURE,
     ENTITY_CATEGORY_DIAGNOSTIC,
     PERCENTAGE,
     STATE_UNAVAILABLE,
@@ -226,7 +226,7 @@ class ToyotaEVSensor(ToyotaBaseEntity):
 class ToyotaHVACSensor(ToyotaBaseEntity):
     """Class for hvac temperature sensor"""
 
-    _attr_device_class = DEVICE_CLASS_TEMPERATURE
+    _attr_device_class = SensorDeviceClass.TEMPERATURE
     _attr_native_unit_of_measurement = TEMP_CELSIUS
 
     @property
@@ -270,7 +270,7 @@ class ToyotaHVACSensor(ToyotaBaseEntity):
 class ToyotaTargetTemperatureSensor(ToyotaBaseEntity):
     """Class for hvac temperature sensor"""
 
-    _attr_device_class = DEVICE_CLASS_TEMPERATURE
+    _attr_device_class = SensorDeviceClass.TEMPERATURE
     _attr_native_unit_of_measurement = TEMP_CELSIUS
 
     @property

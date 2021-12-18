@@ -1,7 +1,9 @@
 """Constants for the Toyota Connected Services integration."""
 
+from homeassistant.const import Platform
+
 # PLATFORMS SUPPORTED
-PLATFORMS = ["binary_sensor", "sensor", "device_tracker"]
+PLATFORMS = [Platform.BINARY_SENSOR, Platform.DEVICE_TRACKER, Platform.SENSOR]
 
 # INTEGRATION ATTRIBUTES
 DOMAIN = "toyota"
