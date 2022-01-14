@@ -201,16 +201,16 @@ class ToyotaEVSensor(ToyotaBaseEntity):
 
         attribute = {
             "Start_time": self.coordinator.data[self.index].energy.chargeinfo.get(
-                "ChargeStartTime", None
+                "start_time", None
             ),
             "End_time": self.coordinator.data[self.index].energy.chargeinfo.get(
-                "ChargeEndTime", None
+                "end_time", None
             ),
             "Remaining_time": self.coordinator.data[self.index].energy.chargeinfo.get(
-                "RemainingChargeTime", None
+                "remaining_time", None
             ),
             "Remaining_amount": self.coordinator.data[self.index].energy.chargeinfo.get(
-                "ChargeRemainingAmount", None
+                "remaining_amount", None
             ),
         }
 
