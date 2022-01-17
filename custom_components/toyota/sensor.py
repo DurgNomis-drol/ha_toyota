@@ -62,7 +62,7 @@ async def async_setup_entry(hass, config_entry, async_add_devices):
                 sensors.append(ToyotaRangeSensor(coordinator, index, "range"))
 
             if vehicle.energy.chargeinfo:
-                sensors.append(ToyotaEVSensor(coordinator, index, "EV battery"))
+                sensors.append(ToyotaEVSensor(coordinator, index, "EV battery status"))
 
             sensors.extend(
                 [
