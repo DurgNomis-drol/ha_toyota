@@ -10,6 +10,7 @@ from homeassistant.const import (
     TEMP_CELSIUS,
 )
 from homeassistant.helpers.typing import StateType
+from homeassistant.helpers.entity import EntityCategory
 
 from .const import (
     BATTERY_HEALTH,
@@ -89,7 +90,7 @@ class ToyotaCarSensor(ToyotaBaseEntity):
     """Class for car details and numberplate sensor."""
 
     _attr_icon = ICON_CAR
-    _attr_entity_category = ENTITY_CATEGORY_DIAGNOSTIC
+    _attr_entity_category = EntityCategory.DIAGNOSTIC
 
     @property
     def extra_state_attributes(self):
