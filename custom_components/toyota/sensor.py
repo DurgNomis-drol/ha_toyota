@@ -3,12 +3,12 @@ import arrow
 
 from homeassistant.components.sensor import SensorDeviceClass
 from homeassistant.const import (
-    ENTITY_CATEGORY_DIAGNOSTIC,
     PERCENTAGE,
     STATE_UNAVAILABLE,
     STATE_UNKNOWN,
     TEMP_CELSIUS,
 )
+from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.typing import StateType
 
 from .const import (
@@ -89,7 +89,7 @@ class ToyotaCarSensor(ToyotaBaseEntity):
     """Class for car details and numberplate sensor."""
 
     _attr_icon = ICON_CAR
-    _attr_entity_category = ENTITY_CATEGORY_DIAGNOSTIC
+    _attr_entity_category = EntityCategory.DIAGNOSTIC
 
     @property
     def extra_state_attributes(self):

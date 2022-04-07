@@ -3,7 +3,7 @@ from homeassistant.components.binary_sensor import (
     BinarySensorDeviceClass,
     BinarySensorEntity,
 )
-from homeassistant.const import ENTITY_CATEGORY_DIAGNOSTIC
+from homeassistant.helpers.entity import EntityCategory
 
 from .const import (
     DATA_COORDINATOR,
@@ -130,7 +130,7 @@ class ToyotaHoodBinarySensor(ToyotaBaseEntity, BinarySensorEntity):
 
     _attr_device_class = BinarySensorDeviceClass.DOOR
     _attr_icon = ICON_CAR_DOOR
-    _attr_entity_category = ENTITY_CATEGORY_DIAGNOSTIC
+    _attr_entity_category = EntityCategory.DIAGNOSTIC
 
     @property
     def extra_state_attributes(self):
@@ -151,7 +151,7 @@ class ToyotaDoorBinarySensor(ToyotaBaseEntity, BinarySensorEntity):
 
     _attr_device_class = BinarySensorDeviceClass.DOOR
     _attr_icon = ICON_CAR_DOOR
-    _attr_entity_category = ENTITY_CATEGORY_DIAGNOSTIC
+    _attr_entity_category = EntityCategory.DIAGNOSTIC
 
     @property
     def extra_state_attributes(self):
@@ -184,7 +184,7 @@ class ToyotaDoorLockBinarySensor(ToyotaBaseEntity, BinarySensorEntity):
 
     _attr_device_class = BinarySensorDeviceClass.DOOR
     _attr_icon = ICON_CAR_DOOR_LOCK
-    _attr_entity_category = ENTITY_CATEGORY_DIAGNOSTIC
+    _attr_entity_category = EntityCategory.DIAGNOSTIC
 
     @property
     def extra_state_attributes(self):
@@ -216,7 +216,7 @@ class ToyotaKeyBinarySensor(ToyotaBaseEntity, BinarySensorEntity):
     """Class for key in car binary sensor"""
 
     _attr_icon = ICON_KEY
-    _attr_entity_category = ENTITY_CATEGORY_DIAGNOSTIC
+    _attr_entity_category = EntityCategory.DIAGNOSTIC
 
     @property
     def extra_state_attributes(self):
@@ -236,7 +236,7 @@ class ToyotaLightBinarySensor(ToyotaBaseEntity, BinarySensorEntity):
 
     _attr_device_class = BinarySensorDeviceClass.LIGHT
     _attr_icon = ICON_CAR_LIGHTS
-    _attr_entity_category = ENTITY_CATEGORY_DIAGNOSTIC
+    _attr_entity_category = EntityCategory.DIAGNOSTIC
 
     @property
     def extra_state_attributes(self):
@@ -288,7 +288,7 @@ class ToyotaWindowBinarySensor(ToyotaBaseEntity, BinarySensorEntity):
     """Class for Window sensor"""
 
     _attr_device_class = BinarySensorDeviceClass.WINDOW
-    _attr_entity_category = ENTITY_CATEGORY_DIAGNOSTIC
+    _attr_entity_category = EntityCategory.DIAGNOSTIC
 
     @property
     def extra_state_attributes(self):
