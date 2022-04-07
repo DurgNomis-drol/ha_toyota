@@ -3,7 +3,6 @@ import arrow
 
 from homeassistant.components.sensor import SensorDeviceClass
 from homeassistant.const import (
-    ENTITY_CATEGORY_DIAGNOSTIC,
     PERCENTAGE,
     STATE_UNAVAILABLE,
     STATE_UNKNOWN,
