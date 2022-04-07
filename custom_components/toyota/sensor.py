@@ -8,8 +8,8 @@ from homeassistant.const import (
     STATE_UNKNOWN,
     TEMP_CELSIUS,
 )
-from homeassistant.helpers.typing import StateType
 from homeassistant.helpers.entity import EntityCategory
+from homeassistant.helpers.typing import StateType
 
 from .const import (
     BATTERY_HEALTH,
