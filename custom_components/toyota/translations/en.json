@@ -6,16 +6,13 @@
         "description": "Please input your email and password for MyT below.",
         "data": {
           "email": "Email",
-          "password": "Password",
-          "region": "Region (Only Europe is supported right now)"
+          "password": "Password"
         }
       }
     },
     "error": {
       "invalid_username": "Email must contain @.",
-      "region_not_supported": "Region is not supported.",
       "invalid_auth": "Email/Password is incorrect.",
-      "invalid_locale": "Language code is not valid.",
       "unknown": "Unexpected error."
     }
   },

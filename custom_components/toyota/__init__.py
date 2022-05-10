@@ -1,23 +1,25 @@
 """Toyota integration"""
+from __future__ import annotations
+
 import asyncio
 import asyncio.exceptions as asyncioexceptions
 from datetime import timedelta
 import logging
+from typing import Any, TypedDict
 
 import async_timeout
 import httpcore
 import httpx
-from mytoyota.client import MyT
+from mytoyota import MyT
 from mytoyota.exceptions import ToyotaApiError, ToyotaInternalError, ToyotaLoginError
+from mytoyota.models.vehicle import Vehicle
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import (
     CONF_EMAIL,
     CONF_PASSWORD,
-    CONF_REGION,
     CONF_UNIT_SYSTEM_IMPERIAL,
     CONF_UNIT_SYSTEM_METRIC,
-    LENGTH_MILES,
 )
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryAuthFailed, ConfigEntryNotReady
@@ -26,9 +28,6 @@ from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, Upda
 from .const import (
     CONF_UNIT_SYSTEM_IMPERIAL_LITERS,
     CONF_USE_LITERS_PER_100_MILES,
-    DATA_CLIENT,
-    DATA_COORDINATOR,
-    DEFAULT_LOCALE,
     DOMAIN,
     PLATFORMS,
     STARTUP_MESSAGE,
@@ -36,8 +35,20 @@ from .const import (
 
 _LOGGER = logging.getLogger(__name__)
 
-# Update sensors every 5 minutes
-UPDATE_INTERVAL = timedelta(seconds=90)
+
+class StatisticsData(TypedDict):
+    """Representing Statistics data."""
+
+    week: list[dict[str, Any]]
+    month: list[dict[str, Any]]
+    year: list[dict[str, Any]]
+
+
+class VehicleData(TypedDict):
+    """Representing Vehicle data."""
+
+    data: Vehicle
+    statistics: StatisticsData | None
 
 
 async def with_timeout(task, timeout_seconds=15):
@@ -48,7 +59,7 @@ async def with_timeout(task, timeout_seconds=15):
 
 async def async_setup_entry(  # pylint: disable=too-many-statements
     hass: HomeAssistant, entry: ConfigEntry
-):
+) -> bool:
     """Set up Toyota Connected Services from a config entry."""
     if hass.data.get(DOMAIN) is None:
         hass.data.setdefault(DOMAIN, {})
@@ -56,14 +67,11 @@ async def async_setup_entry(  # pylint: disable=too-many-statements
 
     email = entry.data[CONF_EMAIL]
     password = entry.data[CONF_PASSWORD]
-    region = entry.data[CONF_REGION]
     use_liters = entry.options.get(CONF_USE_LITERS_PER_100_MILES, False)
 
     client = MyT(
         username=email,
         password=password,
-        locale=DEFAULT_LOCALE,
-        region=region.lower(),
         disable_locale_check=True,
     )
 
@@ -76,8 +84,8 @@ async def async_setup_entry(  # pylint: disable=too-many-statements
             "Unable to connect to Toyota Connected Services"
         ) from ex
 
-    async def async_update_data():
-        """Fetch data from Toyota API."""
+    async def async_get_vehicle_data() -> list[VehicleData]:
+        """Fetch vehicle data from Toyota API."""
 
         try:
 
@@ -88,14 +96,18 @@ async def async_setup_entry(  # pylint: disable=too-many-statements
             for car in cars:
                 vehicle = await client.get_vehicle_status(car)
 
-                if vehicle.is_connected:
-                    if vehicle.odometer.unit == LENGTH_MILES:
+                car = VehicleData(data=vehicle, statistics=None)
+
+                if vehicle.is_connected_services_enabled and vehicle.vin is not None:
+                    if not vehicle.dashboard.is_metric:
                         _LOGGER.debug("The car is reporting data in imperial")
                         if use_liters:
-                            _LOGGER.debug("Get statistics in imperial and L/100 miles")
+                            _LOGGER.debug(
+                                "Getting statistics in imperial and L/100 miles"
+                            )
                             unit = CONF_UNIT_SYSTEM_IMPERIAL_LITERS
                         else:
-                            _LOGGER.debug("Get statistics in imperial and MPG")
+                            _LOGGER.debug("Getting statistics in imperial and MPG")
                             unit = CONF_UNIT_SYSTEM_IMPERIAL
                     else:
                         _LOGGER.debug("The car is reporting data in metric")
@@ -114,11 +126,11 @@ async def async_setup_entry(  # pylint: disable=too-many-statements
                         ]
                     )
 
-                    vehicle.statistics.weekly = data[0]
-                    vehicle.statistics.monthly = data[1]
-                    vehicle.statistics.yearly = data[2]
+                    car["statistics"] = StatisticsData(
+                        week=data[0], month=data[1], year=data[0]
+                    )
 
-                vehicles.append(vehicle)
+                vehicles.append(car)
 
             _LOGGER.debug(vehicles)
             return vehicles
@@ -146,28 +158,20 @@ async def async_setup_entry(  # pylint: disable=too-many-statements
         hass,
         _LOGGER,
         name=DOMAIN,
-        update_method=async_update_data,
-        update_interval=UPDATE_INTERVAL,
+        update_method=async_get_vehicle_data,
+        update_interval=timedelta(seconds=120),
     )
 
-    # Fetch initial data so we have data when entities subscribe
-    await coordinator.async_refresh()
+    await coordinator.async_config_entry_first_refresh()
 
-    hass.data[DOMAIN][entry.entry_id] = {
-        DATA_CLIENT: client,
-        DATA_COORDINATOR: coordinator,
-    }
+    hass.data[DOMAIN][entry.entry_id] = coordinator
 
-    if not coordinator.last_update_success:
-        raise ConfigEntryNotReady
-
-    # Setup components
     hass.config_entries.async_setup_platforms(entry, PLATFORMS)
 
     return True
 
 
-async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
+async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Unload a config entry."""
     unload_ok = await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
 

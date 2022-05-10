@@ -20,13 +20,8 @@ CONF_USE_LITERS_PER_100_MILES = "use_liters"
 # DEFAULTS
 DEFAULT_LOCALE = "en-gb"
 
-# DATA COORDINATOR
-DATA_CLIENT = "toyota_client"
-DATA_COORDINATOR = "coordinator"
-
 # DATA COORDINATOR ATTRIBUTES
 AVERAGE_SPEED = "averageSpeedInKmph"
-BATTERY_HEALTH = "batteryHealth"
 BUCKET = "bucket"
 COACHING_ADVICE = "coachingAdviceMostOccurrence"
 DATA = "data"
@@ -49,7 +44,6 @@ IMAGE = "imageUrl"
 LAST_UPDATED = "last_updated"
 LICENSE_PLATE = "licensePlate"
 MAX_SPEED = "maxSpeedInKmph"
-MODEL = "modelName"
 NIGHT_TRIPS = "nightTripsCount"
 PERIODE_START = "periode_start"
 STATISTICS = "statistics"

@@ -3,41 +3,60 @@ import logging
 
 from homeassistant.components.device_tracker import SOURCE_TYPE_GPS
 from homeassistant.components.device_tracker.config_entry import TrackerEntity
+from homeassistant.config_entries import ConfigEntry
+from homeassistant.core import HomeAssistant
+from homeassistant.helpers.entity import EntityDescription
+from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 
-from .const import DATA_COORDINATOR, DOMAIN, IMAGE
+from . import VehicleData
+from .const import DOMAIN, IMAGE
 from .entity import ToyotaBaseEntity
 
 _LOGGER = logging.getLogger(__name__)
 
 
-async def async_setup_entry(hass, config_entry, async_add_devices):
+async def async_setup_entry(
+    hass: HomeAssistant,
+    entry: ConfigEntry,
+    async_add_devices: AddEntitiesCallback,
+) -> None:
     """Set up the Toyota Connected Services tracker from config entry."""
-    tracker = []
+    coordinator: DataUpdateCoordinator[list[VehicleData]] = hass.data[DOMAIN][
+        entry.entry_id
+    ]
 
-    coordinator = hass.data[DOMAIN][config_entry.entry_id][DATA_COORDINATOR]
-
-    for index, _ in enumerate(coordinator.data):
-
-        vehicle = coordinator.data[index]
-        if vehicle.is_connected:
-            tracker.append(ToyotaParkingTracker(coordinator, index, "parking location"))
-
-    async_add_devices(tracker, True)
+    async_add_devices(
+        ToyotaParkingTracker(
+            coordinator=coordinator,
+            entry_id=entry.entry_id,
+            vehicle_index=index,
+            description=EntityDescription(
+                key="parking_location",
+                name="parking location",
+            ),
+        )
+        for index, vehicle in enumerate(coordinator.data)
+        if vehicle["data"].is_connected_services_enabled
+        and vehicle["data"].parkinglocation
+    )
 
 
 class ToyotaParkingTracker(ToyotaBaseEntity, TrackerEntity):
     """Toyota Connected Services device tracker."""
 
+    coordinator: DataUpdateCoordinator[list[VehicleData]]
+
     @property
     def latitude(self):
         """Return latitude value of the device."""
-        parking = self.coordinator.data[self.index].parking
+        parking = self.coordinator.data[self.index]["data"].parkinglocation
         return parking.latitude if parking else None
 
     @property
     def longitude(self):
         """Return longitude value of the device."""
-        parking = self.coordinator.data[self.index].parking
+        parking = self.coordinator.data[self.index]["data"].parkinglocation
         return parking.longitude if parking else None
 
     @property

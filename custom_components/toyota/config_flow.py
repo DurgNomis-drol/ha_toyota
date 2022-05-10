@@ -2,35 +2,26 @@
 import logging
 
 from mytoyota.client import MyT
-from mytoyota.exceptions import (
-    ToyotaInvalidUsername,
-    ToyotaLoginError,
-    ToyotaRegionNotSupported,
-)
+from mytoyota.exceptions import ToyotaInvalidUsername, ToyotaLoginError
 import voluptuous as vol
 
 from homeassistant import config_entries
-from homeassistant.const import CONF_EMAIL, CONF_PASSWORD, CONF_REGION
+from homeassistant.const import CONF_EMAIL, CONF_PASSWORD
 from homeassistant.core import callback
+from homeassistant.data_entry_flow import FlowResult
 
 # https://github.com/PyCQA/pylint/issues/3202
 from .const import (  # pylint: disable=unused-import
     CONF_USE_LITERS_PER_100_MILES,
-    DEFAULT_LOCALE,
     DOMAIN,
 )
 
 _LOGGER = logging.getLogger(__name__)
 
-supported_regions = MyT.get_supported_regions()
-
 DATA_SCHEMA = vol.Schema(
     {
         vol.Required(CONF_EMAIL): str,
         vol.Required(CONF_PASSWORD): str,
-        vol.Required(CONF_REGION): vol.In(
-            [region.capitalize() for region in supported_regions]
-        ),
     }
 )
 
@@ -39,9 +30,8 @@ class ToyotaConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """Handle a config flow for Toyota Connected Services."""
 
     VERSION = 1
-    CONNECTION_CLASS = config_entries.CONN_CLASS_CLOUD_POLL
 
-    async def async_step_user(self, user_input=None):
+    async def async_step_user(self, user_input=None) -> FlowResult:
         """Handle the initial step."""
         errors = {}
 
@@ -49,13 +39,9 @@ class ToyotaConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             await self.async_set_unique_id(user_input[CONF_EMAIL].lower())
 
             try:
-                region = user_input[CONF_REGION]
-
                 client = MyT(
                     username=user_input[CONF_EMAIL],
                     password=user_input[CONF_PASSWORD],
-                    locale=DEFAULT_LOCALE,
-                    region=region.lower(),
                     disable_locale_check=True,
                 )
 
@@ -64,12 +50,6 @@ class ToyotaConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             except ToyotaLoginError as ex:
                 errors["base"] = "invalid_auth"
                 _LOGGER.error(ex)
-            # except ToyotaLocaleNotValid as ex:
-            #     errors["base"] = "invalid_locale"
-            #     _LOGGER.error(ex)
-            except ToyotaRegionNotSupported as ex:
-                errors["base"] = "region_not_supported"
-                _LOGGER.error("Region not supported - %s", ex)
             except ToyotaInvalidUsername as ex:
                 errors["base"] = "invalid_username"
                 _LOGGER.error(ex)
@@ -97,10 +77,9 @@ class ToyotaOptionsFlowHandler(config_entries.OptionsFlow):
     def __init__(self, config_entry):
         """Initialize options flow."""
         self.config_entry = config_entry
-        # Cast from MappingProxy to dict to allow update.
         self.options = dict(config_entry.options)
 
-    async def async_step_init(self, user_input=None):
+    async def async_step_init(self, user_input=None) -> FlowResult:
         """Manage the options."""
         if user_input is not None:
             self.options.update(user_input)

@@ -6,9 +6,9 @@ authors = ["DurgNomis-drol <simongrud@gmail.com>"]
 license = "MIT"
 
 [tool.poetry.dependencies]
-python = "^3.8"
-homeassistant = ">=2021.12"
-mytoyota = "0.7.5"
+python = "^3.9"
+homeassistant = ">=2022.2"
+mytoyota = "0.8.0"
 arrow = "^1.1.1"
 
 [tool.poetry.dev-dependencies]

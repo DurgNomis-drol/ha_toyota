@@ -6,16 +6,13 @@
         "description": "Introduïu el vostre correu electrònic i contrasenya de la aplicació MyT abaix",
         "data": {
           "email": "Correu electrònic",
-          "password": "Contrasenya",
-          "region": "Regió (Per ara unicament donem soport a Europa)"
+          "password": "Contrasenya"
         }
       }
     },
     "error": {
       "invalid_username": "El correu electrònic ha de contenir un @.",
-      "region_not_supported": "La regió no está soportat",
       "invalid_auth": "Correu electònic/Contrasenya incorrecta.",
-      "invalid_locale": "El codi de la llengua no és vàlid.",
       "unknown": "Error inesperat."
     }
   }
