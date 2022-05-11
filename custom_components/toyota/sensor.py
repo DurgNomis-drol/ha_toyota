@@ -1,4 +1,4 @@
- 
+"""Sensor platform for Toyota integration"""
 from __future__ import annotations
 
 from collections.abc import Callable
@@ -297,7 +297,7 @@ class ToyotaSensor(ToyotaBaseEntity):
         if self.vehicle is None:
             return None
         return self.entity_description.unit_fn(self.vehicle)
-    
+
     @property
     def extra_state_attributes(self) -> dict[str, Any] | None:
         """Return the attributes of the sensor."""
