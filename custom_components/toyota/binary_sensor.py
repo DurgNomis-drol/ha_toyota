@@ -302,74 +302,6 @@ async def async_setup_entry(
 
         if vehicle.is_connected_services_enabled:
 
-            if vehicle.sensors.overallstatus:
-                binary_sensors.append(
-                    ToyotaBinarySensor(
-                        coordinator=coordinator,
-                        entry_id=entry.entry_id,
-                        vehicle_index=vehicle,
-                        description=OVER_ALL_STATUS_ENTITY_DESCRIPTION,
-                    )
-                )
-
-            if vehicle.sensors.windows:
-                # Add window sensors if available
-                binary_sensors.append(
-                    ToyotaBinarySensor(
-                        coordinator=coordinator,
-                        entry_id=entry.entry_id,
-                        vehicle_index=vehicle,
-                        description=description,
-                    )
-                    for description in WINDOW_ENTITY_DESCRIPTIONS
-                )
-
-            if vehicle.sensors.lights:
-                # Add light sensors if available
-                binary_sensors.append(
-                    ToyotaBinarySensor(
-                        coordinator=coordinator,
-                        entry_id=entry.entry_id,
-                        vehicle_index=vehicle,
-                        description=description,
-                    )
-                    for description in LIGHT_ENTITY_DESCRIPTIONS
-                )
-
-            if vehicle.sensors.hood:
-                # Add hood sensor if available
-                binary_sensors.append(
-                    ToyotaBinarySensor(
-                        coordinator=coordinator,
-                        entry_id=entry.entry_id,
-                        vehicle_index=vehicle,
-                        description=HOOD_ENTITY_DESCRIPTION,
-                    )
-                )
-
-            if vehicle.sensors.doors:
-                # Add door sensors if available
-                binary_sensors.append(
-                    ToyotaBinarySensor(
-                        coordinator=coordinator,
-                        entry_id=entry.entry_id,
-                        vehicle_index=vehicle,
-                        description=description,
-                    )
-                    for description in DOOR_ENTITY_DESCRIPTIONS
-                )
-
-            if vehicle.sensors.key:
-                # Add key in car sensor if available
-                binary_sensors.append(
-                    ToyotaBinarySensor(
-                        coordinator=coordinator,
-                        entry_id=entry.entry_id,
-                        vehicle_index=vehicle,
-                        description=KEY_ENTITY_DESCRIPTION,
-                    )
-                )
-
             if vehicle.hvac and vehicle.hvac.legacy:
                 # Add defogger sensors if hvac is set to legacy
                 binary_sensors.append(
@@ -381,6 +313,75 @@ async def async_setup_entry(
                     )
                     for description in DEFOGGER_ENTITY_DESCRIPTIONS
                 )
+
+            if vehicle.sensors:
+                if vehicle.sensors.overallstatus:
+                    binary_sensors.append(
+                        ToyotaBinarySensor(
+                            coordinator=coordinator,
+                            entry_id=entry.entry_id,
+                            vehicle_index=vehicle,
+                            description=OVER_ALL_STATUS_ENTITY_DESCRIPTION,
+                        )
+                    )
+
+                if vehicle.sensors.windows:
+                    # Add window sensors if available
+                    binary_sensors.append(
+                        ToyotaBinarySensor(
+                            coordinator=coordinator,
+                            entry_id=entry.entry_id,
+                            vehicle_index=vehicle,
+                            description=description,
+                        )
+                        for description in WINDOW_ENTITY_DESCRIPTIONS
+                    )
+
+                if vehicle.sensors.lights:
+                    # Add light sensors if available
+                    binary_sensors.append(
+                        ToyotaBinarySensor(
+                            coordinator=coordinator,
+                            entry_id=entry.entry_id,
+                            vehicle_index=vehicle,
+                            description=description,
+                        )
+                        for description in LIGHT_ENTITY_DESCRIPTIONS
+                    )
+
+                if vehicle.sensors.hood:
+                    # Add hood sensor if available
+                    binary_sensors.append(
+                        ToyotaBinarySensor(
+                            coordinator=coordinator,
+                            entry_id=entry.entry_id,
+                            vehicle_index=vehicle,
+                            description=HOOD_ENTITY_DESCRIPTION,
+                        )
+                    )
+
+                if vehicle.sensors.doors:
+                    # Add door sensors if available
+                    binary_sensors.append(
+                        ToyotaBinarySensor(
+                            coordinator=coordinator,
+                            entry_id=entry.entry_id,
+                            vehicle_index=vehicle,
+                            description=description,
+                        )
+                        for description in DOOR_ENTITY_DESCRIPTIONS
+                    )
+
+                if vehicle.sensors.key:
+                    # Add key in car sensor if available
+                    binary_sensors.append(
+                        ToyotaBinarySensor(
+                            coordinator=coordinator,
+                            entry_id=entry.entry_id,
+                            vehicle_index=vehicle,
+                            description=KEY_ENTITY_DESCRIPTION,
+                        )
+                    )
 
     async_add_devices(binary_sensors, True)
 
@@ -394,3 +395,10 @@ class ToyotaBinarySensor(ToyotaBaseEntity, BinarySensorEntity):
         if self.vehicle is None:
             return None
         return self.entity_description.value_fn(self.vehicle)
+
+    @property
+    def extra_state_attributes(self) -> dict[str, Any] | None:
+        """Return the attributes of the sensor."""
+        if self.vehicle is None:
+            return None
+        return self.entity_description.attributes_fn(self.vehicle)

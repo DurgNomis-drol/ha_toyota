@@ -1,8 +1,6 @@
 """Custom coordinator entity base classes for Toyota Connected Services integration"""
 from __future__ import annotations
 
-from typing import Any
-
 from mytoyota.models.vehicle import Vehicle
 
 from homeassistant.core import callback
@@ -42,13 +40,6 @@ class ToyotaBaseEntity(CoordinatorEntity):
             manufacturer=DOMAIN.capitalize(),
         )
         self.entity_description = description
-
-    @property
-    def extra_state_attributes(self) -> dict[str, Any] | None:
-        """Return the attributes of the sensor."""
-        if self.vehicle is None:
-            return None
-        return self.entity_description.attributes_fn(self.vehicle)
 
     @callback
     def _handle_coordinator_update(self) -> None:
