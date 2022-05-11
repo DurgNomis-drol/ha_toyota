@@ -304,17 +304,15 @@ async def async_setup_entry(
 
             if vehicle.hvac and vehicle.hvac.legacy:
                 # Add defogger sensors if hvac is set to legacy
-                binary_sensors.append(
-                    [
+                for description in DEFOGGER_ENTITY_DESCRIPTIONS:
+                    binary_sensors.append(
                         ToyotaBinarySensor(
                             coordinator=coordinator,
                             entry_id=entry.entry_id,
                             vehicle_index=vehicle,
                             description=description,
                         )
-                        for description in DEFOGGER_ENTITY_DESCRIPTIONS
-                    ]
-                )
+                    )
 
             if vehicle.sensors:
                 if vehicle.sensors.overallstatus:
@@ -329,31 +327,27 @@ async def async_setup_entry(
 
                 if vehicle.sensors.windows:
                     # Add window sensors if available
-                    binary_sensors.append(
-                        [
+                    for description in WINDOW_ENTITY_DESCRIPTIONS:
+                        binary_sensors.append(
                             ToyotaBinarySensor(
                                 coordinator=coordinator,
                                 entry_id=entry.entry_id,
                                 vehicle_index=vehicle,
                                 description=description,
                             )
-                            for description in WINDOW_ENTITY_DESCRIPTIONS
-                        ]
-                    )
+                        )
 
                 if vehicle.sensors.lights:
                     # Add light sensors if available
-                    binary_sensors.append(
-                        [
+                    for description in LIGHT_ENTITY_DESCRIPTIONS:
+                        binary_sensors.append(
                             ToyotaBinarySensor(
                                 coordinator=coordinator,
                                 entry_id=entry.entry_id,
                                 vehicle_index=vehicle,
                                 description=description,
                             )
-                            for description in LIGHT_ENTITY_DESCRIPTIONS
-                        ]
-                    )
+                        )
 
                 if vehicle.sensors.hood:
                     # Add hood sensor if available
@@ -368,17 +362,15 @@ async def async_setup_entry(
 
                 if vehicle.sensors.doors:
                     # Add door sensors if available
-                    binary_sensors.append(
-                        [
+                    for description in DOOR_ENTITY_DESCRIPTIONS:
+                        binary_sensors.append(
                             ToyotaBinarySensor(
                                 coordinator=coordinator,
                                 entry_id=entry.entry_id,
                                 vehicle_index=vehicle,
                                 description=description,
                             )
-                            for description in DOOR_ENTITY_DESCRIPTIONS
-                        ]
-                    )
+                        )
 
                 if vehicle.sensors.key:
                     # Add key in car sensor if available

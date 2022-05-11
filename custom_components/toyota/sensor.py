@@ -234,17 +234,15 @@ async def async_setup_entry(
         )
 
         if vehicle.is_connected_services_enabled:
-            sensors.append(
-                [
+            for description in STATISTICS_ENTITY_DESCRIPTIONS:
+                sensors.append(
                     ToyotaStatisticsSensor(
                         coordinator=coordinator,
                         entry_id=entry.entry_id,
                         vehicle_index=index,
                         description=description,
                     )
-                    for description in STATISTICS_ENTITY_DESCRIPTIONS
-                ]
-            )
+                )
 
             if "batteryHealth" in vehicle.details:
                 sensors.append(
@@ -257,30 +255,26 @@ async def async_setup_entry(
                 )
 
             if vehicle.hvac:
-                sensors.append(
-                    [
-                        ToyotaSensor(
+                for description in HVAC_ENTITY_DESCRIPTIONS:
+                    sensors.append(
+                        ToyotaStatisticsSensor(
                             coordinator=coordinator,
                             entry_id=entry.entry_id,
                             vehicle_index=index,
                             description=description,
                         )
-                        for description in HVAC_ENTITY_DESCRIPTIONS
-                    ]
-                )
+                    )
 
             if vehicle.hybrid:
-                sensors.append(
-                    [
-                        ToyotaSensor(
+                for description in HYBRID_ENTITY_DESCRIPTIONS:
+                    sensors.append(
+                        ToyotaStatisticsSensor(
                             coordinator=coordinator,
                             entry_id=entry.entry_id,
                             vehicle_index=index,
                             description=description,
                         )
-                        for description in HYBRID_ENTITY_DESCRIPTIONS
-                    ]
-                )
+                    )
 
     async_add_devices(sensors)
 
@@ -325,7 +319,7 @@ class ToyotaStatisticsSensor(ToyotaSensor):
         description: ToyotaStatisticsSensorEntityDescription,
     ) -> None:
         super().__init__(coordinator, entry_id, vehicle_index, description)
-        self.periode = description.periode
+        self.period = description.period
         self._attr_native_unit_of_measurement = (
             LENGTH_KILOMETERS if self.vehicle.dashboard.is_metric else LENGTH_MILES
         )
@@ -333,21 +327,21 @@ class ToyotaStatisticsSensor(ToyotaSensor):
     @property
     def extra_state_attributes(self):
         """Return the state attributes."""
-        data = self.coordinator.data[self.index]["statistics"][self.periode][0]
+        data = self.coordinator.data[self.index]["statistics"][self.period][0]
 
         attributes = format_statistics_attributes(
             data.get(DATA, {}), self.vehicle.hybrid
         )
 
-        if self.periode == "year":
+        if self.period == "year":
             from_year = arrow.now().floor("year").format("YYYY")
             attributes.update(
                 {"Year": data[BUCKET]["year"] if BUCKET in data else from_year}
             )
-        elif self.periode == "month":
+        elif self.period == "month":
             from_month = arrow.now().floor("month").format("MMMM")
             attributes.update({"Month": from_month})
-        elif self.periode == "week":
+        elif self.period == "week":
             from_dt = arrow.now().floor("week").format("YYYY-MM-DD")
             to_dt = arrow.now().ceil("week").format("YYYY-MM-DD")
             attributes.update(
@@ -363,7 +357,7 @@ class ToyotaStatisticsSensor(ToyotaSensor):
     def native_value(self) -> StateType:
         """Return the state of the sensor."""
         total_distance = None
-        data = self.coordinator.data[self.index]["statistics"][self.periode][0]
+        data = self.coordinator.data[self.index]["statistics"][self.period][0]
 
         if DATA in data:
             total_distance = round(data[DATA][TOTAL_DISTANCE], 1)
