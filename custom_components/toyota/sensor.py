@@ -235,13 +235,15 @@ async def async_setup_entry(
 
         if vehicle.is_connected_services_enabled:
             sensors.append(
-                ToyotaStatisticsSensor(
-                    coordinator=coordinator,
-                    entry_id=entry.entry_id,
-                    vehicle_index=index,
-                    description=description,
-                )
-                for description in STATISTICS_ENTITY_DESCRIPTIONS
+                [
+                    ToyotaStatisticsSensor(
+                        coordinator=coordinator,
+                        entry_id=entry.entry_id,
+                        vehicle_index=index,
+                        description=description,
+                    )
+                    for description in STATISTICS_ENTITY_DESCRIPTIONS
+                ]
             )
 
             if "batteryHealth" in vehicle.details:
@@ -256,24 +258,28 @@ async def async_setup_entry(
 
             if vehicle.hvac:
                 sensors.append(
-                    ToyotaSensor(
-                        coordinator=coordinator,
-                        entry_id=entry.entry_id,
-                        vehicle_index=index,
-                        description=description,
-                    )
-                    for description in HVAC_ENTITY_DESCRIPTIONS
+                    [
+                        ToyotaSensor(
+                            coordinator=coordinator,
+                            entry_id=entry.entry_id,
+                            vehicle_index=index,
+                            description=description,
+                        )
+                        for description in HVAC_ENTITY_DESCRIPTIONS
+                    ]
                 )
 
             if vehicle.hybrid:
                 sensors.append(
-                    ToyotaSensor(
-                        coordinator=coordinator,
-                        entry_id=entry.entry_id,
-                        vehicle_index=index,
-                        description=description,
-                    )
-                    for description in HYBRID_ENTITY_DESCRIPTIONS
+                    [
+                        ToyotaSensor(
+                            coordinator=coordinator,
+                            entry_id=entry.entry_id,
+                            vehicle_index=index,
+                            description=description,
+                        )
+                        for description in HYBRID_ENTITY_DESCRIPTIONS
+                    ]
                 )
 
     async_add_devices(sensors)
