@@ -1,4 +1,6 @@
+"""Utilities for Toyota integration."""
 from __future__ import annotations
+
 from datetime import timedelta
 from typing import Any
 
@@ -23,9 +25,11 @@ from .const import (
     TRIPS,
 )
 
-def round_number(number: int | float | None, places: int) -> int | float | None:
+
+def round_number(number: int | float | None, places: int = 0) -> int | float | None:
     """Round a number if it is not None."""
-    return None if isinstance(number, None) else round(number, places)
+    return None if number is None else round(number, places)
+
 
 def format_statistics_attributes(statistics: dict[str, Any], is_hybrid: bool):
     """Formats and returns statistics attributes."""
@@ -35,9 +39,7 @@ def format_statistics_attributes(statistics: dict[str, Any], is_hybrid: bool):
 
     attr = {
         "Highway_distance": round(statistics.get(HIGHWAY_DISTANCE, 0), 1),
-        "Highway_percentage": round(
-            statistics.get(HIGHWAY_DISTANCE_PERCENTAGE, 0), 1
-        ),
+        "Highway_percentage": round(statistics.get(HIGHWAY_DISTANCE_PERCENTAGE, 0), 1),
         "Number_of_trips": statistics.get(TRIPS, 0),
         "Number_of_night_trips": statistics.get(NIGHT_TRIPS, 0),
         "Total_driving_time": get_timedelta(statistics.get(TOTAL_DURATION, 0)),
@@ -57,9 +59,7 @@ def format_statistics_attributes(statistics: dict[str, Any], is_hybrid: bool):
     if COACHING_ADVICE in statistics:
         attr.update(
             {
-                "Coaching_advice_most_occurrence": statistics.get(
-                    COACHING_ADVICE, 0
-                ),
+                "Coaching_advice_most_occurrence": statistics.get(COACHING_ADVICE, 0),
             }
         )
 

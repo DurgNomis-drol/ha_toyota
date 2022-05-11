@@ -1,21 +1,44 @@
 """Binary sensor platform for Toyota integration"""
 from __future__ import annotations
 
+from collections.abc import Callable
+from dataclasses import dataclass
+from datetime import datetime
+from typing import Any
+
+from mytoyota.models.vehicle import Vehicle
+
 from homeassistant.components.binary_sensor import (
     BinarySensorDeviceClass,
     BinarySensorEntity,
 )
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers.entity import EntityCategory
+from homeassistant.helpers.entity import EntityCategory, EntityDescription
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 
 from . import VehicleData
 from .const import DOMAIN, LAST_UPDATED, WARNING
-from .entity import ToyotaBaseEntity, ToyotaEntityDescription
+from .entity import ToyotaBaseEntity
 
-OVER_ALL_STATUS_ENTITY_DESCRIPTION = ToyotaEntityDescription(
+
+@dataclass
+class ToyotaBinaryEntityDescriptionMixin:
+    """Mixin for required keys."""
+
+    value_fn: Callable[[Vehicle], bool | datetime | int | str | None] | None
+    attributes_fn: Callable[[Vehicle], dict[str, Any] | None] | None
+
+
+@dataclass
+class ToyotaBinaryEntityDescription(
+    EntityDescription, ToyotaBinaryEntityDescriptionMixin
+):
+    """Describes a Toyota binary entity."""
+
+
+OVER_ALL_STATUS_ENTITY_DESCRIPTION = ToyotaBinaryEntityDescription(
     key="over_all_status",
     name="over all status",
     icon="mdi:alert",
@@ -24,7 +47,7 @@ OVER_ALL_STATUS_ENTITY_DESCRIPTION = ToyotaEntityDescription(
     attributes_fn=lambda vh: {LAST_UPDATED: vh.sensors.last_updated},
 )
 
-HOOD_ENTITY_DESCRIPTION = ToyotaEntityDescription(
+HOOD_ENTITY_DESCRIPTION = ToyotaBinaryEntityDescription(
     key="hood",
     name="hood",
     device_class=BinarySensorDeviceClass.DOOR,
@@ -36,7 +59,7 @@ HOOD_ENTITY_DESCRIPTION = ToyotaEntityDescription(
     },
 )
 
-KEY_ENTITY_DESCRIPTION = ToyotaEntityDescription(
+KEY_ENTITY_DESCRIPTION = ToyotaBinaryEntityDescription(
     key="key_in_car",
     name="key in car",
     icon="mdi:car-key",
@@ -48,23 +71,25 @@ KEY_ENTITY_DESCRIPTION = ToyotaEntityDescription(
     },
 )
 
-DEFOGGER_ENTITY_DESCRIPTIONS: tuple[ToyotaEntityDescription, ...] = (
-    ToyotaEntityDescription(
+DEFOGGER_ENTITY_DESCRIPTIONS: tuple[ToyotaBinaryEntityDescription, ...] = (
+    ToyotaBinaryEntityDescription(
         key="front_defogger",
         name="front defogger",
         icon="mdi:car-defrost-front",
         value_fn=lambda vh: vh.hvac.front_defogger_is_on,
+        attributes_fn=None,
     ),
-    ToyotaEntityDescription(
+    ToyotaBinaryEntityDescription(
         key="rear_defogger",
         name="rear defogger",
         icon="mdi:car-defrost-rear",
         value_fn=lambda vh: vh.hvac.rear_defogger_is_on,
+        attributes_fn=None,
     ),
 )
 
-WINDOW_ENTITY_DESCRIPTIONS: tuple[ToyotaEntityDescription, ...] = (
-    ToyotaEntityDescription(
+WINDOW_ENTITY_DESCRIPTIONS: tuple[ToyotaBinaryEntityDescription, ...] = (
+    ToyotaBinaryEntityDescription(
         key="driverseat_window",
         name="driverseat window",
         device_class=BinarySensorDeviceClass.WINDOW,
@@ -75,7 +100,7 @@ WINDOW_ENTITY_DESCRIPTIONS: tuple[ToyotaEntityDescription, ...] = (
             LAST_UPDATED: vh.sensors.last_updated,
         },
     ),
-    ToyotaEntityDescription(
+    ToyotaBinaryEntityDescription(
         key="passengerseat_window",
         name="passengerseat window",
         device_class=BinarySensorDeviceClass.WINDOW,
@@ -86,7 +111,7 @@ WINDOW_ENTITY_DESCRIPTIONS: tuple[ToyotaEntityDescription, ...] = (
             LAST_UPDATED: vh.sensors.last_updated,
         },
     ),
-    ToyotaEntityDescription(
+    ToyotaBinaryEntityDescription(
         key="leftrearseat_window",
         name="leftrearseat window",
         device_class=BinarySensorDeviceClass.WINDOW,
@@ -97,7 +122,7 @@ WINDOW_ENTITY_DESCRIPTIONS: tuple[ToyotaEntityDescription, ...] = (
             LAST_UPDATED: vh.sensors.last_updated,
         },
     ),
-    ToyotaEntityDescription(
+    ToyotaBinaryEntityDescription(
         key="rightrearseat_window",
         name="rightrearseat window",
         device_class=BinarySensorDeviceClass.WINDOW,
@@ -110,8 +135,8 @@ WINDOW_ENTITY_DESCRIPTIONS: tuple[ToyotaEntityDescription, ...] = (
     ),
 )
 
-DOOR_ENTITY_DESCRIPTIONS: tuple[ToyotaEntityDescription, ...] = (
-    ToyotaEntityDescription(
+DOOR_ENTITY_DESCRIPTIONS: tuple[ToyotaBinaryEntityDescription, ...] = (
+    ToyotaBinaryEntityDescription(
         key="driverseat_door",
         name="driverseat door",
         device_class=BinarySensorDeviceClass.DOOR,
@@ -122,7 +147,7 @@ DOOR_ENTITY_DESCRIPTIONS: tuple[ToyotaEntityDescription, ...] = (
             LAST_UPDATED: vh.sensors.last_updated,
         },
     ),
-    ToyotaEntityDescription(
+    ToyotaBinaryEntityDescription(
         key="driverseat_lock",
         name="driverseat lock",
         device_class=BinarySensorDeviceClass.LOCK,
@@ -133,7 +158,7 @@ DOOR_ENTITY_DESCRIPTIONS: tuple[ToyotaEntityDescription, ...] = (
             LAST_UPDATED: vh.sensors.last_updated,
         },
     ),
-    ToyotaEntityDescription(
+    ToyotaBinaryEntityDescription(
         key="passengerseat_door",
         name="passengerseat door",
         device_class=BinarySensorDeviceClass.DOOR,
@@ -144,7 +169,7 @@ DOOR_ENTITY_DESCRIPTIONS: tuple[ToyotaEntityDescription, ...] = (
             LAST_UPDATED: vh.sensors.last_updated,
         },
     ),
-    ToyotaEntityDescription(
+    ToyotaBinaryEntityDescription(
         key="passengerseat_lock",
         name="passengerseat lock",
         device_class=BinarySensorDeviceClass.LOCK,
@@ -155,7 +180,7 @@ DOOR_ENTITY_DESCRIPTIONS: tuple[ToyotaEntityDescription, ...] = (
             LAST_UPDATED: vh.sensors.last_updated,
         },
     ),
-    ToyotaEntityDescription(
+    ToyotaBinaryEntityDescription(
         key="leftrearseat_door",
         name="leftrearseat door",
         device_class=BinarySensorDeviceClass.DOOR,
@@ -166,7 +191,7 @@ DOOR_ENTITY_DESCRIPTIONS: tuple[ToyotaEntityDescription, ...] = (
             LAST_UPDATED: vh.sensors.last_updated,
         },
     ),
-    ToyotaEntityDescription(
+    ToyotaBinaryEntityDescription(
         key="leftrearseat_lock",
         name="leftrearseat lock",
         device_class=BinarySensorDeviceClass.LOCK,
@@ -177,7 +202,7 @@ DOOR_ENTITY_DESCRIPTIONS: tuple[ToyotaEntityDescription, ...] = (
             LAST_UPDATED: vh.sensors.last_updated,
         },
     ),
-    ToyotaEntityDescription(
+    ToyotaBinaryEntityDescription(
         key="rightrearseat_door",
         name="rightrearseat door",
         device_class=BinarySensorDeviceClass.DOOR,
@@ -188,7 +213,7 @@ DOOR_ENTITY_DESCRIPTIONS: tuple[ToyotaEntityDescription, ...] = (
             LAST_UPDATED: vh.sensors.last_updated,
         },
     ),
-    ToyotaEntityDescription(
+    ToyotaBinaryEntityDescription(
         key="rightrearseat_lock",
         name="rightrearseat lock",
         device_class=BinarySensorDeviceClass.LOCK,
@@ -199,7 +224,7 @@ DOOR_ENTITY_DESCRIPTIONS: tuple[ToyotaEntityDescription, ...] = (
             LAST_UPDATED: vh.sensors.last_updated,
         },
     ),
-    ToyotaEntityDescription(
+    ToyotaBinaryEntityDescription(
         key="trunk_door",
         name="trunk",
         device_class=BinarySensorDeviceClass.WINDOW,
@@ -210,7 +235,7 @@ DOOR_ENTITY_DESCRIPTIONS: tuple[ToyotaEntityDescription, ...] = (
             LAST_UPDATED: vh.sensors.last_updated,
         },
     ),
-    ToyotaEntityDescription(
+    ToyotaBinaryEntityDescription(
         key="trunk_lock",
         name="trunk lock",
         device_class=BinarySensorDeviceClass.LOCK,
@@ -223,8 +248,8 @@ DOOR_ENTITY_DESCRIPTIONS: tuple[ToyotaEntityDescription, ...] = (
     ),
 )
 
-LIGHT_ENTITY_DESCRIPTIONS: tuple[ToyotaEntityDescription, ...] = (
-    ToyotaEntityDescription(
+LIGHT_ENTITY_DESCRIPTIONS: tuple[ToyotaBinaryEntityDescription, ...] = (
+    ToyotaBinaryEntityDescription(
         key="hazardlights",
         name="hazardlights",
         device_class=BinarySensorDeviceClass.LIGHT,
@@ -235,7 +260,7 @@ LIGHT_ENTITY_DESCRIPTIONS: tuple[ToyotaEntityDescription, ...] = (
             LAST_UPDATED: vh.sensors.last_updated,
         },
     ),
-    ToyotaEntityDescription(
+    ToyotaBinaryEntityDescription(
         key="headlights",
         name="headlights",
         device_class=BinarySensorDeviceClass.LIGHT,
@@ -246,7 +271,7 @@ LIGHT_ENTITY_DESCRIPTIONS: tuple[ToyotaEntityDescription, ...] = (
             LAST_UPDATED: vh.sensors.last_updated,
         },
     ),
-    ToyotaEntityDescription(
+    ToyotaBinaryEntityDescription(
         key="taillights",
         name="taillights",
         device_class=BinarySensorDeviceClass.LIGHT,

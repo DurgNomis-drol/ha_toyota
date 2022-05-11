@@ -1,9 +1,6 @@
 """Custom coordinator entity base classes for Toyota Connected Services integration"""
 from __future__ import annotations
 
-from collections.abc import Callable
-from dataclasses import dataclass
-from datetime import datetime
 from typing import Any
 
 from mytoyota.models.vehicle import Vehicle
@@ -15,27 +12,8 @@ from homeassistant.helpers.update_coordinator import (
     DataUpdateCoordinator,
 )
 
-from . import StatisticsData, VehicleData
+from . import VehicleData
 from .const import DOMAIN
-
-
-@dataclass
-class ToyotaEntityDescriptionMixin:
-    """Mixin for required keys."""
-
-    value_fn: Callable[
-        [Vehicle | StatisticsData], bool | datetime | int | str | None
-    ] | None = None
-    attributes_fn: Callable[
-        [Vehicle | StatisticsData], dict[str, Any] | None
-    ] | None = None
-    unit_fn: Callable[[Vehicle | StatisticsData], str | None] | str | None = None
-    periode: str | None = None
-
-
-@dataclass
-class ToyotaEntityDescription(EntityDescription, ToyotaEntityDescriptionMixin):
-    """Describes a Toyota entity."""
 
 
 class ToyotaBaseEntity(CoordinatorEntity):
@@ -46,7 +24,7 @@ class ToyotaBaseEntity(CoordinatorEntity):
         coordinator: DataUpdateCoordinator[list[VehicleData]],
         entry_id: str,
         vehicle_index: int,
-        description: ToyotaEntityDescription,
+        description: EntityDescription,
     ) -> None:
         """Initialize the Toyota entity."""
         super().__init__(coordinator)
