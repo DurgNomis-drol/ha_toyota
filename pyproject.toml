@@ -6,7 +6,7 @@ authors = ["DurgNomis-drol <simongrud@gmail.com>"]
 license = "MIT"
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.9"
 homeassistant = ">=2022.6"
 mytoyota = "0.7.5"
 arrow = "^1.1.1"
@@ -15,8 +15,10 @@ arrow = "^1.1.1"
 pre-commit = "^2.11.1"
 black = "^20.8b1"
 flake8 = "^3.8.4"
+mypy = "^0.910"
 pylint = "^2.7.2"
 isort = "^5.7.0"
+codespell = "^2.0.0"
 
 [tool.pylint.messages_control]
 # Reasons disabled:
@@ -26,6 +28,7 @@ disable = [
     "too-few-public-methods",
     "too-many-arguments",
     "too-many-instance-attributes",
+    "duplicate-code",
 ]
 
 [tool.pylint.format]
