@@ -2,7 +2,6 @@
   "config": {
     "step": {
       "user": {
-        "title": "Toyota Connected Services",
         "description": "Voer uw e-mailadres en wachtwoord voor MyT in hieronder.",
         "data": {
           "email": "E-mail",
