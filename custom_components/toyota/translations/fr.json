@@ -1,0 +1,30 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "description": "Merci d'insérer vos identifiant et mot de passe MyT ci-dessous.",
+        "data": {
+          "email": "Email",
+          "password": "Mot de passe",
+          "region": "Région (Seule l'Europe est actuellement supportée)"
+        }
+      }
+    },
+    "error": {
+      "invalid_username": "L'adresse Email doit contenir un @.",
+      "region_not_supported": "Cette région n'est pas supportée.",
+      "invalid_auth": "Email ou mot de passe incorrect.",
+      "invalid_locale": "Code de langue invalide.",
+      "unknown": "Erreur inattendue."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "data": {
+          "use_liters": "Utiliser les littres (L/100 miles) au lieu de MPG. Applicable uniquement si votre voiture rapporte les données en miles (Système d'unités impériales)."
+        }
+      }
+    }
+  }
+}
