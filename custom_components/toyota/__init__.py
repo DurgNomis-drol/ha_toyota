@@ -40,7 +40,7 @@ _LOGGER = logging.getLogger(__name__)
 UPDATE_INTERVAL = timedelta(minutes=10)
 
 
-async def with_timeout(task, timeout_seconds=15):
+async def with_timeout(task, timeout_seconds=25):
     """Run an async task with a timeout."""
     async with async_timeout.timeout(timeout_seconds):
         return await task
