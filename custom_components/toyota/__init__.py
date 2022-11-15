@@ -37,7 +37,7 @@ from .const import (
 _LOGGER = logging.getLogger(__name__)
 
 # Update sensors every 5 minutes
-UPDATE_INTERVAL = timedelta(seconds=90)
+UPDATE_INTERVAL = timedelta(minutes=10)
 
 
 async def with_timeout(task, timeout_seconds=15):
