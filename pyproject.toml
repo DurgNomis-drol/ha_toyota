@@ -8,7 +8,7 @@ license = "MIT"
 [tool.poetry.dependencies]
 python = "^3.9"
 homeassistant = ">=2022.6"
-mytoyota = "0.9.1"
+mytoyota = "^0.9.1"
 arrow = "^1.1.1"
 
 [tool.poetry.dev-dependencies]
