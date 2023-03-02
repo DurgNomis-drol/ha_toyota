@@ -48,6 +48,4 @@ class ToyotaParkingTracker(ToyotaBaseEntity, TrackerEntity):
     @property
     def entity_picture(self):
         """Return entity picture."""
-        if IMAGE in self.vehicle.details:
-            return self.vehicle.details[IMAGE]
-        return None
+        return self.vehicle.details[IMAGE] if IMAGE in self.vehicle.details else None

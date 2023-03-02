@@ -96,20 +96,10 @@ class StatisticsBaseEntity(ToyotaBaseEntity, SensorEntity):
         }
 
         if FUEL_CONSUMED in statistics:
-            attr.update(
-                {
-                    "Average_fuel_consumed": round(statistics.get(FUEL_CONSUMED, 0), 2),
-                }
-            )
+            attr["Average_fuel_consumed"] = round(statistics.get(FUEL_CONSUMED, 0), 2)
 
         if COACHING_ADVICE in statistics:
-            attr.update(
-                {
-                    "Coaching_advice_most_occurrence": statistics.get(
-                        COACHING_ADVICE, 0
-                    ),
-                }
-            )
+            attr["Coaching_advice_most_occurrence"] = statistics.get(COACHING_ADVICE, 0)
 
         if DRIVER_SCORE in statistics:
             attr.update(

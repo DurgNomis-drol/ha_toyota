@@ -2,12 +2,14 @@
 import arrow
 
 from homeassistant.components.sensor import SensorDeviceClass
+from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import (
     PERCENTAGE,
     STATE_UNAVAILABLE,
     STATE_UNKNOWN,
     TEMP_CELSIUS,
 )
+from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.typing import StateType
 
@@ -32,7 +34,9 @@ from .const import (
 from .entity import StatisticsBaseEntity, ToyotaBaseEntity
 
 
-async def async_setup_entry(hass, config_entry, async_add_devices):
+async def async_setup_entry(
+    hass: HomeAssistant, config_entry: ConfigEntry, async_add_devices
+):
     """Set up the sensor platform."""
     sensors = []
 
@@ -199,7 +203,7 @@ class ToyotaEVSensor(ToyotaBaseEntity):
     def extra_state_attributes(self):
         """Return the state attributes."""
 
-        attribute = {
+        return {
             "Start_time": self.coordinator.data[self.index].energy.chargeinfo.get(
                 "start_time", None
             ),
@@ -213,8 +217,6 @@ class ToyotaEVSensor(ToyotaBaseEntity):
                 "remaining_amount", None
             ),
         }
-
-        return attribute
 
     @property
     def state(self):
@@ -242,22 +244,16 @@ class ToyotaHVACSensor(ToyotaBaseEntity):
         }
 
         if hvac.legacy:
-            attributes.update(
-                {
-                    "blower_status": hvac.blower_on,
-                }
-            )
+            attributes["blower_status"] = hvac.blower_on
         else:
-            attributes.update(
-                {
-                    "started_at": hvac.started_at,
-                    "status": hvac.status,
-                    "type": hvac.type,
-                    "duration": hvac.duration,
-                    "options": hvac.options,
-                    "command_id": hvac.options,
-                }
-            )
+            attributes |= {
+                "started_at": hvac.started_at,
+                "status": hvac.status,
+                "type": hvac.type,
+                "duration": hvac.duration,
+                "options": hvac.options,
+                "command_id": hvac.options,
+            }
 
         return attributes
 
@@ -301,12 +297,9 @@ class ToyotaCurrentWeekSensor(StatisticsBaseEntity):
     @property
     def native_value(self) -> StateType:
         """Return the state of the sensor."""
-        total_distance = None
         data = self.coordinator.data[self.index].statistics.weekly[0]
 
-        if DATA in data:
-            total_distance = round(data[DATA][TOTAL_DISTANCE], 1)
-
+        total_distance = round(data[DATA][TOTAL_DISTANCE], 1) if DATA in data else None
         return STATE_UNAVAILABLE if total_distance is None else total_distance
 
 
@@ -327,12 +320,9 @@ class ToyotaCurrentMonthSensor(StatisticsBaseEntity):
     @property
     def native_value(self) -> StateType:
         """Return the state of the sensor."""
-        total_distance = None
         data = self.coordinator.data[self.index].statistics.monthly[0]
 
-        if DATA in data:
-            total_distance = round(data[DATA][TOTAL_DISTANCE], 1)
-
+        total_distance = round(data[DATA][TOTAL_DISTANCE], 1) if DATA in data else None
         return STATE_UNAVAILABLE if total_distance is None else total_distance
 
 
@@ -355,10 +345,7 @@ class ToyotaCurrentYearSensor(StatisticsBaseEntity):
     @property
     def native_value(self) -> StateType:
         """Return the state of the sensor."""
-        total_distance = None
         data = self.coordinator.data[self.index].statistics.yearly[0]
 
-        if DATA in data:
-            total_distance = round(data[DATA][TOTAL_DISTANCE], 1)
-
+        total_distance = round(data[DATA][TOTAL_DISTANCE], 1) if DATA in data else None
         return STATE_UNAVAILABLE if total_distance is None else total_distance

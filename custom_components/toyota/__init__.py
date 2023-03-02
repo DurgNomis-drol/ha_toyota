@@ -3,11 +3,12 @@ import asyncio
 import asyncio.exceptions as asyncioexceptions
 from datetime import timedelta
 import logging
+from typing import Any, Coroutine, Dict, List, Optional
 
 import async_timeout
 import httpcore
 import httpx
-from mytoyota.client import MyT
+from mytoyota.client import MyT, Vehicle
 from mytoyota.exceptions import ToyotaApiError, ToyotaInternalError, ToyotaLoginError
 
 from homeassistant.config_entries import ConfigEntry
@@ -40,7 +41,9 @@ _LOGGER = logging.getLogger(__name__)
 UPDATE_INTERVAL = timedelta(minutes=10)
 
 
-async def with_timeout(task, timeout_seconds=25):
+async def with_timeout(
+    task: Coroutine[Any, Any, List[Dict[str, Any]]], timeout_seconds: int = 25
+) -> List[Dict[str, Any]]:
     """Run an async task with a timeout."""
     async with async_timeout.timeout(timeout_seconds):
         return await task
@@ -76,7 +79,7 @@ async def async_setup_entry(  # pylint: disable=too-many-statements
             "Unable to connect to Toyota Connected Services"
         ) from ex
 
-    async def async_update_data():
+    async def async_update_data() -> Optional[List[Vehicle]]:
         """Fetch data from Toyota API."""
 
         try:
