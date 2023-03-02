@@ -11,6 +11,7 @@ from homeassistant.const import (
 )
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import EntityCategory
+from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.typing import StateType
 
 from .const import (
@@ -35,8 +36,10 @@ from .entity import StatisticsBaseEntity, ToyotaBaseEntity
 
 
 async def async_setup_entry(
-    hass: HomeAssistant, config_entry: ConfigEntry, async_add_devices
-):
+    hass: HomeAssistant,
+    config_entry: ConfigEntry,
+    async_add_entities: AddEntitiesCallback,
+) -> None:
     """Set up the sensor platform."""
     sensors = []
 
@@ -86,7 +89,7 @@ async def async_setup_entry(
             if vehicle.hvac:
                 sensors.append(ToyotaHVACSensor(coordinator, index, "hvac"))
 
-    async_add_devices(sensors, True)
+    async_add_entities(sensors, True)
 
 
 class ToyotaCarSensor(ToyotaBaseEntity):

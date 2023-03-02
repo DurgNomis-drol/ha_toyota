@@ -6,6 +6,7 @@ from homeassistant.components.binary_sensor import (
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import EntityCategory
+from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .const import (
     DATA_COORDINATOR,
@@ -25,8 +26,8 @@ from .entity import ToyotaBaseEntity
 async def async_setup_entry(
     hass: HomeAssistant,
     config_entry: ConfigEntry,
-    async_add_devices,
-):
+    async_add_entities: AddEntitiesCallback,
+) -> None:
     """Set up the sensor platform."""
     binary_sensors = []
 
@@ -128,7 +129,7 @@ async def async_setup_entry(
                     ]
                 )
 
-    async_add_devices(binary_sensors, True)
+    async_add_entities(binary_sensors, True)
 
 
 class ToyotaHoodBinarySensor(ToyotaBaseEntity, BinarySensorEntity):
