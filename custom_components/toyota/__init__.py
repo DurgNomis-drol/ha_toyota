@@ -91,7 +91,7 @@ async def async_setup_entry(  # pylint: disable=too-many-statements
             for car in cars:
                 vehicle = await client.get_vehicle_status(car)
 
-                if vehicle.is_connected:
+                if vehicle.is_connected:  # Clarify the 'Vehicle' members
                     if vehicle.odometer.unit == LENGTH_MILES:
                         _LOGGER.debug("The car is reporting data in imperial")
                         if use_liters:
