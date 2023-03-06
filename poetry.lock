@@ -1043,14 +1043,14 @@ files = [
 
 [[package]]
 name = "mytoyota"
-version = "0.9.1"
+version = "0.7.8"
 description = "Python client for Toyota Connected Services."
 category = "main"
 optional = false
 python-versions = ">=3.7,<4.0"
 files = [
-    {file = "mytoyota-0.9.1-py3-none-any.whl", hash = "sha256:1c301b8f93fe94d3e3edbb3fc14aaf580bbc33c91689c8569a0cad09a092a1db"},
-    {file = "mytoyota-0.9.1.tar.gz", hash = "sha256:469408e7945bdc1b2c6ffb66936e7a3001be5fe7d2d7fb4ff2e86e2763b6a6c7"},
+    {file = "mytoyota-0.7.8-py3-none-any.whl", hash = "sha256:f3d5528056f8c2ccfb5e6350428ee28694ccbfbdcc1b9f7ab89118b28fed7417"},
+    {file = "mytoyota-0.7.8.tar.gz", hash = "sha256:79a1f9863ba4bb7b69a6dedd8fe515fed50d52b0fa73dd7c8a1fc5ee6e327025"},
 ]
 
 [package.dependencies]
@@ -1158,14 +1158,14 @@ files = [
 
 [[package]]
 name = "platformdirs"
-version = "3.0.0"
+version = "3.1.0"
 description = "A small Python package for determining appropriate platform-specific dirs, e.g. a \"user data dir\"."
 category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "platformdirs-3.0.0-py3-none-any.whl", hash = "sha256:b1d5eb14f221506f50d6604a561f4c5786d9e80355219694a1b244bcd96f4567"},
-    {file = "platformdirs-3.0.0.tar.gz", hash = "sha256:8a1228abb1ef82d788f74139988b137e78692984ec7b08eaa6c65f1723af28f9"},
+    {file = "platformdirs-3.1.0-py3-none-any.whl", hash = "sha256:13b08a53ed71021350c9e300d4ea8668438fb0046ab3937ac9a29913a1a1350a"},
+    {file = "platformdirs-3.1.0.tar.gz", hash = "sha256:accc3665857288317f32c7bebb5a8e482ba717b474f3fc1d18ca7f9214be0cef"},
 ]
 
 [package.extras]
@@ -1383,14 +1383,14 @@ files = [
 
 [[package]]
 name = "setuptools"
-version = "67.4.0"
+version = "67.5.1"
 description = "Easily download, build, install, upgrade, and uninstall Python packages"
 category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "setuptools-67.4.0-py3-none-any.whl", hash = "sha256:f106dee1b506dee5102cc3f3e9e68137bbad6d47b616be7991714b0c62204251"},
-    {file = "setuptools-67.4.0.tar.gz", hash = "sha256:e5fd0a713141a4a105412233c63dc4e17ba0090c8e8334594ac790ec97792330"},
+    {file = "setuptools-67.5.1-py3-none-any.whl", hash = "sha256:1c39d42bda4cb89f7fdcad52b6762e3c309ec8f8715b27c684176b7d71283242"},
+    {file = "setuptools-67.5.1.tar.gz", hash = "sha256:15136a251127da2d2e77ac7a1bc231eb504654f7e3346d93613a13f2e2787535"},
 ]
 
 [package.extras]
@@ -1599,4 +1599,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "2ce1be84a073b891178db98b774242180cef5e22dc4f19840c8b44f55b620b47"
+content-hash = "f94239dbf0d024c78ed70c56154002be5d3dba16e4a234d036f3864af24b2784"
