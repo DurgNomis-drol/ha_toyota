@@ -48,6 +48,50 @@ async def with_timeout(
         return await task
 
 
+def _get_unit_system_from_odometer(vehicle: Vehicle, use_liters: bool) -> str:
+    if vehicle.odometer is not None:
+        if vehicle.odometer.unit == LENGTH_MILES:
+            _LOGGER.debug("The car is reporting data in imperial")
+            if use_liters:
+                _LOGGER.debug("Get statistics in imperial and L/100 miles")
+                unit = CONF_UNIT_SYSTEM_IMPERIAL_LITERS
+            else:
+                _LOGGER.debug("Get statistics in imperial and MPG")
+                unit = CONF_UNIT_SYSTEM_IMPERIAL
+        else:
+            _LOGGER.debug("The car is reporting data in metric")
+            unit = CONF_UNIT_SYSTEM_METRIC
+    else:
+        _LOGGER.debug(
+            "Could not get any 'odometer' information. \
+            Falling back to metric data"
+        )
+        unit = CONF_UNIT_SYSTEM_METRIC
+    return unit
+
+
+async def _get_and_append_vehicle_statistics(
+    client: MyT, vehicle: Vehicle, unit: str
+) -> Vehicle:
+    if vehicle.vin is not None:
+        data = await asyncio.gather(
+            *[
+                client.get_driving_statistics(
+                    vehicle.vin, interval="isoweek", unit=unit
+                ),
+                client.get_driving_statistics(vehicle.vin, unit=unit),
+                client.get_driving_statistics(vehicle.vin, interval="year", unit=unit),
+            ]
+        )
+    else:
+        data = []
+        _LOGGER.debug("Could not resolve any 'vehicle.vin'")
+    vehicle.statistics.weekly = data[0]
+    vehicle.statistics.monthly = data[1]
+    vehicle.statistics.yearly = data[2]
+    return vehicle
+
+
 async def async_setup_entry(  # pylint: disable=too-many-statements
     hass: HomeAssistant, entry: ConfigEntry
 ):
@@ -91,48 +135,9 @@ async def async_setup_entry(  # pylint: disable=too-many-statements
                 vehicle = await client.get_vehicle_status(car)
 
                 if vehicle.is_connected:  # Clarify the 'Vehicle' members
-                    if vehicle.odometer is not None:
-                        if vehicle.odometer.unit == LENGTH_MILES:
-                            _LOGGER.debug("The car is reporting data in imperial")
-                            if use_liters:
-                                _LOGGER.debug(
-                                    "Get statistics in imperial and L/100 miles"
-                                )
-                                unit = CONF_UNIT_SYSTEM_IMPERIAL_LITERS
-                            else:
-                                _LOGGER.debug("Get statistics in imperial and MPG")
-                                unit = CONF_UNIT_SYSTEM_IMPERIAL
-                        else:
-                            _LOGGER.debug("The car is reporting data in metric")
-                            unit = CONF_UNIT_SYSTEM_METRIC
-                    else:
-                        _LOGGER.debug(
-                            "Could not get any 'odometer' information. \
-                            Falling back to metric data"
-                        )
-                        unit = CONF_UNIT_SYSTEM_METRIC
-
+                    unit = _get_unit_system_from_odometer(vehicle, use_liters)
                     # Use parallel request to get car statistics.
-                    if vehicle.vin is not None:
-                        data = await asyncio.gather(
-                            *[
-                                client.get_driving_statistics(
-                                    vehicle.vin, interval="isoweek", unit=unit
-                                ),
-                                client.get_driving_statistics(vehicle.vin, unit=unit),
-                                client.get_driving_statistics(
-                                    vehicle.vin, interval="year", unit=unit
-                                ),
-                            ]
-                        )
-                    else:
-                        data = []
-                        _LOGGER.debug("Could not resolve any 'vehicle.vin'")
-
-                    vehicle.statistics.weekly = data[0]
-                    vehicle.statistics.monthly = data[1]
-                    vehicle.statistics.yearly = data[2]
-
+                    vehicle = _get_and_append_vehicle_statistics(client, vehicle, unit)
                 vehicles.append(vehicle)
 
             _LOGGER.debug(vehicles)
