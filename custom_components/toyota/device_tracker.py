@@ -1,5 +1,4 @@
 """Device tracker platform for Toyota Connected Services"""
-import logging
 from typing import Optional
 
 from homeassistant.components.device_tracker import SOURCE_TYPE_GPS
@@ -10,8 +9,6 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .const import DATA_COORDINATOR, DOMAIN, IMAGE
 from .entity import ToyotaBaseEntity
-
-_LOGGER = logging.getLogger(__name__)
 
 
 async def async_setup_entry(
