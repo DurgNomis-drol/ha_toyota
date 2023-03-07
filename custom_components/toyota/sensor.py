@@ -1,6 +1,5 @@
 """Sensor platform for Toyota sensor integration."""
 import arrow
-
 from homeassistant.components.sensor import SensorDeviceClass
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import (
