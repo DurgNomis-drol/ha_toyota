@@ -133,7 +133,6 @@ async def async_setup_entry(  # pylint: disable=too-many-statements
 
             for car in cars:
                 vehicle = await client.get_vehicle_status(car)
-
                 if vehicle.is_connected:  # Clarify the 'Vehicle' members
                     unit = _get_unit_system_from_odometer(vehicle, use_liters)
                     # Use parallel request to get car statistics.
