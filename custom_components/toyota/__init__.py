@@ -70,28 +70,6 @@ def _get_unit_system_from_odometer(vehicle: Vehicle, use_liters: bool) -> str:
     return unit
 
 
-async def _get_and_append_vehicle_statistics(
-    client: MyT, vehicle: Vehicle, unit: str
-) -> Vehicle:
-    if vehicle.vin is not None:
-        data = await asyncio.gather(
-            *[
-                client.get_driving_statistics(
-                    vehicle.vin, interval="isoweek", unit=unit
-                ),
-                client.get_driving_statistics(vehicle.vin, unit=unit),
-                client.get_driving_statistics(vehicle.vin, interval="year", unit=unit),
-            ]
-        )
-    else:
-        data = []
-        _LOGGER.debug("Could not resolve any 'vehicle.vin'")
-    vehicle.statistics.weekly = data[0]
-    vehicle.statistics.monthly = data[1]
-    vehicle.statistics.yearly = data[2]
-    return vehicle
-
-
 async def async_setup_entry(  # pylint: disable=too-many-statements
     hass: HomeAssistant, entry: ConfigEntry
 ):
@@ -136,7 +114,24 @@ async def async_setup_entry(  # pylint: disable=too-many-statements
                 if vehicle.is_connected:  # Clarify the 'Vehicle' members
                     unit = _get_unit_system_from_odometer(vehicle, use_liters)
                     # Use parallel request to get car statistics.
-                    vehicle = _get_and_append_vehicle_statistics(client, vehicle, unit)
+                    if vehicle.vin is not None:
+                        data = await asyncio.gather(
+                            *[
+                                client.get_driving_statistics(
+                                    vehicle.vin, interval="isoweek", unit=unit
+                                ),
+                                client.get_driving_statistics(vehicle.vin, unit=unit),
+                                client.get_driving_statistics(
+                                    vehicle.vin, interval="year", unit=unit
+                                ),
+                            ]
+                        )
+                    else:
+                        data = []
+                        _LOGGER.debug("Could not resolve any 'vehicle.vin'")
+                    vehicle.statistics.weekly = data[0]
+                    vehicle.statistics.monthly = data[1]
+                    vehicle.statistics.yearly = data[2]
                 vehicles.append(vehicle)
 
             _LOGGER.debug(vehicles)
