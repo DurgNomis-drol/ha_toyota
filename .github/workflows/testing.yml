@@ -8,7 +8,7 @@ on:
 
 jobs:
   run_pytest:
-    name: Run tests with pytest
+    name: Run tests
     strategy:
       matrix:
         python-version: [3.9]
