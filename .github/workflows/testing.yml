@@ -22,11 +22,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: "⚙️ Set up Poetry"
         uses: abatilo/actions-poetry@v2.3.0
-      - name: "⚙️ Create venv"
-        run: python3.9 -m venv test_env
-      - name: "⚙️ Switch to venv"
-        run: source test_env/bin/activate
       - name: "⚙️ Install dependencies"
         run: poetry install
       - name: "🚀 Run all tests"
-        run: pytest tests -v
+        run: poetry run pytest tests -v
