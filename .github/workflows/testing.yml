@@ -14,20 +14,16 @@ jobs:
         python-version: [3.9]
     runs-on: ubuntu-latest
     steps:
-      - name: Check out the repository
+      - name: "⤵️ Check out code from GitHub"
         uses: actions/checkout@v2
-
-      - name: Set up Python ${{ matrix.python-version }}
+      - name: "⚙️ Set up Python ${{ matrix.python-version }}"
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
-
-      - name: Install Poetry
+      - name: "⚙️ Set up Poetry"
         uses: abatilo/actions-poetry@v2.3.0
-
-      - name: Install dependencies
+      - name: "⚙️ Install dependencies"
         run: poetry install
-
-      - name: Run alls tests with pytest
+      - name: "🚀 Run all tests"
         run: |
           python -m pytest tests -v
