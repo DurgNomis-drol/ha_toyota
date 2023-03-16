@@ -2,7 +2,6 @@
 import arrow
 from homeassistant.components.sensor import SensorDeviceClass
 from homeassistant.const import (
-    LENGTH_KILOMETERS,
     PERCENTAGE,
     STATE_UNAVAILABLE,
     STATE_UNKNOWN,
@@ -290,7 +289,6 @@ class ToyotaCurrentWeekSensor(StatisticsBaseEntity):
     """Class for current week statistics sensor."""
 
     _attr_device_class = SensorDeviceClass.DISTANCE
-    _attr_native_unit_of_measurement = LENGTH_KILOMETERS
 
     @property
     def extra_state_attributes(self):
@@ -324,7 +322,6 @@ class ToyotaCurrentMonthSensor(StatisticsBaseEntity):
     """Class for current month statistics sensor."""
 
     _attr_device_class = SensorDeviceClass.DISTANCE
-    _attr_native_unit_of_measurement = LENGTH_KILOMETERS
 
     @property
     def extra_state_attributes(self):
@@ -353,7 +350,6 @@ class ToyotaCurrentYearSensor(StatisticsBaseEntity):
     """Class for current year statistics sensor."""
 
     _attr_device_class = SensorDeviceClass.DISTANCE
-    _attr_native_unit_of_measurement = LENGTH_KILOMETERS
 
     @property
     def extra_state_attributes(self):
