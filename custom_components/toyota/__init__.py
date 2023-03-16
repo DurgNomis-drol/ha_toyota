@@ -85,6 +85,9 @@ async def async_setup_entry(  # pylint: disable=too-many-statements
             cars = await with_timeout(client.get_vehicles())
 
             for car in cars:
+                if not car["vin"]:
+                    continue
+
                 vehicle = await client.get_vehicle_status(car)
 
                 if vehicle.is_connected:
