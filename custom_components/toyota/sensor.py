@@ -1,6 +1,6 @@
 """Sensor platform for Toyota sensor integration."""
 import arrow
-from homeassistant.components.sensor import SensorDeviceClass
+from homeassistant.components.sensor import SensorDeviceClass, SensorStateClass
 from homeassistant.const import (
     PERCENTAGE,
     STATE_UNAVAILABLE,
@@ -110,6 +110,7 @@ class ToyotaOdometerSensor(ToyotaBaseEntity):
 
     _attr_icon = ICON_ODOMETER
     _attr_device_class = SensorDeviceClass.DISTANCE
+    _attr_state_class = SensorStateClass.TOTAL_INCREASING
 
     @property
     def unit_of_measurement(self):
@@ -149,6 +150,7 @@ class ToyotaFuelRemainingSensor(ToyotaBaseEntity):
 
     _attr_icon = ICON_FUEL
     _attr_unit_of_measurement = PERCENTAGE
+    _attr_state_class = SensorStateClass.MEASUREMENT
 
     @property
     def extra_state_attributes(self):
@@ -169,6 +171,7 @@ class ToyotaRangeSensor(ToyotaBaseEntity):
 
     _attr_icon = ICON_RANGE
     _attr_device_class = SensorDeviceClass.DISTANCE
+    _attr_state_class = SensorStateClass.MEASUREMENT
 
     @property
     def unit_of_measurement(self):
@@ -198,6 +201,7 @@ class ToyotaEVSensor(ToyotaBaseEntity):
     _attr_icon = ICON_EV
     _attr_device_class = SensorDeviceClass.BATTERY
     _attr_unit_of_measurement = PERCENTAGE
+    _attr_state_class = SensorStateClass.MEASUREMENT
 
     @property
     def extra_state_attributes(self):
@@ -234,6 +238,7 @@ class ToyotaHVACSensor(ToyotaBaseEntity):
 
     _attr_device_class = SensorDeviceClass.TEMPERATURE
     _attr_native_unit_of_measurement = TEMP_CELSIUS
+    _attr_state_class = SensorStateClass.MEASUREMENT
 
     @property
     def extra_state_attributes(self):
@@ -278,6 +283,7 @@ class ToyotaTargetTemperatureSensor(ToyotaBaseEntity):
 
     _attr_device_class = SensorDeviceClass.TEMPERATURE
     _attr_native_unit_of_measurement = TEMP_CELSIUS
+    _attr_state_class = SensorStateClass.MEASUREMENT
 
     @property
     def native_value(self):
@@ -289,6 +295,7 @@ class ToyotaCurrentWeekSensor(StatisticsBaseEntity):
     """Class for current week statistics sensor."""
 
     _attr_device_class = SensorDeviceClass.DISTANCE
+    _attr_state_class = SensorStateClass.MEASUREMENT
 
     @property
     def extra_state_attributes(self):
@@ -322,6 +329,7 @@ class ToyotaCurrentMonthSensor(StatisticsBaseEntity):
     """Class for current month statistics sensor."""
 
     _attr_device_class = SensorDeviceClass.DISTANCE
+    _attr_state_class = SensorStateClass.MEASUREMENT
 
     @property
     def extra_state_attributes(self):
@@ -350,6 +358,7 @@ class ToyotaCurrentYearSensor(StatisticsBaseEntity):
     """Class for current year statistics sensor."""
 
     _attr_device_class = SensorDeviceClass.DISTANCE
+    _attr_state_class = SensorStateClass.MEASUREMENT
 
     @property
     def extra_state_attributes(self):
