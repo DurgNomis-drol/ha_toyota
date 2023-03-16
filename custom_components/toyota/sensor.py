@@ -6,6 +6,7 @@ from homeassistant.const import (
     STATE_UNAVAILABLE,
     STATE_UNKNOWN,
     TEMP_CELSIUS,
+    LENGTH_KILOMETERS,
 )
 from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.typing import StateType
@@ -109,6 +110,7 @@ class ToyotaOdometerSensor(ToyotaBaseEntity):
     """Class for the odometer sensor."""
 
     _attr_icon = ICON_ODOMETER
+    _attr_device_class = SensorDeviceClass.DISTANCE
 
     @property
     def unit_of_measurement(self):
@@ -129,6 +131,7 @@ class ToyotaStarterBatterySensor(ToyotaBaseEntity):
     """Class for the starter battery health sensor."""
 
     _attr_icon = ICON_BATTERY
+    _attr_entity_category = EntityCategory.DIAGNOSTIC
 
     @property
     def state(self) -> StateType:
@@ -166,6 +169,7 @@ class ToyotaRangeSensor(ToyotaBaseEntity):
     """Class for range sensor."""
 
     _attr_icon = ICON_RANGE
+    _attr_device_class = SensorDeviceClass.DISTANCE
 
     @property
     def unit_of_measurement(self):
@@ -193,6 +197,8 @@ class ToyotaEVSensor(ToyotaBaseEntity):
     """Class for EV sensor."""
 
     _attr_icon = ICON_EV
+    _attr_device_class = SensorDeviceClass.BATTERY
+    _attr_unit_of_measurement = PERCENTAGE
 
     @property
     def extra_state_attributes(self):
@@ -208,8 +214,8 @@ class ToyotaEVSensor(ToyotaBaseEntity):
             "Remaining_time": self.coordinator.data[self.index].energy.chargeinfo.get(
                 "remaining_time", None
             ),
-            "Remaining_amount": self.coordinator.data[self.index].energy.chargeinfo.get(
-                "remaining_amount", None
+            "Status": self.coordinator.data[self.index].energy.chargeinfo.get(
+                "status", None
             ),
         }
 
@@ -219,7 +225,9 @@ class ToyotaEVSensor(ToyotaBaseEntity):
     def state(self):
         """Return battery information for EV's."""
 
-        return self.coordinator.data[self.index].energy.chargeinfo.get("status", None)
+        return self.coordinator.data[self.index].energy.chargeinfo.get(
+            "remaining_amount", None
+        )
 
 
 class ToyotaHVACSensor(ToyotaBaseEntity):
@@ -281,6 +289,9 @@ class ToyotaTargetTemperatureSensor(ToyotaBaseEntity):
 class ToyotaCurrentWeekSensor(StatisticsBaseEntity):
     """Class for current week statistics sensor."""
 
+    _attr_device_class = SensorDeviceClass.DISTANCE
+    _attr_native_unit_of_measurement = LENGTH_KILOMETERS
+
     @property
     def extra_state_attributes(self):
         """Return the state attributes."""
@@ -312,6 +323,9 @@ class ToyotaCurrentWeekSensor(StatisticsBaseEntity):
 class ToyotaCurrentMonthSensor(StatisticsBaseEntity):
     """Class for current month statistics sensor."""
 
+    _attr_device_class = SensorDeviceClass.DISTANCE
+    _attr_native_unit_of_measurement = LENGTH_KILOMETERS
+
     @property
     def extra_state_attributes(self):
         """Return the state attributes."""
@@ -337,6 +351,9 @@ class ToyotaCurrentMonthSensor(StatisticsBaseEntity):
 
 class ToyotaCurrentYearSensor(StatisticsBaseEntity):
     """Class for current year statistics sensor."""
+
+    _attr_device_class = SensorDeviceClass.DISTANCE
+    _attr_native_unit_of_measurement = LENGTH_KILOMETERS
 
     @property
     def extra_state_attributes(self):
