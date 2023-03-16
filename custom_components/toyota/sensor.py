@@ -2,11 +2,11 @@
 import arrow
 from homeassistant.components.sensor import SensorDeviceClass
 from homeassistant.const import (
+    LENGTH_KILOMETERS,
     PERCENTAGE,
     STATE_UNAVAILABLE,
     STATE_UNKNOWN,
     TEMP_CELSIUS,
-    LENGTH_KILOMETERS,
 )
 from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.typing import StateType
