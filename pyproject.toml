@@ -7,7 +7,7 @@ license = "MIT"
 
 [tool.poetry.dependencies]
 python = "^3.9"
-homeassistant = "^2023.1"
+homeassistant = ">=2022.6"
 mytoyota = "0.7.8"
 arrow = "^1.1.1"
 
@@ -15,8 +15,6 @@ arrow = "^1.1.1"
 pre-commit = "^2.11.1"
 black = "^22.12.0"
 ruff = "^0.0.246"
-pytest = "^7.2.0"
-pytest-homeassistant-custom-component = "^0.12.30"
 
 [tool.ruff]
 select = [
