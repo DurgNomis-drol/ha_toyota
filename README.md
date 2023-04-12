@@ -183,7 +183,7 @@ Under the hood this integration uses the [mytoyota](https://github.com/DurgNomis
 [hacsbadge]: https://img.shields.io/badge/HACS-Default-orange.svg?style=for-the-badge
 [releases-shield]: https://img.shields.io/github/release/DurgNomis-drol/ha_toyota.svg?style=for-the-badge
 [releases]: https://github.com/DurgNomis-drol/ha_toyota/releases
-[workflow-shield]: https://img.shields.io/github/actions/workflow/status/DurgNomis-drol/ha_toyota/linting.yml?branch=main?style=for-the-badge
+[workflow-shield]: https://img.shields.io/github/actions/workflow/status/DurgNomis-drol/ha_toyota/linting.yml?branch=main&style=for-the-badge
 [workflow]: https://github.com/DurgNomis-drol/ha_toyota/actions
 [installs-shield]: https://img.shields.io/endpoint?style=for-the-badge&url=https%3A%2F%2Ftoyota-installs-for-shield-io-b910bxm1lt58.runkit.sh%2F
 [installs]: https://analytics.home-assistant.io/custom_integrations.json
