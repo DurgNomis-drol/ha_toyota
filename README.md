@@ -8,7 +8,7 @@
     <img src="https://brands.home-assistant.io/_/toyota/icon@2x.png" alt="logo" height="200">
 </p>
 
-<h2 align="center">Toyota community integration</h2>
+<h2 align="center">Toyota EU community integration</h2>
 
 <p align="center">
     This custom integration aims to provide plug-and-play integration for your Toyota vehicle.
@@ -17,13 +17,14 @@
 ## About
 
 This is a custom integration the retrieves' data from the
-Toyota MyT API and makes them available in Home Assistant as different types of sensors.
+Toyota EU MyT API and makes them available in Home Assistant as different types of sensors.
 As there is no official API from Toyota, I will try my best to keep
 it working, but there are no promises.
 
 ## Features
 
-Only Europe is supported right now. If you want to help add other regions, please open an issue over at [`mytoyota`](https://github.com/DurgNomis-drol/mytoyota).
+Only Europe is supported.
+See [here](https://github.com/widewing/ha-toyota-na) for North America.
 
 **Disclaimer: Features available depends on your car model and year.**
 
