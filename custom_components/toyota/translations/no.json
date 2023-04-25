@@ -1,0 +1,30 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "description": "Vennligst oppgi e-postadresse og passord for din MyT-konto nedenfor.",
+        "data": {
+          "email": "E-postadresse",
+          "password": "Passord",
+          "region": "Region (Foreløpig er kun Europa støttet )"
+        }
+      }
+    },
+    "error": {
+      "invalid_username": "E-postadressen må inneholde @.",
+      "region_not_supported": "Regionen er ikke støttet.",
+      "invalid_auth": "E-postadressen/Passordet er ikke riktig.",
+      "invalid_locale": "Språkkoden er ikke gyldig.",
+      "unknown": "Uventet feil."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "data": {
+          "use_liters": "Bruk liter (L/100 miles) istedenfor MPG. Gjelder bare hvis din bil rapporterer data i miles (britisk/imperial enhetssystem)."
+        }
+      }
+    }
+  }
+}
