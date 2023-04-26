@@ -6,7 +6,7 @@
         "data": {
           "email": "E-postadresse",
           "password": "Passord",
-          "region": "Region (Foreløpig er kun Europa støttet )"
+          "region": "Region (Foreløpig er kun Europa støttet)"
         }
       }
     },
