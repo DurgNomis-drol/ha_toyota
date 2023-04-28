@@ -63,7 +63,9 @@ async def async_setup_entry(hass, config_entry, async_add_devices):
 
             if vehicle.energy.chargeinfo:
                 sensors.append(ToyotaEVSensor(coordinator, index, "EV battery status"))
-                sensors.append(ToyotaEVBatterySensor(coordinator, index, "EV remaining charge"))
+                sensors.append(
+                    ToyotaEVBatterySensor(coordinator, index, "EV remaining charge")
+                )
 
             sensors.extend(
                 [
@@ -210,9 +212,6 @@ class ToyotaEVSensor(ToyotaBaseEntity):
             "Remaining_time": self.coordinator.data[self.index].energy.chargeinfo.get(
                 "remaining_time", None
             ),
-            "Remaining_amount": self.coordinator.data[self.index].energy.chargeinfo.get(
-                "remaining_amount", None
-            ),
         }
 
         return attribute
@@ -234,7 +233,9 @@ class ToyotaEVBatterySensor(ToyotaBaseEntity):
     @property
     def state(self) -> StateType:
         """Return remaining charge of the EV battery."""
-        level = self.coordinator.data[self.index].energy.chargeinfo.get("remaining_amount", None)
+        level = self.coordinator.data[self.index].energy.chargeinfo.get(
+            "remaining_amount", None
+        )
         return round(level, 0) if level else None
 
 

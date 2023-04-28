@@ -61,7 +61,8 @@ See [here](https://github.com/widewing/ha-toyota-na) for North America.
 | <div style="width:250px">Name</div>  | Description                                                              |
 | ------------------------------------ | ------------------------------------------------------------------------ |
 | `sensor.corolla`                     | Static data about your car.                                              |
-| `sensor.corolla_hvac`                | EV battery information                                                   |
+| `sensor.corolla_ev_battery_status`   | EV battery information                                                   |
+| `sensor.corolla_ev_remaining_charge` | EV battery remaining charge (in per cent of full capacity)               |
 | `sensor.corolla_fuel_tank`           | Fuel tank information.                                                   |
 | `sensor.corolla_hvac`                | HVAC sensor showing current and target temperature, including other data |
 | `sensor.corolla_odometer`            | Odometer information.                                                    |
