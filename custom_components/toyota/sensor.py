@@ -20,6 +20,7 @@ from .const import (
     ICON_BATTERY,
     ICON_CAR,
     ICON_EV,
+    ICON_EV_BATTERY,
     ICON_FUEL,
     ICON_ODOMETER,
     ICON_RANGE,
@@ -62,6 +63,9 @@ async def async_setup_entry(hass, config_entry, async_add_devices):
 
             if vehicle.energy.chargeinfo:
                 sensors.append(ToyotaEVSensor(coordinator, index, "EV battery status"))
+                sensors.append(
+                    ToyotaEVBatterySensor(coordinator, index, "EV remaining charge")
+                )
 
             sensors.extend(
                 [
@@ -208,9 +212,6 @@ class ToyotaEVSensor(ToyotaBaseEntity):
             "Remaining_time": self.coordinator.data[self.index].energy.chargeinfo.get(
                 "remaining_time", None
             ),
-            "Remaining_amount": self.coordinator.data[self.index].energy.chargeinfo.get(
-                "remaining_amount", None
-            ),
         }
 
         return attribute
@@ -220,6 +221,22 @@ class ToyotaEVSensor(ToyotaBaseEntity):
         """Return battery information for EV's."""
 
         return self.coordinator.data[self.index].energy.chargeinfo.get("status", None)
+
+
+class ToyotaEVBatterySensor(ToyotaBaseEntity):
+    """Class for EV battery sensor."""
+
+    _attr_icon = ICON_EV_BATTERY
+    _attr_device_class = SensorDeviceClass.BATTERY
+    _attr_unit_of_measurement = PERCENTAGE
+
+    @property
+    def state(self) -> StateType:
+        """Return remaining charge of the EV battery."""
+        level = self.coordinator.data[self.index].energy.chargeinfo.get(
+            "remaining_amount", None
+        )
+        return round(level, 0) if level else None
 
 
 class ToyotaHVACSensor(ToyotaBaseEntity):
