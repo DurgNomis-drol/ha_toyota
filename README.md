@@ -4,6 +4,8 @@
 [![GitHub Activity][commits-shield]][commits]
 [![Installs][installs-shield]][installs]
 
+# IMPORTANT! --> This only works with old Myt by Toyota app. If you have moved to the new app this wont work for you unfortunatly.
+
 <p align="center">
     <img src="https://brands.home-assistant.io/_/toyota/icon@2x.png" alt="logo" height="200">
 </p>
