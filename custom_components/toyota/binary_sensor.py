@@ -3,7 +3,10 @@ from homeassistant.components.binary_sensor import (
     BinarySensorDeviceClass,
     BinarySensorEntity,
 )
+from homeassistant.config_entries import ConfigEntry
+from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import EntityCategory
+from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .const import (
     DATA_COORDINATOR,
@@ -20,7 +23,11 @@ from .const import (
 from .entity import ToyotaBaseEntity
 
 
-async def async_setup_entry(hass, config_entry, async_add_devices):
+async def async_setup_entry(
+    hass: HomeAssistant,
+    config_entry: ConfigEntry,
+    async_add_entities: AddEntitiesCallback,
+) -> None:
     """Set up the sensor platform."""
     binary_sensors = []
 
@@ -122,7 +129,7 @@ async def async_setup_entry(hass, config_entry, async_add_devices):
                     ]
                 )
 
-    async_add_devices(binary_sensors, True)
+    async_add_entities(binary_sensors, True)
 
 
 class ToyotaHoodBinarySensor(ToyotaBaseEntity, BinarySensorEntity):
@@ -141,7 +148,7 @@ class ToyotaHoodBinarySensor(ToyotaBaseEntity, BinarySensorEntity):
         }
 
     @property
-    def is_on(self):
+    def is_on(self) -> bool:
         """Return true if the hood is open."""
         return not self.coordinator.data[self.index].sensors.hood.closed
 
@@ -168,7 +175,7 @@ class ToyotaDoorBinarySensor(ToyotaBaseEntity, BinarySensorEntity):
         }
 
     @property
-    def is_on(self):
+    def is_on(self) -> bool:
         """Return true if the door is open."""
 
         door = getattr(
@@ -201,7 +208,7 @@ class ToyotaDoorLockBinarySensor(ToyotaBaseEntity, BinarySensorEntity):
         }
 
     @property
-    def is_on(self):
+    def is_on(self) -> bool:
         """Return true if the door is unlocked."""
 
         door = getattr(
@@ -226,7 +233,7 @@ class ToyotaKeyBinarySensor(ToyotaBaseEntity, BinarySensorEntity):
         }
 
     @property
-    def is_on(self):
+    def is_on(self) -> bool:
         """Return true if key is in car."""
         return self.coordinator.data[self.index].sensors.key.in_car
 
@@ -253,7 +260,7 @@ class ToyotaLightBinarySensor(ToyotaBaseEntity, BinarySensorEntity):
         }
 
     @property
-    def is_on(self):
+    def is_on(self) -> bool:
         """Return true if light is on."""
 
         light = getattr(
@@ -278,10 +285,10 @@ class ToyotaOverAllStatusBinarySensor(ToyotaBaseEntity, BinarySensorEntity):
         }
 
     @property
-    def is_on(self):
+    def is_on(self) -> bool:
         """Return true if a overallstatus is not OK."""
 
-        return not self.coordinator.data[self.index].sensors.overallstatus == "OK"
+        return self.coordinator.data[self.index].sensors.overallstatus != "OK"
 
 
 class ToyotaWindowBinarySensor(ToyotaBaseEntity, BinarySensorEntity):
@@ -305,7 +312,7 @@ class ToyotaWindowBinarySensor(ToyotaBaseEntity, BinarySensorEntity):
         }
 
     @property
-    def is_on(self):
+    def is_on(self) -> bool:
         """Return true if the window is down."""
 
         window = getattr(
@@ -313,10 +320,7 @@ class ToyotaWindowBinarySensor(ToyotaBaseEntity, BinarySensorEntity):
             self.sensor_name.split(" ")[0],
         )
 
-        if window.state == "close":
-            return False
-
-        return True
+        return window.state != "close"
 
 
 class ToyotaFrontDefoggerSensor(ToyotaBaseEntity, BinarySensorEntity):
@@ -325,7 +329,7 @@ class ToyotaFrontDefoggerSensor(ToyotaBaseEntity, BinarySensorEntity):
     _attr_icon = ICON_FRONT_DEFOGGER
 
     @property
-    def is_on(self):
+    def is_on(self) -> bool:
         """Return true if the defogger is on."""
 
         return self.coordinator.data[self.index].hvac.front_defogger_on
@@ -337,7 +341,7 @@ class ToyotaRearDefoggerSensor(ToyotaBaseEntity, BinarySensorEntity):
     _attr_icon = ICON_REAR_DEFOGGER
 
     @property
-    def is_on(self):
+    def is_on(self) -> bool:
         """Return true if the defogger is on."""
 
         return self.coordinator.data[self.index].hvac.rear_defogger_on

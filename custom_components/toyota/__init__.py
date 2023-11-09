@@ -3,6 +3,7 @@ import asyncio
 import asyncio.exceptions as asyncioexceptions
 import logging
 from datetime import timedelta
+from typing import Any, Coroutine, Dict, List, Optional
 
 import async_timeout
 import httpcore
@@ -19,7 +20,7 @@ from homeassistant.const import (
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryAuthFailed, ConfigEntryNotReady
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
-from mytoyota.client import MyT
+from mytoyota.client import MyT, Vehicle
 from mytoyota.exceptions import ToyotaApiError, ToyotaInternalError, ToyotaLoginError
 
 from .const import (
@@ -39,10 +40,34 @@ _LOGGER = logging.getLogger(__name__)
 UPDATE_INTERVAL = timedelta(minutes=10)
 
 
-async def with_timeout(task, timeout_seconds=25):
+async def with_timeout(
+    task: Coroutine[Any, Any, List[Dict[str, Any]]], timeout_seconds: int = 25
+) -> List[Dict[str, Any]]:
     """Run an async task with a timeout."""
     async with async_timeout.timeout(timeout_seconds):
         return await task
+
+
+def _get_unit_system_from_odometer(vehicle: Vehicle, use_liters: bool) -> str:
+    if vehicle.odometer is not None:
+        if vehicle.odometer.unit == LENGTH_MILES:
+            _LOGGER.debug("The car is reporting data in imperial")
+            if use_liters:
+                _LOGGER.debug("Get statistics in imperial and L/100 miles")
+                unit = CONF_UNIT_SYSTEM_IMPERIAL_LITERS
+            else:
+                _LOGGER.debug("Get statistics in imperial and MPG")
+                unit = CONF_UNIT_SYSTEM_IMPERIAL
+        else:
+            _LOGGER.debug("The car is reporting data in metric")
+            unit = CONF_UNIT_SYSTEM_METRIC
+    else:
+        _LOGGER.debug(
+            "Could not get any 'odometer' information. \
+            Falling back to metric data"
+        )
+        unit = CONF_UNIT_SYSTEM_METRIC
+    return unit
 
 
 async def async_setup_entry(  # pylint: disable=too-many-statements
@@ -75,7 +100,7 @@ async def async_setup_entry(  # pylint: disable=too-many-statements
             "Unable to connect to Toyota Connected Services"
         ) from ex
 
-    async def async_update_data():
+    async def async_update_data() -> Optional[List[Vehicle]]:
         """Fetch data from Toyota API."""
 
         try:
@@ -89,37 +114,27 @@ async def async_setup_entry(  # pylint: disable=too-many-statements
                     continue
 
                 vehicle = await client.get_vehicle_status(car)
-
-                if vehicle.is_connected:
-                    if vehicle.odometer.unit == LENGTH_MILES:
-                        _LOGGER.debug("The car is reporting data in imperial")
-                        if use_liters:
-                            _LOGGER.debug("Get statistics in imperial and L/100 miles")
-                            unit = CONF_UNIT_SYSTEM_IMPERIAL_LITERS
-                        else:
-                            _LOGGER.debug("Get statistics in imperial and MPG")
-                            unit = CONF_UNIT_SYSTEM_IMPERIAL
-                    else:
-                        _LOGGER.debug("The car is reporting data in metric")
-                        unit = CONF_UNIT_SYSTEM_METRIC
-
+                if vehicle.is_connected:  # Clarify the 'Vehicle' members
+                    unit = _get_unit_system_from_odometer(vehicle, use_liters)
                     # Use parallel request to get car statistics.
-                    data = await asyncio.gather(
-                        *[
-                            client.get_driving_statistics(
-                                vehicle.vin, interval="isoweek", unit=unit
-                            ),
-                            client.get_driving_statistics(vehicle.vin, unit=unit),
-                            client.get_driving_statistics(
-                                vehicle.vin, interval="year", unit=unit
-                            ),
-                        ]
-                    )
-
+                    if vehicle.vin is not None:
+                        data = await asyncio.gather(
+                            *[
+                                client.get_driving_statistics(
+                                    vehicle.vin, interval="isoweek", unit=unit
+                                ),
+                                client.get_driving_statistics(vehicle.vin, unit=unit),
+                                client.get_driving_statistics(
+                                    vehicle.vin, interval="year", unit=unit
+                                ),
+                            ]
+                        )
+                    else:
+                        data = []
+                        _LOGGER.debug("Could not resolve any 'vehicle.vin'")
                     vehicle.statistics.weekly = data[0]
                     vehicle.statistics.monthly = data[1]
                     vehicle.statistics.yearly = data[2]
-
                 vehicles.append(vehicle)
 
             _LOGGER.debug(vehicles)

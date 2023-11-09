@@ -1,5 +1,6 @@
 """Config flow for Toyota Connected Services integration."""
 import logging
+from typing import Dict, Optional
 
 import voluptuous as vol
 from homeassistant import config_entries
@@ -40,7 +41,7 @@ class ToyotaConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     VERSION = 1
     CONNECTION_CLASS = config_entries.CONN_CLASS_CLOUD_POLL
 
-    async def async_step_user(self, user_input=None):
+    async def async_step_user(self, user_input: Optional[Dict] = None):
         """Handle the initial step."""
         errors = {}
 
