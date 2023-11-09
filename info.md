@@ -1,12 +1,10 @@
-## Toyota Connected Services
+## Toyota Connected Services Europe
 
 This custom integration aims to provide plug-and-play integration for your Toyota vehicle.
 
 **Disclaimer: Features available dependents on your car model and year.**
 
-### Regions supported
-
-- Europe
+**Only Europe is supported**
 
 ### Features
 
@@ -24,6 +22,8 @@ See [features](https://github.com/DurgNomis-drol/ha_toyota#binary-sensors) secti
 ### Installations
 
 Go to: Settings -> Integrations -> Add integration and search for Toyota Connected Services.
+
+[Add Integration](https://my.home-assistant.io/redirect/config_flow_start?domain=toyota)
 
 ### Help is need to:
 

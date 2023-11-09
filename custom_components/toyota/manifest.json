@@ -1,12 +1,14 @@
 {
-  "after_dependencies": ["cloud", "http"],
   "domain": "toyota",
   "name": "Toyota Connected Services",
+  "after_dependencies": ["cloud", "http"],
+  "codeowners": ["@DurgNomis-drol"],
   "config_flow": true,
   "documentation": "https://github.com/DurgNomis-drol/ha_toyota",
+  "iot_class": "cloud_polling",
   "issue_tracker": "https://github.com/DurgNomis-drol/ha_toyota/issues",
   "codeowners": ["@DurgNomis-drol"],
-  "requirements": ["mytoyota==0.8.1", "arrow"],
+  "requirements": ["mytoyota==0.9.2", "arrow"],
   "version": "0.0.0",
   "iot_class": "cloud_polling"
 }

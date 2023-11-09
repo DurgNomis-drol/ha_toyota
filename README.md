@@ -4,11 +4,13 @@
 [![GitHub Activity][commits-shield]][commits]
 [![Installs][installs-shield]][installs]
 
+# IMPORTANT! --> This only works with old Myt by Toyota app. If you have moved to the new app this wont work for you unfortunatly.
+
 <p align="center">
     <img src="https://brands.home-assistant.io/_/toyota/icon@2x.png" alt="logo" height="200">
 </p>
 
-<h2 align="center">Toyota community integration</h2>
+<h2 align="center">Toyota EU community integration</h2>
 
 <p align="center">
     This custom integration aims to provide plug-and-play integration for your Toyota vehicle.
@@ -17,13 +19,14 @@
 ## About
 
 This is a custom integration the retrieves' data from the
-Toyota MyT API and makes them available in Home Assistant as different types of sensors.
+Toyota EU MyT API and makes them available in Home Assistant as different types of sensors.
 As there is no official API from Toyota, I will try my best to keep
 it working, but there are no promises.
 
 ## Features
 
-Only Europe is supported right now. If you want to help add other regions, please open an issue over at [`mytoyota`](https://github.com/DurgNomis-drol/mytoyota).
+Only Europe is supported.
+See [here](https://github.com/widewing/ha-toyota-na) for North America.
 
 **Disclaimer: Features available depends on your car model and year.**
 
@@ -60,7 +63,8 @@ Only Europe is supported right now. If you want to help add other regions, pleas
 | <div style="width:250px">Name</div>  | Description                                                              |
 | ------------------------------------ | ------------------------------------------------------------------------ |
 | `sensor.corolla`                     | Static data about your car.                                              |
-| `sensor.corolla_hvac`                | EV battery information                                                   |
+| `sensor.corolla_ev_battery_status`   | EV battery information                                                   |
+| `sensor.corolla_ev_remaining_charge` | EV battery remaining charge (in per cent of full capacity)               |
 | `sensor.corolla_fuel_tank`           | Fuel tank information.                                                   |
 | `sensor.corolla_hvac`                | HVAC sensor showing current and target temperature, including other data |
 | `sensor.corolla_odometer`            | Odometer information.                                                    |
@@ -183,7 +187,7 @@ Under the hood this integration uses the [mytoyota](https://github.com/DurgNomis
 [hacsbadge]: https://img.shields.io/badge/HACS-Default-orange.svg?style=for-the-badge
 [releases-shield]: https://img.shields.io/github/release/DurgNomis-drol/ha_toyota.svg?style=for-the-badge
 [releases]: https://github.com/DurgNomis-drol/ha_toyota/releases
-[workflow-shield]: https://img.shields.io/github/workflow/status/DurgNomis-drol/ha_toyota/Linting?style=for-the-badge
+[workflow-shield]: https://img.shields.io/github/actions/workflow/status/DurgNomis-drol/ha_toyota/linting.yml?branch=master&style=for-the-badge
 [workflow]: https://github.com/DurgNomis-drol/ha_toyota/actions
 [installs-shield]: https://img.shields.io/endpoint?style=for-the-badge&url=https%3A%2F%2Ftoyota-installs-for-shield-io-b910bxm1lt58.runkit.sh%2F
 [installs]: https://analytics.home-assistant.io/custom_integrations.json

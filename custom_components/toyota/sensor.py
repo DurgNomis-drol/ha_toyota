@@ -7,8 +7,6 @@ from datetime import datetime
 from typing import Any
 
 import arrow
-from mytoyota.models.vehicle import Vehicle
-
 from homeassistant.components.sensor import STATE_CLASS_MEASUREMENT, SensorDeviceClass
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import (
@@ -24,6 +22,7 @@ from homeassistant.helpers.entity import EntityCategory, EntityDescription
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.typing import StateType
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
+from mytoyota.models.vehicle import Vehicle
 
 from . import StatisticsData, VehicleData
 from .const import BUCKET, DATA, DOMAIN, PERIODE_START, TOTAL_DISTANCE
@@ -359,9 +358,7 @@ class ToyotaStatisticsSensor(ToyotaSensor):
         total_distance = None
         data = self.coordinator.data[self.index]["statistics"][self.period][0]
 
-        if DATA in data:
-            total_distance = round(data[DATA][TOTAL_DISTANCE], 1)
-
+        total_distance = round(data[DATA][TOTAL_DISTANCE], 1) if DATA in data else None
         return STATE_UNAVAILABLE if total_distance is None else total_distance
 
     @callback

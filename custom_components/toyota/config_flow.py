@@ -1,14 +1,13 @@
 """Config flow for Toyota Connected Services integration."""
 import logging
 
-from mytoyota.client import MyT
-from mytoyota.exceptions import ToyotaInvalidUsername, ToyotaLoginError
 import voluptuous as vol
-
 from homeassistant import config_entries
 from homeassistant.const import CONF_EMAIL, CONF_PASSWORD
 from homeassistant.core import callback
 from homeassistant.data_entry_flow import FlowResult
+from mytoyota.client import MyT
+from mytoyota.exceptions import ToyotaInvalidUsername, ToyotaLoginError
 
 # https://github.com/PyCQA/pylint/issues/3202
 from .const import (  # pylint: disable=unused-import

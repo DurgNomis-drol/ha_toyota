@@ -1,14 +1,13 @@
 """Custom coordinator entity base classes for Toyota Connected Services integration"""
 from __future__ import annotations
 
-from mytoyota.models.vehicle import Vehicle
-
 from homeassistant.core import callback
 from homeassistant.helpers.entity import DeviceInfo, EntityDescription
 from homeassistant.helpers.update_coordinator import (
     CoordinatorEntity,
     DataUpdateCoordinator,
 )
+from mytoyota.models.vehicle import Vehicle
 
 from . import VehicleData
 from .const import DOMAIN

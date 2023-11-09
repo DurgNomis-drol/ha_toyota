@@ -2,7 +2,6 @@
   "config": {
     "step": {
       "user": {
-        "title": "Serveis conectats de Toyota",
         "description": "Introduïu el vostre correu electrònic i contrasenya de la aplicació MyT abaix",
         "data": {
           "email": "Correu electrònic",
