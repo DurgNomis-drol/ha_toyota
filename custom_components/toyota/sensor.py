@@ -152,9 +152,7 @@ HVAC_ENTITY_DESCRIPTIONS: tuple[ToyotaSensorEntityDescription, ...] = (
         unit_fn=TEMP_CELSIUS,
         value_fn=lambda vh: vh.hvac.current_temperature,
         attributes_fn=lambda vh: {
-            "last_acquired": vh.hvac.last_updated
-            if vh.hvac.last_updated
-            else "Not supported",
+            "last_acquired": vh.hvac.last_updated or "Not supported",
         },
     ),
     ToyotaSensorEntityDescription(
@@ -164,9 +162,7 @@ HVAC_ENTITY_DESCRIPTIONS: tuple[ToyotaSensorEntityDescription, ...] = (
         unit_fn=TEMP_CELSIUS,
         value_fn=lambda vh: vh.hvac.target_temperature,
         attributes_fn=lambda vh: {
-            "last_acquired": vh.hvac.last_updated
-            if vh.hvac.last_updated
-            else "Not supported",
+            "last_acquired": vh.hvac.last_updated or "Not supported",
         },
     ),
 )
