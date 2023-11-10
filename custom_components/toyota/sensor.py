@@ -286,23 +286,21 @@ class ToyotaSensor(ToyotaBaseEntity):
     @property
     def native_value(self) -> datetime | str | int | None:
         """Return the state of the sensor."""
-        if self.vehicle is None:
-            return None
-        return self.entity_description.value_fn(self.vehicle)
+        return self.entity_description.value_fn(self.vehicle) if self.vehicle else None
 
     @property
     def native_unit_of_measurement(self) -> str | None:
         """Return unit of measurement."""
-        if self.vehicle is None:
-            return None
-        return self.entity_description.unit_fn(self.vehicle)
+        return self.entity_description.unit_fn(self.vehicle) if self.vehicle else None
 
     @property
     def extra_state_attributes(self) -> dict[str, Any] | None:
         """Return the attributes of the sensor."""
-        if self.vehicle is None:
-            return None
-        return self.entity_description.attributes_fn(self.vehicle)
+        return (
+            self.entity_description.attributes_fn(self.vehicle)
+            if self.vehicle
+            else None
+        )
 
 
 class ToyotaStatisticsSensor(ToyotaSensor):
