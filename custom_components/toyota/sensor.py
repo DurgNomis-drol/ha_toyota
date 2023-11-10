@@ -353,12 +353,9 @@ class ToyotaStatisticsSensor(ToyotaSensor):
     @property
     def native_value(self) -> StateType:
         """Return the state of the sensor."""
-        total_distance = None
         data = self.coordinator.data[self.index]["statistics"][self.period][0]
 
-        if DATA in data:
-            total_distance = round(data[DATA][TOTAL_DISTANCE], 1)
-
+        total_distance = round(data[DATA][TOTAL_DISTANCE], 1) if DATA in data else None
         return STATE_UNAVAILABLE if total_distance is None else total_distance
 
     @callback
