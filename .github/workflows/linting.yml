@@ -26,4 +26,5 @@ jobs:
         run: "poetry install"
       - name: "🚀 Run pre-commit on all files"
         run: |
-          "poetry run pre-commit run --all-files --show-diff-on-failure --color=always"
+          poetry run pre-commit install
+          poetry run pre-commit run --all-files --show-diff-on-failure --color=always

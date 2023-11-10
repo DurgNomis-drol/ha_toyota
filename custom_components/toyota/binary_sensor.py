@@ -276,7 +276,6 @@ async def async_setup_entry(
         vehicle = coordinator.data[index]["data"]
 
         if vehicle.is_connected_services_enabled:
-
             if vehicle.sensors.overallstatus:
                 binary_sensors.append(
                     ToyotaBinarySensor(

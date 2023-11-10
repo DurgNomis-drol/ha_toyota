@@ -111,7 +111,6 @@ async def async_setup_entry(  # pylint: disable=too-many-statements
         """Fetch vehicle data from Toyota API."""
 
         try:
-
             vehicles = []
 
             cars = await with_timeout(client.get_vehicles())
@@ -174,7 +173,6 @@ async def async_setup_entry(  # pylint: disable=too-many-statements
             asyncioexceptions.TimeoutError,
             httpx.ReadTimeout,
         ) as ex:
-
             raise UpdateFailed(
                 "Update canceled! Toyota's API was too slow to respond."
                 " Will try again later..."
