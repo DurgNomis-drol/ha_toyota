@@ -5,7 +5,7 @@ import asyncio
 import asyncio.exceptions as asyncioexceptions
 import logging
 from datetime import timedelta
-from typing import Any, Coroutine, Dict, List, TypedDict
+from typing import Any, TypedDict
 
 import async_timeout
 import httpcore
@@ -16,13 +16,13 @@ from homeassistant.const import (
     CONF_PASSWORD,
     CONF_UNIT_SYSTEM_IMPERIAL,
     CONF_UNIT_SYSTEM_METRIC,
-    LENGTH_MILES,
 )
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryAuthFailed, ConfigEntryNotReady
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
-from mytoyota.client import MyT, Vehicle
+from mytoyota import MyT
 from mytoyota.exceptions import ToyotaApiError, ToyotaInternalError, ToyotaLoginError
+from mytoyota.models.vehicle import Vehicle
 
 from .const import (
     CONF_UNIT_SYSTEM_IMPERIAL_LITERS,
@@ -50,34 +50,10 @@ class VehicleData(TypedDict):
     statistics: StatisticsData | None
 
 
-async def with_timeout(
-    task: Coroutine[Any, Any, List[Dict[str, Any]]], timeout_seconds: int = 25
-) -> List[Dict[str, Any]]:
+async def with_timeout(task, timeout_seconds=15):
     """Run an async task with a timeout."""
     async with async_timeout.timeout(timeout_seconds):
         return await task
-
-
-def _get_unit_system_from_odometer(vehicle: Vehicle, use_liters: bool) -> str:
-    if vehicle.odometer is not None:
-        if vehicle.odometer.unit == LENGTH_MILES:
-            _LOGGER.debug("The car is reporting data in imperial")
-            if use_liters:
-                _LOGGER.debug("Get statistics in imperial and L/100 miles")
-                unit = CONF_UNIT_SYSTEM_IMPERIAL_LITERS
-            else:
-                _LOGGER.debug("Get statistics in imperial and MPG")
-                unit = CONF_UNIT_SYSTEM_IMPERIAL
-        else:
-            _LOGGER.debug("The car is reporting data in metric")
-            unit = CONF_UNIT_SYSTEM_METRIC
-    else:
-        _LOGGER.debug(
-            "Could not get any 'odometer' information. \
-            Falling back to metric data"
-        )
-        unit = CONF_UNIT_SYSTEM_METRIC
-    return unit
 
 
 async def async_setup_entry(  # pylint: disable=too-many-statements
@@ -116,9 +92,6 @@ async def async_setup_entry(  # pylint: disable=too-many-statements
             cars = await with_timeout(client.get_vehicles())
 
             for car in cars:
-                if not car["vin"]:
-                    continue
-
                 vehicle = await client.get_vehicle_status(car)
 
                 car = VehicleData(data=vehicle, statistics=None)

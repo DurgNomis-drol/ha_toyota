@@ -54,7 +54,6 @@ WARNING = "warning"
 
 # ICONS
 ICON_BATTERY = "mdi:car-battery"
-ICON_EV_BATTERY = "mdi:battery"
 ICON_CAR = "mdi:car-info"
 ICON_CAR_DOOR = "mdi:car-door"
 ICON_CAR_DOOR_LOCK = "mdi:car-door-lock"

@@ -358,7 +358,9 @@ class ToyotaStatisticsSensor(ToyotaSensor):
         total_distance = None
         data = self.coordinator.data[self.index]["statistics"][self.period][0]
 
-        total_distance = round(data[DATA][TOTAL_DISTANCE], 1) if DATA in data else None
+        if DATA in data:
+            total_distance = round(data[DATA][TOTAL_DISTANCE], 1)
+
         return STATE_UNAVAILABLE if total_distance is None else total_distance
 
     @callback
