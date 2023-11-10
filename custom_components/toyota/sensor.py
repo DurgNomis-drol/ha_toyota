@@ -4,7 +4,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any
+from typing import Any, Optional, Union
 
 import arrow
 from homeassistant.components.sensor import STATE_CLASS_MEASUREMENT, SensorDeviceClass
@@ -284,17 +284,17 @@ class ToyotaSensor(ToyotaBaseEntity):
     _attr_state_class = STATE_CLASS_MEASUREMENT
 
     @property
-    def native_value(self) -> datetime | str | int | None:
+    def native_value(self) -> Optional[Union[datetime, str, int]]:
         """Return the state of the sensor."""
         return self.entity_description.value_fn(self.vehicle) if self.vehicle else None
 
     @property
-    def native_unit_of_measurement(self) -> str | None:
+    def native_unit_of_measurement(self) -> Optional[str]:
         """Return unit of measurement."""
         return self.entity_description.unit_fn(self.vehicle) if self.vehicle else None
 
     @property
-    def extra_state_attributes(self) -> dict[str, Any] | None:
+    def extra_state_attributes(self) -> Optional[dict[str, Any]]:
         """Return the attributes of the sensor."""
         return (
             self.entity_description.attributes_fn(self.vehicle)
