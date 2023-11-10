@@ -135,8 +135,8 @@ HYBRID_ENTITY_DESCRIPTIONS: tuple[ToyotaSensorEntityDescription, ...] = (
         unit_fn=None,
     ),
     ToyotaSensorEntityDescription(
-        key="charging_status",
-        name="charging status",
+        key="remaining_charge_time",
+        name="remaining charge time",
         icon="mdi:car-electric",
         value_fn=lambda vh: vh.dashboard.remaining_charge_time,
         attributes_fn=None,
@@ -256,7 +256,7 @@ async def async_setup_entry(
             if vehicle.hvac:
                 for description in HVAC_ENTITY_DESCRIPTIONS:
                     sensors.append(
-                        ToyotaStatisticsSensor(
+                        ToyotaSensor(
                             coordinator=coordinator,
                             entry_id=entry.entry_id,
                             vehicle_index=index,
@@ -267,7 +267,7 @@ async def async_setup_entry(
             if vehicle.hybrid:
                 for description in HYBRID_ENTITY_DESCRIPTIONS:
                     sensors.append(
-                        ToyotaStatisticsSensor(
+                        ToyotaSensor(
                             coordinator=coordinator,
                             entry_id=entry.entry_id,
                             vehicle_index=index,
