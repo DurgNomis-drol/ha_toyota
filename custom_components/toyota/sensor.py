@@ -51,7 +51,7 @@ LICENSE_PLATE_ENTITY_DESCRIPTION = ToyotaSensorEntityDescription(
     name="numberplate",
     icon="mdi:car-info",
     entity_category=EntityCategory.DIAGNOSTIC,
-    value_fn=lambda vh: vh.details.get("licensePlate", STATE_UNKNOWN),
+    value_fn=lambda vh: vh.details.get("LicensePlate", STATE_UNKNOWN),
     attributes_fn=lambda vh: vh.details,
     unit_fn=None,
 )
