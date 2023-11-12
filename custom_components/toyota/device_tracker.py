@@ -1,5 +1,7 @@
 """Device tracker platform for Toyota Connected Services"""
 
+from typing import Optional
+
 from homeassistant.components.device_tracker import SOURCE_TYPE_GPS
 from homeassistant.components.device_tracker.config_entry import TrackerEntity
 from homeassistant.config_entries import ConfigEntry
@@ -48,23 +50,23 @@ class ToyotaParkingTracker(ToyotaBaseEntity, TrackerEntity):
     coordinator: DataUpdateCoordinator[list[VehicleData]]
 
     @property
-    def latitude(self):
+    def latitude(self) -> Optional[float]:
         """Return latitude value of the device."""
         parking = self.coordinator.data[self.index]["data"].parkinglocation
         return parking.latitude if parking else None
 
     @property
-    def longitude(self):
+    def longitude(self) -> Optional[float]:
         """Return longitude value of the device."""
         parking = self.coordinator.data[self.index]["data"].parkinglocation
         return parking.longitude if parking else None
 
     @property
-    def source_type(self):
+    def source_type(self) -> str:
         """Return the source type, eg gps or router, of the device."""
         return SOURCE_TYPE_GPS
 
     @property
-    def entity_picture(self):
+    def entity_picture(self) -> Optional[str]:
         """Return entity picture."""
-        return self.vehicle.details[IMAGE] if IMAGE in self.vehicle.details else None
+        return self.vehicle.details.get(IMAGE)

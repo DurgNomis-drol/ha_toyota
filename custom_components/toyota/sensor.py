@@ -214,7 +214,7 @@ async def async_setup_entry(
         entry.entry_id
     ]
 
-    sensors = []
+    sensors: list[Union[ToyotaSensor, ToyotaStatisticsSensor]] = []
     for index, vehicle in enumerate(coordinator.data):
         vehicle = coordinator.data[index]["data"]
 
@@ -238,7 +238,7 @@ async def async_setup_entry(
                     )
                 )
 
-            if "batteryHealth" in vehicle.details:
+            if vehicle.details.get("batteryHealth") is not None:
                 sensors.append(
                     ToyotaSensor(
                         coordinator=coordinator,
