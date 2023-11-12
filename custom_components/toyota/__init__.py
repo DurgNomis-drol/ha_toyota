@@ -81,11 +81,11 @@ async def async_setup_entry(  # pylint: disable=too-many-statements
 
         try:
             vehicles = await asyncio.wait_for(client.get_vehicles(), 15)
-            vehicle_informations = []
+            vehicle_informations: list[VehicleData] = []
             for vehicle in vehicles:
                 vehicle_status = await client.get_vehicle_status(vehicle)
 
-                car = VehicleData(data=vehicle_status, statistics=None)
+                vehicle_data = VehicleData(data=vehicle_status, statistics=None)
 
                 unit_system_map = {
                     False: CONF_UNIT_SYSTEM_IMPERIAL,
@@ -118,13 +118,13 @@ async def async_setup_entry(  # pylint: disable=too-many-statements
                         ),
                     )
 
-                    car["statistics"] = StatisticsData(
+                    vehicle_data["statistics"] = StatisticsData(
                         week=driving_statistics[0],
                         month=driving_statistics[1],
                         year=driving_statistics[2],
                     )
 
-                vehicle_informations.append(car)
+                vehicle_informations.append(vehicle_data)
 
             _LOGGER.debug(vehicle_informations)
             return vehicle_informations

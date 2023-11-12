@@ -1,5 +1,4 @@
 """Device tracker platform for Toyota Connected Services"""
-import logging
 
 from homeassistant.components.device_tracker import SOURCE_TYPE_GPS
 from homeassistant.components.device_tracker.config_entry import TrackerEntity
@@ -13,7 +12,11 @@ from . import VehicleData
 from .const import DOMAIN, IMAGE
 from .entity import ToyotaBaseEntity
 
-_LOGGER = logging.getLogger(__name__)
+PARKING_TRACKER_DESCRIPTION: EntityDescription = EntityDescription(
+    key="parking_location",
+    name="parking location",
+    icon="mdi:map-marker",
+)
 
 
 async def async_setup_entry(
@@ -31,10 +34,7 @@ async def async_setup_entry(
             coordinator=coordinator,
             entry_id=entry.entry_id,
             vehicle_index=index,
-            description=EntityDescription(
-                key="parking_location",
-                name="parking location",
-            ),
+            description=PARKING_TRACKER_DESCRIPTION,
         )
         for index, vehicle in enumerate(coordinator.data)
         if vehicle["data"].is_connected_services_enabled
@@ -67,6 +67,4 @@ class ToyotaParkingTracker(ToyotaBaseEntity, TrackerEntity):
     @property
     def entity_picture(self):
         """Return entity picture."""
-        if IMAGE in self.vehicle.details:
-            return self.vehicle.details[IMAGE]
-        return None
+        return self.vehicle.details[IMAGE] if IMAGE in self.vehicle.details else None
