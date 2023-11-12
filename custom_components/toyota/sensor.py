@@ -210,12 +210,11 @@ async def async_setup_entry(
     async_add_devices: AddEntitiesCallback,
 ) -> None:
     """Set up the sensor platform."""
-    sensors = []
-
     coordinator: DataUpdateCoordinator[list[VehicleData]] = hass.data[DOMAIN][
         entry.entry_id
     ]
 
+    sensors = []
     for index, vehicle in enumerate(coordinator.data):
         vehicle = coordinator.data[index]["data"]
 
