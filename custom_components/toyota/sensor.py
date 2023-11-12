@@ -25,7 +25,7 @@ from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 from mytoyota.models.vehicle import Vehicle
 
 from . import StatisticsData, VehicleData
-from .const import BUCKET, DATA, DOMAIN, PERIODE_START, TOTAL_DISTANCE
+from .const import BUCKET, DATA, DOMAIN, LICENSE_PLATE, PERIODE_START, TOTAL_DISTANCE
 from .entity import ToyotaBaseEntity
 from .utils import format_statistics_attributes, round_number
 
@@ -51,8 +51,8 @@ LICENSE_PLATE_ENTITY_DESCRIPTION = ToyotaSensorEntityDescription(
     name="numberplate",
     icon="mdi:car-info",
     entity_category=EntityCategory.DIAGNOSTIC,
-    value_fn=lambda vh: vh.details.get("LicensePlate", STATE_UNKNOWN),
-    attributes_fn=lambda vh: vh.details,
+    value_fn=lambda data: data.details.get(LICENSE_PLATE, STATE_UNKNOWN),
+    attributes_fn=lambda data: data.details,
     unit_fn=None,
 )
 
@@ -216,7 +216,7 @@ async def async_setup_entry(
 
     sensors: list[Union[ToyotaSensor, ToyotaStatisticsSensor]] = []
     for index, vehicle in enumerate(coordinator.data):
-        vehicle = coordinator.data[index]["data"]
+        # vehicle = coordinator.data[index]["data"]
 
         sensors.append(
             ToyotaSensor(
@@ -227,48 +227,48 @@ async def async_setup_entry(
             )
         )
 
-        if vehicle.is_connected_services_enabled:
-            for description in STATISTICS_ENTITY_DESCRIPTIONS:
-                sensors.append(
-                    ToyotaStatisticsSensor(
-                        coordinator=coordinator,
-                        entry_id=entry.entry_id,
-                        vehicle_index=index,
-                        description=description,
-                    )
-                )
+        # if vehicle.is_connected_services_enabled:
+        #    for description in STATISTICS_ENTITY_DESCRIPTIONS:
+        #        sensors.append(
+        #            ToyotaStatisticsSensor(
+        #                coordinator=coordinator,
+        #                entry_id=entry.entry_id,
+        #                vehicle_index=index,
+        #                description=description,
+        #            )
+        #        )
 
-            if vehicle.details.get("batteryHealth") is not None:
-                sensors.append(
-                    ToyotaSensor(
-                        coordinator=coordinator,
-                        entry_id=entry.entry_id,
-                        vehicle_index=index,
-                        description=STARTER_BATTERY_HEALTH_ENTITY_DESCRIPTIONS,
-                    )
-                )
+        # if vehicle.details.get("batteryHealth") is not None:
+        #    sensors.append(
+        #        ToyotaSensor(
+        #            coordinator=coordinator,
+        #            entry_id=entry.entry_id,
+        #            vehicle_index=index,
+        #            description=STARTER_BATTERY_HEALTH_ENTITY_DESCRIPTIONS,
+        #        )
+        #    )
 
-            if vehicle.hvac:
-                for description in HVAC_ENTITY_DESCRIPTIONS:
-                    sensors.append(
-                        ToyotaSensor(
-                            coordinator=coordinator,
-                            entry_id=entry.entry_id,
-                            vehicle_index=index,
-                            description=description,
-                        )
-                    )
+        # if vehicle.hvac:
+        #    for description in HVAC_ENTITY_DESCRIPTIONS:
+        #        sensors.append(
+        #            ToyotaSensor(
+        #                coordinator=coordinator,
+        #                entry_id=entry.entry_id,
+        #                vehicle_index=index,
+        #                description=description,
+        #            )
+        #        )
 
-            if vehicle.hybrid:
-                for description in HYBRID_ENTITY_DESCRIPTIONS:
-                    sensors.append(
-                        ToyotaSensor(
-                            coordinator=coordinator,
-                            entry_id=entry.entry_id,
-                            vehicle_index=index,
-                            description=description,
-                        )
-                    )
+        # if vehicle.hybrid:
+        #    for description in HYBRID_ENTITY_DESCRIPTIONS:
+        #        sensors.append(
+        #            ToyotaSensor(
+        #                coordinator=coordinator,
+        #                entry_id=entry.entry_id,
+        #                vehicle_index=index,
+        #                description=description,
+        #            )
+        #        )
 
     async_add_devices(sensors)
 
@@ -284,11 +284,6 @@ class ToyotaSensor(ToyotaBaseEntity):
         return self.entity_description.value_fn(self.vehicle) if self.vehicle else None
 
     @property
-    def native_unit_of_measurement(self) -> Optional[str]:
-        """Return unit of measurement."""
-        return self.entity_description.unit_fn(self.vehicle) if self.vehicle else None
-
-    @property
     def extra_state_attributes(self) -> Optional[dict[str, Any]]:
         """Return the attributes of the sensor."""
         return (
@@ -296,6 +291,11 @@ class ToyotaSensor(ToyotaBaseEntity):
             if self.vehicle
             else None
         )
+
+    @property
+    def native_unit_of_measurement(self) -> Optional[str]:
+        """Return unit of measurement."""
+        return self.entity_description.unit_fn(self.vehicle) if self.vehicle else None
 
 
 class ToyotaStatisticsSensor(ToyotaSensor):

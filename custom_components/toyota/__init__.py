@@ -84,6 +84,7 @@ async def async_setup_entry(  # pylint: disable=too-many-statements
             vehicle_informations: list[VehicleData] = []
             for vehicle in vehicles:
                 vehicle_status = await client.get_vehicle_status(vehicle)
+                _LOGGER.debug(vars(vehicle_status))
 
                 vehicle_data = VehicleData(data=vehicle_status, statistics=None)
 
