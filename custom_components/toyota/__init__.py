@@ -5,7 +5,7 @@ import asyncio
 import asyncio.exceptions as asyncioexceptions
 import logging
 from datetime import timedelta
-from typing import Any, TypedDict
+from typing import Any, Optional, TypedDict
 
 import async_timeout
 import httpcore
@@ -47,7 +47,7 @@ class VehicleData(TypedDict):
     """Representing Vehicle data."""
 
     data: Vehicle
-    statistics: StatisticsData | None
+    statistics: Optional[StatisticsData]
 
 
 async def with_timeout(task, timeout_seconds=15):
@@ -87,17 +87,18 @@ async def async_setup_entry(  # pylint: disable=too-many-statements
         """Fetch vehicle data from Toyota API."""
 
         try:
-            vehicles = []
+            vehicles = await with_timeout(client.get_vehicles())
+            vehicle_informations = []
+            for vehicle in vehicles:
+                vehicle_status = await client.get_vehicle_status(vehicle)
 
-            cars = await with_timeout(client.get_vehicles())
+                car = VehicleData(data=vehicle_status, statistics=None)
 
-            for car in cars:
-                vehicle = await client.get_vehicle_status(car)
-
-                car = VehicleData(data=vehicle, statistics=None)
-
-                if vehicle.is_connected_services_enabled and vehicle.vin is not None:
-                    if not vehicle.dashboard.is_metric:
+                if (
+                    vehicle_status.is_connected_services_enabled
+                    and vehicle_status.vin is not None
+                ):
+                    if not vehicle_status.dashboard.is_metric:
                         _LOGGER.debug("The car is reporting data in imperial")
                         if use_liters:
                             _LOGGER.debug(
@@ -112,26 +113,30 @@ async def async_setup_entry(  # pylint: disable=too-many-statements
                         unit = CONF_UNIT_SYSTEM_METRIC
 
                     # Use parallel request to get car statistics.
-                    data = await asyncio.gather(
+                    driving_statistics = await asyncio.gather(
                         *[
                             client.get_driving_statistics(
-                                vehicle.vin, interval="isoweek", unit=unit
+                                vehicle_status.vin, interval="isoweek", unit=unit
                             ),
-                            client.get_driving_statistics(vehicle.vin, unit=unit),
                             client.get_driving_statistics(
-                                vehicle.vin, interval="year", unit=unit
+                                vehicle_status.vin, unit=unit
+                            ),
+                            client.get_driving_statistics(
+                                vehicle_status.vin, interval="year", unit=unit
                             ),
                         ]
                     )
 
                     car["statistics"] = StatisticsData(
-                        week=data[0], month=data[1], year=data[0]
+                        week=driving_statistics[0],
+                        month=driving_statistics[1],
+                        year=driving_statistics[0],
                     )
 
-                vehicles.append(car)
+                vehicle_informations.append(car)
 
-            _LOGGER.debug(vehicles)
-            return vehicles
+            _LOGGER.debug(vehicle_informations)
+            return vehicle_informations
 
         except ToyotaLoginError as ex:
             _LOGGER.error(ex)
