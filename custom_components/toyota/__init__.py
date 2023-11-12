@@ -7,7 +7,6 @@ import logging
 from datetime import timedelta
 from typing import Any, Optional, TypedDict
 
-import async_timeout
 import httpcore
 import httpx
 from homeassistant.config_entries import ConfigEntry
@@ -50,12 +49,6 @@ class VehicleData(TypedDict):
     statistics: Optional[StatisticsData]
 
 
-async def with_timeout(task, timeout_seconds=15):
-    """Run an async task with a timeout."""
-    async with async_timeout.timeout(timeout_seconds):
-        return await task
-
-
 async def async_setup_entry(  # pylint: disable=too-many-statements
     hass: HomeAssistant, entry: ConfigEntry
 ) -> bool:
@@ -87,50 +80,48 @@ async def async_setup_entry(  # pylint: disable=too-many-statements
         """Fetch vehicle data from Toyota API."""
 
         try:
-            vehicles = await with_timeout(client.get_vehicles())
+            vehicles = await asyncio.wait_for(client.get_vehicles(), 15)
             vehicle_informations = []
             for vehicle in vehicles:
                 vehicle_status = await client.get_vehicle_status(vehicle)
 
                 car = VehicleData(data=vehicle_status, statistics=None)
 
+                unit_system_map = {
+                    False: CONF_UNIT_SYSTEM_IMPERIAL,
+                    True: CONF_UNIT_SYSTEM_IMPERIAL_LITERS,
+                }
+                unit = (
+                    CONF_UNIT_SYSTEM_METRIC
+                    if vehicle_status.dashboard.is_metric
+                    else unit_system_map[use_liters]
+                )
+
+                _LOGGER.debug(f"The car is reporting data in {unit}")
+                if use_liters and not vehicle_status.dashboard.is_metric:
+                    _LOGGER.debug("Getting statistics in imperial and L/100 miles")
+                elif not vehicle_status.dashboard.is_metric:
+                    _LOGGER.debug("Getting statistics in imperial and MPG")
+
                 if (
                     vehicle_status.is_connected_services_enabled
                     and vehicle_status.vin is not None
                 ):
-                    if not vehicle_status.dashboard.is_metric:
-                        _LOGGER.debug("The car is reporting data in imperial")
-                        if use_liters:
-                            _LOGGER.debug(
-                                "Getting statistics in imperial and L/100 miles"
-                            )
-                            unit = CONF_UNIT_SYSTEM_IMPERIAL_LITERS
-                        else:
-                            _LOGGER.debug("Getting statistics in imperial and MPG")
-                            unit = CONF_UNIT_SYSTEM_IMPERIAL
-                    else:
-                        _LOGGER.debug("The car is reporting data in metric")
-                        unit = CONF_UNIT_SYSTEM_METRIC
-
                     # Use parallel request to get car statistics.
                     driving_statistics = await asyncio.gather(
-                        *[
-                            client.get_driving_statistics(
-                                vehicle_status.vin, interval="isoweek", unit=unit
-                            ),
-                            client.get_driving_statistics(
-                                vehicle_status.vin, unit=unit
-                            ),
-                            client.get_driving_statistics(
-                                vehicle_status.vin, interval="year", unit=unit
-                            ),
-                        ]
+                        client.get_driving_statistics(
+                            vehicle_status.vin, interval="isoweek", unit=unit
+                        ),
+                        client.get_driving_statistics(vehicle_status.vin, unit=unit),
+                        client.get_driving_statistics(
+                            vehicle_status.vin, interval="year", unit=unit
+                        ),
                     )
 
                     car["statistics"] = StatisticsData(
                         week=driving_statistics[0],
                         month=driving_statistics[1],
-                        year=driving_statistics[0],
+                        year=driving_statistics[2],
                     )
 
                 vehicle_informations.append(car)
