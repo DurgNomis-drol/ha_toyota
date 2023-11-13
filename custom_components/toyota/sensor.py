@@ -7,17 +7,16 @@ from typing import Any, Optional, Union
 
 import arrow
 from homeassistant.components.sensor import (
-    STATE_CLASS_MEASUREMENT,
     SensorDeviceClass,
     SensorEntity,
     SensorEntityDescription,
+    SensorStateClass,
 )
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import (
     LENGTH_KILOMETERS,
     LENGTH_MILES,
     PERCENTAGE,
-    STATE_UNAVAILABLE,
     STATE_UNKNOWN,
     TEMP_CELSIUS,
 )
@@ -191,21 +190,39 @@ class ToyotaStatisticsSensorEntityDescription(
 
 STATISTICS_ENTITY_DESCRIPTIONS: tuple[ToyotaStatisticsSensorEntityDescription, ...] = (
     ToyotaStatisticsSensorEntityDescription(
+        key="current_day_statistics",
+        name="current day statistics",
+        icon="mdi:history",
+        entity_category=None,
+        device_class=SensorDeviceClass.DISTANCE,
+        state_class=SensorStateClass.MEASUREMENT,
+        period="day",
+    ),
+    ToyotaStatisticsSensorEntityDescription(
         key="current_week_statistics",
         name="current week statistics",
         icon="mdi:history",
+        entity_category=None,
+        device_class=SensorDeviceClass.DISTANCE,
+        state_class=SensorStateClass.MEASUREMENT,
         period="week",
     ),
     ToyotaStatisticsSensorEntityDescription(
         key="current_month_statistics",
         name="current month statistics",
         icon="mdi:history",
+        entity_category=None,
+        device_class=SensorDeviceClass.DISTANCE,
+        state_class=SensorStateClass.MEASUREMENT,
         period="month",
     ),
     ToyotaStatisticsSensorEntityDescription(
         key="current_year_statistics",
         name="current year statistics",
         icon="mdi:history",
+        entity_category=None,
+        device_class=SensorDeviceClass.DISTANCE,
+        state_class=SensorStateClass.MEASUREMENT,
         period="year",
     ),
 )
@@ -222,8 +239,8 @@ async def async_setup_entry(
     ]
 
     sensors: list[Union[ToyotaSensor, ToyotaStatisticsSensor]] = []
-    for index, vehicle in enumerate(coordinator.data):
-        # vehicle = coordinator.data[index]["data"]
+    for index, _ in enumerate(coordinator.data):
+        vehicle = coordinator.data[index]["data"]
 
         sensors.append(
             ToyotaSensor(
@@ -234,16 +251,16 @@ async def async_setup_entry(
             )
         )
 
-        # if vehicle.is_connected_services_enabled:
-        #    for description in STATISTICS_ENTITY_DESCRIPTIONS:
-        #        sensors.append(
-        #            ToyotaStatisticsSensor(
-        #                coordinator=coordinator,
-        #                entry_id=entry.entry_id,
-        #                vehicle_index=index,
-        #                description=description,
-        #            )
-        #        )
+        if vehicle.is_connected_services_enabled:
+            for description in STATISTICS_ENTITY_DESCRIPTIONS:
+                sensors.append(
+                    ToyotaStatisticsSensor(
+                        coordinator=coordinator,
+                        entry_id=entry.entry_id,
+                        vehicle_index=index,
+                        description=description,
+                    )
+                )
 
         # if vehicle.details.get("batteryHealth") is not None:
         #    sensors.append(
@@ -283,8 +300,6 @@ async def async_setup_entry(
 class ToyotaSensor(ToyotaBaseEntity, SensorEntity):
     """Representation of a Toyota sensor."""
 
-    _attr_state_class = STATE_CLASS_MEASUREMENT
-
     @property
     def native_value(self) -> StateType:
         """Return the state of the sensor."""
@@ -315,6 +330,12 @@ class ToyotaStatisticsSensor(ToyotaSensor):
         )
 
     @property
+    def native_value(self) -> StateType:
+        """Return the state of the sensor."""
+        data = self.coordinator.data[self.index]["statistics"][self.period][0]
+        return round(data[DATA][TOTAL_DISTANCE], 1) if DATA in data else None
+
+    @property
     def extra_state_attributes(self):
         """Return the state attributes."""
         data = self.coordinator.data[self.index]["statistics"][self.period][0]
@@ -323,7 +344,16 @@ class ToyotaStatisticsSensor(ToyotaSensor):
             data.get(DATA, {}), self.vehicle.hybrid
         )
 
-        if self.period == "year":
+        if self.period == "day":
+            from_dt = arrow.now().floor("day").format("YYYY-MM-DD")
+            to_dt = arrow.now().ceil("day").format("YYYY-MM-DD")
+            attributes.update(
+                {
+                    "From": data[BUCKET][PERIODE_START] if BUCKET in data else from_dt,
+                    "To": to_dt,
+                }
+            )
+        elif self.period == "year":
             from_year = arrow.now().floor("year").format("YYYY")
             attributes.update(
                 {"Year": data[BUCKET]["year"] if BUCKET in data else from_year}
@@ -342,14 +372,6 @@ class ToyotaStatisticsSensor(ToyotaSensor):
             )
 
         return attributes
-
-    @property
-    def native_value(self) -> StateType:
-        """Return the state of the sensor."""
-        data = self.coordinator.data[self.index]["statistics"][self.period][0]
-
-        total_distance = round(data[DATA][TOTAL_DISTANCE], 1) if DATA in data else None
-        return STATE_UNAVAILABLE if total_distance is None else total_distance
 
     @callback
     def _handle_coordinator_update(self) -> None:

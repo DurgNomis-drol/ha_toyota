@@ -37,6 +37,7 @@ _LOGGER = logging.getLogger(__name__)
 class StatisticsData(TypedDict):
     """Representing Statistics data."""
 
+    day: list[dict[str, Any]]
     week: list[dict[str, Any]]
     month: list[dict[str, Any]]
     year: list[dict[str, Any]]
@@ -111,6 +112,9 @@ async def async_setup_entry(  # pylint: disable=too-many-statements
                     # Use parallel request to get car statistics.
                     driving_statistics = await asyncio.gather(
                         client.get_driving_statistics(
+                            vehicle_status.vin, interval="day", unit=unit
+                        ),
+                        client.get_driving_statistics(
                             vehicle_status.vin, interval="isoweek", unit=unit
                         ),
                         client.get_driving_statistics(vehicle_status.vin, unit=unit),
@@ -120,9 +124,10 @@ async def async_setup_entry(  # pylint: disable=too-many-statements
                     )
 
                     vehicle_data["statistics"] = StatisticsData(
-                        week=driving_statistics[0],
-                        month=driving_statistics[1],
-                        year=driving_statistics[2],
+                        day=driving_statistics[0],
+                        week=driving_statistics[1],
+                        month=driving_statistics[2],
+                        year=driving_statistics[3],
                     )
 
                 vehicle_informations.append(vehicle_data)
