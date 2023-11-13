@@ -59,7 +59,6 @@ LICENSE_PLATE_ENTITY_DESCRIPTION = ToyotaSensorEntityDescription(
     value_fn=lambda vehicle: vehicle.details.get(LICENSE_PLATE, STATE_UNKNOWN),
     attributes_fn=lambda vehicle: vehicle.details,
 )
-
 STARTER_BATTERY_HEALTH_ENTITY_DESCRIPTIONS = ToyotaSensorEntityDescription(
     key="starter_battery_health",
     name="starter battery health",
@@ -70,7 +69,6 @@ STARTER_BATTERY_HEALTH_ENTITY_DESCRIPTIONS = ToyotaSensorEntityDescription(
     value_fn=lambda vehicle: vehicle.details.get("batteryHealth").capitalize(),
     attributes_fn=lambda vehicle: None,
 )
-
 ODOMETER_ENTITY_DESCRIPTION_KM = ToyotaSensorEntityDescription(
     key="odometer",
     name="odometer",
@@ -79,6 +77,7 @@ ODOMETER_ENTITY_DESCRIPTION_KM = ToyotaSensorEntityDescription(
     native_unit_of_measurement=LENGTH_KILOMETERS,
     state_class=SensorStateClass.MEASUREMENT,
     value_fn=lambda vehicle: vehicle.dashboard.odometer,
+    suggested_display_precision=0,
     attributes_fn=lambda vehicle: None,
 )
 ODOMETER_ENTITY_DESCRIPTION_MILES = ToyotaSensorEntityDescription(
@@ -89,6 +88,18 @@ ODOMETER_ENTITY_DESCRIPTION_MILES = ToyotaSensorEntityDescription(
     native_unit_of_measurement=LENGTH_MILES,
     state_class=SensorStateClass.MEASUREMENT,
     value_fn=lambda vehicle: vehicle.dashboard.odometer,
+    suggested_display_precision=0,
+    attributes_fn=lambda vehicle: None,
+)
+FUEL_LEVEL_ENTITY_DESCRIPTION = ToyotaSensorEntityDescription(
+    key="fuel_level",
+    name="fuel level",
+    icon="mdi:gas-station",
+    device_class=SensorDeviceClass.VOLUME_STORAGE,
+    native_unit_of_measurement=PERCENTAGE,
+    state_class=SensorStateClass.MEASUREMENT,
+    value_fn=lambda vehicle: round_number(vehicle.dashboard.fuel_level),
+    suggested_display_precision=0,
     attributes_fn=lambda vehicle: None,
 )
 
@@ -207,6 +218,7 @@ STATISTICS_ENTITY_DESCRIPTIONS: tuple[ToyotaStatisticsSensorEntityDescription, .
         icon="mdi:history",
         device_class=SensorDeviceClass.DISTANCE,
         state_class=SensorStateClass.MEASUREMENT,
+        suggested_display_precision=0,
         period="day",
     ),
     ToyotaStatisticsSensorEntityDescription(
@@ -215,6 +227,7 @@ STATISTICS_ENTITY_DESCRIPTIONS: tuple[ToyotaStatisticsSensorEntityDescription, .
         icon="mdi:history",
         device_class=SensorDeviceClass.DISTANCE,
         state_class=SensorStateClass.MEASUREMENT,
+        suggested_display_precision=0,
         period="week",
     ),
     ToyotaStatisticsSensorEntityDescription(
@@ -223,6 +236,7 @@ STATISTICS_ENTITY_DESCRIPTIONS: tuple[ToyotaStatisticsSensorEntityDescription, .
         icon="mdi:history",
         device_class=SensorDeviceClass.DISTANCE,
         state_class=SensorStateClass.MEASUREMENT,
+        suggested_display_precision=0,
         period="month",
     ),
     ToyotaStatisticsSensorEntityDescription(
@@ -231,6 +245,7 @@ STATISTICS_ENTITY_DESCRIPTIONS: tuple[ToyotaStatisticsSensorEntityDescription, .
         icon="mdi:history",
         device_class=SensorDeviceClass.DISTANCE,
         state_class=SensorStateClass.MEASUREMENT,
+        suggested_display_precision=0,
         period="year",
     ),
 )
@@ -288,6 +303,15 @@ async def async_setup_entry(
                 description=ODOMETER_ENTITY_DESCRIPTION_KM
                 if vehicle.dashboard.is_metric
                 else ODOMETER_ENTITY_DESCRIPTION_MILES,
+            )
+        )
+
+        sensors.append(
+            ToyotaSensor(
+                coordinator=coordinator,
+                entry_id=entry.entry_id,
+                vehicle_index=index,
+                description=FUEL_LEVEL_ENTITY_DESCRIPTION,
             )
         )
 
