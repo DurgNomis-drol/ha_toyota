@@ -825,13 +825,13 @@ files = [
 
 [[package]]
 name = "homeassistant"
-version = "2023.11.1"
+version = "2023.11.2"
 description = "Open-source home automation platform running on Python 3."
 optional = false
 python-versions = ">=3.11.0"
 files = [
-    {file = "homeassistant-2023.11.1-py3-none-any.whl", hash = "sha256:9c0bde94d11cfa9f7ff1c752cc6a155091b3e001b2a5f169148bd92f13931e34"},
-    {file = "homeassistant-2023.11.1.tar.gz", hash = "sha256:e0e22f63a6e5ba7fbeec90d8f81d028ebaf8c8d8278d377c1b9e525a4852dc2b"},
+    {file = "homeassistant-2023.11.2-py3-none-any.whl", hash = "sha256:9514abc37e8172495da009f376020b2e16cda4e9dc61e58694db53acf191119a"},
+    {file = "homeassistant-2023.11.2.tar.gz", hash = "sha256:7279de46ad21232be02a8d1dbbfe76cded0856cf138133cd40cdd3d64cb2d37b"},
 ]
 
 [package.dependencies]
@@ -1226,13 +1226,13 @@ files = [
 
 [[package]]
 name = "mytoyota"
-version = "0.9.2"
+version = "0.9.3"
 description = "Python client for Toyota Connected Services."
 optional = false
-python-versions = ">=3.7,<4.0"
+python-versions = ">=3.8.1,<4.0.0"
 files = [
-    {file = "mytoyota-0.9.2-py3-none-any.whl", hash = "sha256:536c65c0f894e832191d8e8085b3986b21a040d7fde9cfd524c40f4d62dbeebf"},
-    {file = "mytoyota-0.9.2.tar.gz", hash = "sha256:0dc4d6e0cb1af9a23a8d27a04cfd864223f069c3e44ecfda91c74aa1c2ef2220"},
+    {file = "mytoyota-0.9.3-py3-none-any.whl", hash = "sha256:b4c29a583a456eb3c96910571d5f60c57080ce0885b175d0ecc3fe96bb299c21"},
+    {file = "mytoyota-0.9.3.tar.gz", hash = "sha256:5c601f42717086ca5c49cae8507bfc25fcd7f453e60f209a14be3167b2cacc31"},
 ]
 
 [package.dependencies]
@@ -1681,18 +1681,17 @@ files = [
 
 [[package]]
 name = "urllib3"
-version = "2.0.7"
+version = "2.1.0"
 description = "HTTP library with thread-safe connection pooling, file post, and more."
 optional = false
-python-versions = ">=3.7"
+python-versions = ">=3.8"
 files = [
-    {file = "urllib3-2.0.7-py3-none-any.whl", hash = "sha256:fdb6d215c776278489906c2f8916e6e7d4f5a9b602ccbcfdf7f016fc8da0596e"},
-    {file = "urllib3-2.0.7.tar.gz", hash = "sha256:c97dfde1f7bd43a71c8d2a58e369e9b2bf692d1334ea9f9cae55add7d0dd0f84"},
+    {file = "urllib3-2.1.0-py3-none-any.whl", hash = "sha256:55901e917a5896a349ff771be919f8bd99aff50b79fe58fec595eb37bbc56bb3"},
+    {file = "urllib3-2.1.0.tar.gz", hash = "sha256:df7aa8afb0148fa78488e7899b2c59b5f4ffcfa82e6c54ccb9dd37c1d7b52d54"},
 ]
 
 [package.extras]
 brotli = ["brotli (>=1.0.9)", "brotlicffi (>=0.8.0)"]
-secure = ["certifi", "cryptography (>=1.9)", "idna (>=2.0.0)", "pyopenssl (>=17.1.0)", "urllib3-secure-extra"]
 socks = ["pysocks (>=1.5.6,!=1.5.7,<2.0)"]
 zstd = ["zstandard (>=0.18.0)"]
 
@@ -1831,4 +1830,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "91250dc5095613a4f5fa40f0e1aa6d900677a1ae825ad3f8259d34fb63e9f509"
+content-hash = "72d8334bffb3bc7caeddfaa9680637637ad4b4aee7b7c92df42e2b483f3f5c11"
