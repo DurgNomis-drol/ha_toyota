@@ -11,13 +11,13 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 
 from . import VehicleData
-from .const import DOMAIN, IMAGE
+from .const import DOMAIN, ICON_PARKING, IMAGE
 from .entity import ToyotaBaseEntity
 
 PARKING_TRACKER_DESCRIPTION: EntityDescription = EntityDescription(
     key="parking_location",
     name="parking location",
-    icon="mdi:map-marker",
+    icon=ICON_PARKING,
 )
 
 

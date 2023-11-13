@@ -3,11 +3,15 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from dataclasses import dataclass
-from datetime import datetime
 from typing import Any, Optional, Union
 
 import arrow
-from homeassistant.components.sensor import STATE_CLASS_MEASUREMENT, SensorDeviceClass
+from homeassistant.components.sensor import (
+    STATE_CLASS_MEASUREMENT,
+    SensorDeviceClass,
+    SensorEntity,
+    SensorEntityDescription,
+)
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import (
     LENGTH_KILOMETERS,
@@ -18,7 +22,7 @@ from homeassistant.const import (
     TEMP_CELSIUS,
 )
 from homeassistant.core import HomeAssistant, callback
-from homeassistant.helpers.entity import EntityCategory, EntityDescription
+from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.typing import StateType
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
@@ -34,26 +38,27 @@ from .utils import format_statistics_attributes, round_number
 class ToyotaSensorEntityDescriptionMixin:
     """Mixin for required keys."""
 
-    value_fn: Callable[[Vehicle], bool | datetime | int | str | None] | None
-    attributes_fn: Callable[[Vehicle], dict[str, Any] | None] | None
-    unit_fn: Callable[[Vehicle | StatisticsData], str | None] | str | None
+    value_fn: Callable[[Vehicle], StateType]
+    attributes_fn: Callable[[Vehicle], Optional[dict[str, Any]]]
 
 
 @dataclass
 class ToyotaSensorEntityDescription(
-    EntityDescription, ToyotaSensorEntityDescriptionMixin
+    SensorEntityDescription, ToyotaSensorEntityDescriptionMixin
 ):
     """Describes a Toyota sensor entity."""
 
 
 LICENSE_PLATE_ENTITY_DESCRIPTION = ToyotaSensorEntityDescription(
-    key="numberplate",
-    name="numberplate",
+    key="license_plate",
+    name="license plate",
     icon="mdi:car-info",
     entity_category=EntityCategory.DIAGNOSTIC,
-    value_fn=lambda data: data.details.get(LICENSE_PLATE, STATE_UNKNOWN),
-    attributes_fn=lambda data: data.details,
-    unit_fn=None,
+    device_class=SensorDeviceClass.ENUM,
+    native_unit_of_measurement=None,
+    state_class=None,
+    value_fn=lambda vehicle: vehicle.details.get(LICENSE_PLATE, STATE_UNKNOWN),
+    attributes_fn=lambda vehicle: vehicle.details,
 )
 
 STARTER_BATTERY_HEALTH_ENTITY_DESCRIPTIONS = ToyotaSensorEntityDescription(
@@ -62,7 +67,7 @@ STARTER_BATTERY_HEALTH_ENTITY_DESCRIPTIONS = ToyotaSensorEntityDescription(
     icon="mdi:car_battery",
     value_fn=lambda vh: vh.details.get("batteryHealth").capitalize(),
     attributes_fn=None,
-    unit_fn=None,
+    native_unit_of_measurement=None,
 )
 
 ODOMETER_ENTITY_DESCRIPTION = ToyotaSensorEntityDescription(
@@ -71,7 +76,9 @@ ODOMETER_ENTITY_DESCRIPTION = ToyotaSensorEntityDescription(
     icon="mdi:counter",
     value_fn=lambda vh: vh.dashboard.odometer,
     attributes_fn=None,
-    unit_fn=lambda vh: LENGTH_KILOMETERS if vh.dashboard.is_metric else LENGTH_MILES,
+    native_unit_of_measurement=lambda vh: LENGTH_KILOMETERS
+    if vh.dashboard.is_metric
+    else LENGTH_MILES,
 )
 
 FUEL_ENTITY_DESCRIPTIONS: tuple[ToyotaSensorEntityDescription, ...] = (
@@ -79,7 +86,7 @@ FUEL_ENTITY_DESCRIPTIONS: tuple[ToyotaSensorEntityDescription, ...] = (
         key="fuel_level",
         name="fuel level",
         icon="mdi:gas-station",
-        unit_fn=PERCENTAGE,
+        native_unit_of_measurement=PERCENTAGE,
         value_fn=lambda vh: round_number(vh.dashboard.fuel_level),
         attributes_fn=lambda vh: {
             "fueltype": vh.fueltype,
@@ -89,7 +96,7 @@ FUEL_ENTITY_DESCRIPTIONS: tuple[ToyotaSensorEntityDescription, ...] = (
         key="fuel_range",
         name="fuel range",
         icon="mdi:map-marker-distance",
-        unit_fn=lambda vh: LENGTH_KILOMETERS
+        native_unit_of_measurement=lambda vh: LENGTH_KILOMETERS
         if vh.dashboard.is_metric
         else LENGTH_MILES,
         value_fn=lambda vh: round_number(vh.dashboard.fuel_range, 1),
@@ -102,7 +109,7 @@ HYBRID_ENTITY_DESCRIPTIONS: tuple[ToyotaSensorEntityDescription, ...] = (
         key="batter_level",
         name="battery level",
         icon="mdi:battery",
-        unit_fn=PERCENTAGE,
+        native_unit_of_measurement=PERCENTAGE,
         value_fn=lambda vh: round_number(vh.dashboard.battery_level),
         attributes_fn=None,
     ),
@@ -110,7 +117,7 @@ HYBRID_ENTITY_DESCRIPTIONS: tuple[ToyotaSensorEntityDescription, ...] = (
         key="fuel_range",
         name="fuel range",
         icon="mdi:map-marker-distance",
-        unit_fn=lambda vh: LENGTH_KILOMETERS
+        native_unit_of_measurement=lambda vh: LENGTH_KILOMETERS
         if vh.dashboard.is_metric
         else LENGTH_MILES,
         value_fn=lambda vh: round_number(vh.dashboard.battery_range, 1),
@@ -120,7 +127,7 @@ HYBRID_ENTITY_DESCRIPTIONS: tuple[ToyotaSensorEntityDescription, ...] = (
         key="fuel_range_aircon",
         name="fuel range with aircon",
         icon="mdi:map-marker-distance",
-        unit_fn=lambda vh: LENGTH_KILOMETERS
+        native_unit_of_measurement=lambda vh: LENGTH_KILOMETERS
         if vh.dashboard.is_metric
         else LENGTH_MILES,
         value_fn=lambda vh: round_number(vh.dashboard.battery_range_with_aircon, 1),
@@ -132,7 +139,7 @@ HYBRID_ENTITY_DESCRIPTIONS: tuple[ToyotaSensorEntityDescription, ...] = (
         icon="mdi:car-electric",
         value_fn=lambda vh: vh.dashboard.charging_status,
         attributes_fn=None,
-        unit_fn=None,
+        native_unit_of_measurement=None,
     ),
     ToyotaSensorEntityDescription(
         key="remaining_charge_time",
@@ -140,7 +147,7 @@ HYBRID_ENTITY_DESCRIPTIONS: tuple[ToyotaSensorEntityDescription, ...] = (
         icon="mdi:car-electric",
         value_fn=lambda vh: vh.dashboard.remaining_charge_time,
         attributes_fn=None,
-        unit_fn=None,
+        native_unit_of_measurement=None,
     ),
 )
 
@@ -149,7 +156,7 @@ HVAC_ENTITY_DESCRIPTIONS: tuple[ToyotaSensorEntityDescription, ...] = (
         key="hvac_current_temperature",
         name="current temperature",
         device_class=SensorDeviceClass.TEMPERATURE,
-        unit_fn=TEMP_CELSIUS,
+        native_unit_of_measurement=TEMP_CELSIUS,
         value_fn=lambda vh: vh.hvac.current_temperature,
         attributes_fn=lambda vh: {
             "last_acquired": vh.hvac.last_updated or "Not supported",
@@ -159,7 +166,7 @@ HVAC_ENTITY_DESCRIPTIONS: tuple[ToyotaSensorEntityDescription, ...] = (
         key="hvac_target_temperature",
         name="target temperature",
         device_class=SensorDeviceClass.TEMPERATURE,
-        unit_fn=TEMP_CELSIUS,
+        native_unit_of_measurement=TEMP_CELSIUS,
         value_fn=lambda vh: vh.hvac.target_temperature,
         attributes_fn=lambda vh: {
             "last_acquired": vh.hvac.last_updated or "Not supported",
@@ -177,7 +184,7 @@ class ToyotaStatisticsSensorEntityDescriptionMixin:
 
 @dataclass
 class ToyotaStatisticsSensorEntityDescription(
-    EntityDescription, ToyotaStatisticsSensorEntityDescriptionMixin
+    SensorEntityDescription, ToyotaStatisticsSensorEntityDescriptionMixin
 ):
     """Describes a Toyota statistics sensor entity."""
 
@@ -273,29 +280,20 @@ async def async_setup_entry(
     async_add_devices(sensors)
 
 
-class ToyotaSensor(ToyotaBaseEntity):
+class ToyotaSensor(ToyotaBaseEntity, SensorEntity):
     """Representation of a Toyota sensor."""
 
     _attr_state_class = STATE_CLASS_MEASUREMENT
 
     @property
-    def native_value(self) -> Optional[Union[datetime, str, int]]:
+    def native_value(self) -> StateType:
         """Return the state of the sensor."""
-        return self.entity_description.value_fn(self.vehicle) if self.vehicle else None
+        return self.entity_description.value_fn(self.vehicle)
 
     @property
     def extra_state_attributes(self) -> Optional[dict[str, Any]]:
         """Return the attributes of the sensor."""
-        return (
-            self.entity_description.attributes_fn(self.vehicle)
-            if self.vehicle
-            else None
-        )
-
-    @property
-    def native_unit_of_measurement(self) -> Optional[str]:
-        """Return unit of measurement."""
-        return self.entity_description.unit_fn(self.vehicle) if self.vehicle else None
+        return self.entity_description.attributes_fn(self.vehicle)
 
 
 class ToyotaStatisticsSensor(ToyotaSensor):
