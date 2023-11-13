@@ -38,7 +38,7 @@ class ToyotaSensorEntityDescriptionMixin:
     """Mixin for required keys."""
 
     value_fn: Callable[[Vehicle], StateType]
-    attributes_fn: Optional[Callable[[Vehicle], Optional[dict[str, Any]]]]
+    attributes_fn: Callable[[Vehicle], Optional[dict[str, Any]]]
 
 
 @dataclass
@@ -67,19 +67,29 @@ STARTER_BATTERY_HEALTH_ENTITY_DESCRIPTIONS = ToyotaSensorEntityDescription(
     device_class=SensorDeviceClass.ENUM,
     native_unit_of_measurement=None,
     state_class=None,
-    value_fn=lambda vh: vh.details.get("batteryHealth").capitalize(),
-    attributes_fn=None,
+    value_fn=lambda vehicle: vehicle.details.get("batteryHealth").capitalize(),
+    attributes_fn=lambda vehicle: None,
 )
 
-ODOMETER_ENTITY_DESCRIPTION = ToyotaSensorEntityDescription(
+ODOMETER_ENTITY_DESCRIPTION_KM = ToyotaSensorEntityDescription(
     key="odometer",
     name="odometer",
     icon="mdi:counter",
-    value_fn=lambda vh: vh.dashboard.odometer,
-    attributes_fn=None,
-    native_unit_of_measurement=lambda vh: LENGTH_KILOMETERS
-    if vh.dashboard.is_metric
-    else LENGTH_MILES,
+    device_class=SensorDeviceClass.DISTANCE,
+    native_unit_of_measurement=LENGTH_KILOMETERS,
+    state_class=SensorStateClass.MEASUREMENT,
+    value_fn=lambda vehicle: vehicle.dashboard.odometer,
+    attributes_fn=lambda vehicle: None,
+)
+ODOMETER_ENTITY_DESCRIPTION_MILES = ToyotaSensorEntityDescription(
+    key="odometer",
+    name="odometer",
+    icon="mdi:counter",
+    device_class=SensorDeviceClass.DISTANCE,
+    native_unit_of_measurement=LENGTH_MILES,
+    state_class=SensorStateClass.MEASUREMENT,
+    value_fn=lambda vehicle: vehicle.dashboard.odometer,
+    attributes_fn=lambda vehicle: None,
 )
 
 FUEL_ENTITY_DESCRIPTIONS: tuple[ToyotaSensorEntityDescription, ...] = (
@@ -270,6 +280,17 @@ async def async_setup_entry(
                 )
             )
 
+        sensors.append(
+            ToyotaSensor(
+                coordinator=coordinator,
+                entry_id=entry.entry_id,
+                vehicle_index=index,
+                description=ODOMETER_ENTITY_DESCRIPTION_KM
+                if vehicle.dashboard.is_metric
+                else ODOMETER_ENTITY_DESCRIPTION_MILES,
+            )
+        )
+
         # if vehicle.hvac:
         #    for description in HVAC_ENTITY_DESCRIPTIONS:
         #        sensors.append(
@@ -306,10 +327,7 @@ class ToyotaSensor(ToyotaBaseEntity, SensorEntity):
     @property
     def extra_state_attributes(self) -> Optional[dict[str, Any]]:
         """Return the attributes of the sensor."""
-        if isinstance(self.entity_description.attributes_fn(self.vehicle), Callable):
-            return self.entity_description.attributes_fn(self.vehicle)
-        else:
-            return None
+        return self.entity_description.attributes_fn(self.vehicle)
 
 
 class ToyotaStatisticsSensor(ToyotaSensor):
