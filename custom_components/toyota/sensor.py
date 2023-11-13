@@ -18,7 +18,6 @@ from homeassistant.const import (
     LENGTH_MILES,
     PERCENTAGE,
     STATE_UNKNOWN,
-    TEMP_CELSIUS,
 )
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity import EntityCategory
@@ -98,102 +97,9 @@ FUEL_LEVEL_ENTITY_DESCRIPTION = ToyotaSensorEntityDescription(
     device_class=SensorDeviceClass.VOLUME_STORAGE,
     native_unit_of_measurement=PERCENTAGE,
     state_class=SensorStateClass.MEASUREMENT,
-    value_fn=lambda vehicle: round_number(vehicle.dashboard.fuel_level),
+    value_fn=lambda vehicle: round_number(vehicle.dashboard.fuel_level, 0),
     suggested_display_precision=0,
     attributes_fn=lambda vehicle: None,
-)
-
-FUEL_ENTITY_DESCRIPTIONS: tuple[ToyotaSensorEntityDescription, ...] = (
-    ToyotaSensorEntityDescription(
-        key="fuel_level",
-        name="fuel level",
-        icon="mdi:gas-station",
-        native_unit_of_measurement=PERCENTAGE,
-        value_fn=lambda vh: round_number(vh.dashboard.fuel_level),
-        attributes_fn=lambda vh: {
-            "fueltype": vh.fueltype,
-        },
-    ),
-    ToyotaSensorEntityDescription(
-        key="fuel_range",
-        name="fuel range",
-        icon="mdi:map-marker-distance",
-        native_unit_of_measurement=lambda vh: LENGTH_KILOMETERS
-        if vh.dashboard.is_metric
-        else LENGTH_MILES,
-        value_fn=lambda vh: round_number(vh.dashboard.fuel_range, 1),
-        attributes_fn=None,
-    ),
-)
-
-HYBRID_ENTITY_DESCRIPTIONS: tuple[ToyotaSensorEntityDescription, ...] = (
-    ToyotaSensorEntityDescription(
-        key="batter_level",
-        name="battery level",
-        icon="mdi:battery",
-        native_unit_of_measurement=PERCENTAGE,
-        value_fn=lambda vh: round_number(vh.dashboard.battery_level),
-        attributes_fn=None,
-    ),
-    ToyotaSensorEntityDescription(
-        key="fuel_range",
-        name="fuel range",
-        icon="mdi:map-marker-distance",
-        native_unit_of_measurement=lambda vh: LENGTH_KILOMETERS
-        if vh.dashboard.is_metric
-        else LENGTH_MILES,
-        value_fn=lambda vh: round_number(vh.dashboard.battery_range, 1),
-        attributes_fn=None,
-    ),
-    ToyotaSensorEntityDescription(
-        key="fuel_range_aircon",
-        name="fuel range with aircon",
-        icon="mdi:map-marker-distance",
-        native_unit_of_measurement=lambda vh: LENGTH_KILOMETERS
-        if vh.dashboard.is_metric
-        else LENGTH_MILES,
-        value_fn=lambda vh: round_number(vh.dashboard.battery_range_with_aircon, 1),
-        attributes_fn=None,
-    ),
-    ToyotaSensorEntityDescription(
-        key="charging_status",
-        name="charging status",
-        icon="mdi:car-electric",
-        value_fn=lambda vh: vh.dashboard.charging_status,
-        attributes_fn=None,
-        native_unit_of_measurement=None,
-    ),
-    ToyotaSensorEntityDescription(
-        key="remaining_charge_time",
-        name="remaining charge time",
-        icon="mdi:car-electric",
-        value_fn=lambda vh: vh.dashboard.remaining_charge_time,
-        attributes_fn=None,
-        native_unit_of_measurement=None,
-    ),
-)
-
-HVAC_ENTITY_DESCRIPTIONS: tuple[ToyotaSensorEntityDescription, ...] = (
-    ToyotaSensorEntityDescription(
-        key="hvac_current_temperature",
-        name="current temperature",
-        device_class=SensorDeviceClass.TEMPERATURE,
-        native_unit_of_measurement=TEMP_CELSIUS,
-        value_fn=lambda vh: vh.hvac.current_temperature,
-        attributes_fn=lambda vh: {
-            "last_acquired": vh.hvac.last_updated or "Not supported",
-        },
-    ),
-    ToyotaSensorEntityDescription(
-        key="hvac_target_temperature",
-        name="target temperature",
-        device_class=SensorDeviceClass.TEMPERATURE,
-        native_unit_of_measurement=TEMP_CELSIUS,
-        value_fn=lambda vh: vh.hvac.target_temperature,
-        attributes_fn=lambda vh: {
-            "last_acquired": vh.hvac.last_updated or "Not supported",
-        },
-    ),
 )
 
 
@@ -314,28 +220,6 @@ async def async_setup_entry(
                 description=FUEL_LEVEL_ENTITY_DESCRIPTION,
             )
         )
-
-        # if vehicle.hvac:
-        #    for description in HVAC_ENTITY_DESCRIPTIONS:
-        #        sensors.append(
-        #            ToyotaSensor(
-        #                coordinator=coordinator,
-        #                entry_id=entry.entry_id,
-        #                vehicle_index=index,
-        #                description=description,
-        #            )
-        #        )
-
-        # if vehicle.hybrid:
-        #    for description in HYBRID_ENTITY_DESCRIPTIONS:
-        #        sensors.append(
-        #            ToyotaSensor(
-        #                coordinator=coordinator,
-        #                entry_id=entry.entry_id,
-        #                vehicle_index=index,
-        #                description=description,
-        #            )
-        #        )
 
     async_add_devices(sensors)
 
