@@ -38,7 +38,7 @@ class ToyotaSensorEntityDescriptionMixin:
     """Mixin for required keys."""
 
     value_fn: Callable[[Vehicle], StateType]
-    attributes_fn: Callable[[Vehicle], Optional[dict[str, Any]]]
+    attributes_fn: Optional[Callable[[Vehicle], Optional[dict[str, Any]]]]
 
 
 @dataclass
@@ -64,9 +64,11 @@ STARTER_BATTERY_HEALTH_ENTITY_DESCRIPTIONS = ToyotaSensorEntityDescription(
     key="starter_battery_health",
     name="starter battery health",
     icon="mdi:car_battery",
+    device_class=SensorDeviceClass.ENUM,
+    native_unit_of_measurement=None,
+    state_class=None,
     value_fn=lambda vh: vh.details.get("batteryHealth").capitalize(),
     attributes_fn=None,
-    native_unit_of_measurement=None,
 )
 
 ODOMETER_ENTITY_DESCRIPTION = ToyotaSensorEntityDescription(
@@ -193,7 +195,6 @@ STATISTICS_ENTITY_DESCRIPTIONS: tuple[ToyotaStatisticsSensorEntityDescription, .
         key="current_day_statistics",
         name="current day statistics",
         icon="mdi:history",
-        entity_category=None,
         device_class=SensorDeviceClass.DISTANCE,
         state_class=SensorStateClass.MEASUREMENT,
         period="day",
@@ -202,7 +203,6 @@ STATISTICS_ENTITY_DESCRIPTIONS: tuple[ToyotaStatisticsSensorEntityDescription, .
         key="current_week_statistics",
         name="current week statistics",
         icon="mdi:history",
-        entity_category=None,
         device_class=SensorDeviceClass.DISTANCE,
         state_class=SensorStateClass.MEASUREMENT,
         period="week",
@@ -211,7 +211,6 @@ STATISTICS_ENTITY_DESCRIPTIONS: tuple[ToyotaStatisticsSensorEntityDescription, .
         key="current_month_statistics",
         name="current month statistics",
         icon="mdi:history",
-        entity_category=None,
         device_class=SensorDeviceClass.DISTANCE,
         state_class=SensorStateClass.MEASUREMENT,
         period="month",
@@ -220,7 +219,6 @@ STATISTICS_ENTITY_DESCRIPTIONS: tuple[ToyotaStatisticsSensorEntityDescription, .
         key="current_year_statistics",
         name="current year statistics",
         icon="mdi:history",
-        entity_category=None,
         device_class=SensorDeviceClass.DISTANCE,
         state_class=SensorStateClass.MEASUREMENT,
         period="year",
@@ -262,15 +260,15 @@ async def async_setup_entry(
                     )
                 )
 
-        # if vehicle.details.get("batteryHealth") is not None:
-        #    sensors.append(
-        #        ToyotaSensor(
-        #            coordinator=coordinator,
-        #            entry_id=entry.entry_id,
-        #            vehicle_index=index,
-        #            description=STARTER_BATTERY_HEALTH_ENTITY_DESCRIPTIONS,
-        #        )
-        #    )
+        if vehicle.details.get("batteryHealth") is not None:
+            sensors.append(
+                ToyotaSensor(
+                    coordinator=coordinator,
+                    entry_id=entry.entry_id,
+                    vehicle_index=index,
+                    description=STARTER_BATTERY_HEALTH_ENTITY_DESCRIPTIONS,
+                )
+            )
 
         # if vehicle.hvac:
         #    for description in HVAC_ENTITY_DESCRIPTIONS:
@@ -308,7 +306,10 @@ class ToyotaSensor(ToyotaBaseEntity, SensorEntity):
     @property
     def extra_state_attributes(self) -> Optional[dict[str, Any]]:
         """Return the attributes of the sensor."""
-        return self.entity_description.attributes_fn(self.vehicle)
+        if isinstance(self.entity_description.attributes_fn(self.vehicle), Callable):
+            return self.entity_description.attributes_fn(self.vehicle)
+        else:
+            return None
 
 
 class ToyotaStatisticsSensor(ToyotaSensor):
