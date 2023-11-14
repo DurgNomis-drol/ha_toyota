@@ -1,6 +1,7 @@
 """Sensor platform for Toyota integration"""
 from __future__ import annotations
 
+import logging
 from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Any, Optional, Union
@@ -30,6 +31,8 @@ from . import StatisticsData, VehicleData
 from .const import BUCKET, DATA, DOMAIN, LICENSE_PLATE, PERIODE_START, TOTAL_DISTANCE
 from .entity import ToyotaBaseEntity
 from .utils import format_statistics_attributes, round_number
+
+_LOGGER = logging.getLogger(__name__)
 
 
 @dataclass
@@ -266,18 +269,8 @@ class ToyotaStatisticsSensor(ToyotaSensor):
         """Helper function to get time period attributes."""
         now = arrow.now()
         if self.period == "day":
-            from_dt = now.floor("day").format("YYYY-MM-DD")
-            to_dt = now.ceil("day").format("YYYY-MM-DD")
-            return {
-                "From": data[BUCKET][PERIODE_START] if BUCKET in data else from_dt,
-                "To": to_dt,
-            }
-        elif self.period == "year":
-            from_year = now.floor("year").format("YYYY")
-            return {"Year": data[BUCKET]["year"] if BUCKET in data else from_year}
-        elif self.period == "month":
-            from_month = now.floor("month").format("MMMM")
-            return {"Month": from_month}
+            dt = now.floor("day").format("YYYY-MM-DD")
+            return {"Day": data[BUCKET]["date"] if BUCKET in data else dt}
         elif self.period == "week":
             from_dt = now.floor("week").format("YYYY-MM-DD")
             to_dt = now.ceil("week").format("YYYY-MM-DD")
@@ -285,7 +278,13 @@ class ToyotaStatisticsSensor(ToyotaSensor):
                 "From": data[BUCKET][PERIODE_START] if BUCKET in data else from_dt,
                 "To": to_dt,
             }
-        return {}
+        elif self.period == "month":
+            from_month = now.floor("month").format("MMMM")
+            return {"Month": from_month}
+        elif self.period == "year":
+            from_year = now.floor("year").format("YYYY")
+            return {"Year": data[BUCKET]["year"] if BUCKET in data else from_year}
+        return None
 
     @property
     def extra_state_attributes(self):
