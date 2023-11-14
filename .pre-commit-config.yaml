@@ -4,6 +4,8 @@ repos:
     hooks:
       - id: check-added-large-files
       - id: check-yaml
+      - id: check-toml
+      - id: check-xml
       - id: end-of-file-fixer
       - id: trailing-whitespace
   - repo: local
@@ -19,7 +21,3 @@ repos:
         entry: poetry run ruff
         language: system
         types: [python]
-  - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: v3.0.3
-    hooks:
-      - id: prettier
