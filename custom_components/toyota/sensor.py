@@ -262,42 +262,39 @@ class ToyotaStatisticsSensor(ToyotaSensor):
         data = self.coordinator.data[self.index]["statistics"][self.period][0]
         return round(data[DATA][TOTAL_DISTANCE], 1) if DATA in data else None
 
+    def _get_time_period_attributes(self, data: dict[str, Any]):
+        """Helper function to get time period attributes."""
+        now = arrow.now()
+        if self.period == "day":
+            from_dt = now.floor("day").format("YYYY-MM-DD")
+            to_dt = now.ceil("day").format("YYYY-MM-DD")
+            return {
+                "From": data[BUCKET][PERIODE_START] if BUCKET in data else from_dt,
+                "To": to_dt,
+            }
+        elif self.period == "year":
+            from_year = now.floor("year").format("YYYY")
+            return {"Year": data[BUCKET]["year"] if BUCKET in data else from_year}
+        elif self.period == "month":
+            from_month = now.floor("month").format("MMMM")
+            return {"Month": from_month}
+        elif self.period == "week":
+            from_dt = now.floor("week").format("YYYY-MM-DD")
+            to_dt = now.ceil("week").format("YYYY-MM-DD")
+            return {
+                "From": data[BUCKET][PERIODE_START] if BUCKET in data else from_dt,
+                "To": to_dt,
+            }
+        return {}
+
     @property
     def extra_state_attributes(self):
         """Return the state attributes."""
         data = self.coordinator.data[self.index]["statistics"][self.period][0]
-
         attributes = format_statistics_attributes(
             data.get(DATA, {}), self.vehicle.hybrid
         )
-
-        if self.period == "day":
-            from_dt = arrow.now().floor("day").format("YYYY-MM-DD")
-            to_dt = arrow.now().ceil("day").format("YYYY-MM-DD")
-            attributes.update(
-                {
-                    "From": data[BUCKET][PERIODE_START] if BUCKET in data else from_dt,
-                    "To": to_dt,
-                }
-            )
-        elif self.period == "year":
-            from_year = arrow.now().floor("year").format("YYYY")
-            attributes.update(
-                {"Year": data[BUCKET]["year"] if BUCKET in data else from_year}
-            )
-        elif self.period == "month":
-            from_month = arrow.now().floor("month").format("MMMM")
-            attributes.update({"Month": from_month})
-        elif self.period == "week":
-            from_dt = arrow.now().floor("week").format("YYYY-MM-DD")
-            to_dt = arrow.now().ceil("week").format("YYYY-MM-DD")
-            attributes.update(
-                {
-                    "From": data[BUCKET][PERIODE_START] if BUCKET in data else from_dt,
-                    "To": to_dt,
-                }
-            )
-
+        attributes.update(self._get_time_period_attributes(data))
         return attributes
 
     @callback
