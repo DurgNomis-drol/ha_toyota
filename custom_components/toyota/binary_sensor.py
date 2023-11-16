@@ -36,7 +36,6 @@ class ToyotaBinaryEntityDescription(
 ):
     """Describes a Toyota binary entity."""
 
-
 OVER_ALL_STATUS_ENTITY_DESCRIPTION = ToyotaBinaryEntityDescription(
     key="over_all_status",
     translation_key="over_all_status",
