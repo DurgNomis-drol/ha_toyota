@@ -1,347 +1,402 @@
 """Binary sensor platform for Toyota integration"""
+from __future__ import annotations
+
+from collections.abc import Callable
+from dataclasses import dataclass
+from datetime import datetime
+from typing import Any
+
 from homeassistant.components.binary_sensor import (
     BinarySensorDeviceClass,
     BinarySensorEntity,
 )
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers.entity import EntityCategory
+from homeassistant.helpers.entity import EntityCategory, EntityDescription
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
+from mytoyota.models.vehicle import Vehicle
 
-from .const import (
-    DATA_COORDINATOR,
-    DOMAIN,
-    ICON_CAR_DOOR,
-    ICON_CAR_DOOR_LOCK,
-    ICON_CAR_LIGHTS,
-    ICON_FRONT_DEFOGGER,
-    ICON_KEY,
-    ICON_REAR_DEFOGGER,
-    LAST_UPDATED,
-    WARNING,
-)
+from . import VehicleData
+from .const import DOMAIN, LAST_UPDATED, WARNING
 from .entity import ToyotaBaseEntity
+
+
+@dataclass
+class ToyotaBinaryEntityDescriptionMixin:
+    """Mixin for required keys."""
+
+    value_fn: Callable[[Vehicle], bool | datetime | int | str | None] | None
+    attributes_fn: Callable[[Vehicle], dict[str, Any] | None] | None
+
+
+@dataclass
+class ToyotaBinaryEntityDescription(
+    EntityDescription, ToyotaBinaryEntityDescriptionMixin
+):
+    """Describes a Toyota binary entity."""
+
+
+OVER_ALL_STATUS_ENTITY_DESCRIPTION = ToyotaBinaryEntityDescription(
+    key="over_all_status",
+    name="over all status",
+    icon="mdi:alert",
+    device_class=BinarySensorDeviceClass.PROBLEM,
+    value_fn=lambda vh: vh.sensors.overallstatus == "OK",
+    attributes_fn=lambda vh: {LAST_UPDATED: vh.sensors.last_updated},
+)
+
+HOOD_ENTITY_DESCRIPTION = ToyotaBinaryEntityDescription(
+    key="hood",
+    name="hood",
+    device_class=BinarySensorDeviceClass.DOOR,
+    entity_category=EntityCategory.DIAGNOSTIC,
+    value_fn=lambda vh: False if vh.sensors.hood.closed else True,
+    attributes_fn=lambda vh: {
+        WARNING: vh.sensors.hood.warning,
+        LAST_UPDATED: vh.sensors.last_updated,
+    },
+)
+
+KEY_ENTITY_DESCRIPTION = ToyotaBinaryEntityDescription(
+    key="key_in_car",
+    name="key in car",
+    icon="mdi:car-key",
+    entity_category=EntityCategory.DIAGNOSTIC,
+    value_fn=lambda vh: vh.sensors.key.in_car,
+    attributes_fn=lambda vh: {
+        WARNING: vh.sensors.key.warning,
+        LAST_UPDATED: vh.sensors.last_updated,
+    },
+)
+
+DEFOGGER_ENTITY_DESCRIPTIONS: tuple[ToyotaBinaryEntityDescription, ...] = (
+    ToyotaBinaryEntityDescription(
+        key="front_defogger",
+        name="front defogger",
+        icon="mdi:car-defrost-front",
+        value_fn=lambda vh: vh.hvac.front_defogger_is_on,
+        attributes_fn=None,
+    ),
+    ToyotaBinaryEntityDescription(
+        key="rear_defogger",
+        name="rear defogger",
+        icon="mdi:car-defrost-rear",
+        value_fn=lambda vh: vh.hvac.rear_defogger_is_on,
+        attributes_fn=None,
+    ),
+)
+
+WINDOW_ENTITY_DESCRIPTIONS: tuple[ToyotaBinaryEntityDescription, ...] = (
+    ToyotaBinaryEntityDescription(
+        key="driverseat_window",
+        name="driverseat window",
+        device_class=BinarySensorDeviceClass.WINDOW,
+        entity_category=EntityCategory.DIAGNOSTIC,
+        value_fn=lambda vh: vh.sensors.windows.driver_seat.state != "close",
+        attributes_fn=lambda vh: {
+            WARNING: vh.sensors.windows.driver_seat.warning,
+            LAST_UPDATED: vh.sensors.last_updated,
+        },
+    ),
+    ToyotaBinaryEntityDescription(
+        key="passengerseat_window",
+        name="passengerseat window",
+        device_class=BinarySensorDeviceClass.WINDOW,
+        entity_category=EntityCategory.DIAGNOSTIC,
+        value_fn=lambda vh: vh.sensors.windows.passenger_seat.state != "close",
+        attributes_fn=lambda vh: {
+            WARNING: vh.sensors.windows.passenger_seat.warning,
+            LAST_UPDATED: vh.sensors.last_updated,
+        },
+    ),
+    ToyotaBinaryEntityDescription(
+        key="leftrearseat_window",
+        name="leftrearseat window",
+        device_class=BinarySensorDeviceClass.WINDOW,
+        entity_category=EntityCategory.DIAGNOSTIC,
+        value_fn=lambda vh: vh.sensors.windows.leftrear_seat.state != "close",
+        attributes_fn=lambda vh: {
+            WARNING: vh.sensors.windows.leftrear_seat.warning,
+            LAST_UPDATED: vh.sensors.last_updated,
+        },
+    ),
+    ToyotaBinaryEntityDescription(
+        key="rightrearseat_window",
+        name="rightrearseat window",
+        device_class=BinarySensorDeviceClass.WINDOW,
+        entity_category=EntityCategory.DIAGNOSTIC,
+        value_fn=lambda vh: vh.sensors.windows.rightrear_seat.state != "close",
+        attributes_fn=lambda vh: {
+            WARNING: vh.sensors.windows.rightrear_seat.warning,
+            LAST_UPDATED: vh.sensors.last_updated,
+        },
+    ),
+)
+
+DOOR_ENTITY_DESCRIPTIONS: tuple[ToyotaBinaryEntityDescription, ...] = (
+    ToyotaBinaryEntityDescription(
+        key="driverseat_door",
+        name="driverseat door",
+        device_class=BinarySensorDeviceClass.DOOR,
+        entity_category=EntityCategory.DIAGNOSTIC,
+        value_fn=lambda vh: False if vh.sensors.doors.driver_seat.closed else True,
+        attributes_fn=lambda vh: {
+            WARNING: vh.sensors.doors.driver_seat.warning,
+            LAST_UPDATED: vh.sensors.last_updated,
+        },
+    ),
+    ToyotaBinaryEntityDescription(
+        key="driverseat_lock",
+        name="driverseat lock",
+        device_class=BinarySensorDeviceClass.LOCK,
+        entity_category=EntityCategory.DIAGNOSTIC,
+        value_fn=lambda vh: vh.sensors.doors.driver_seat.locked,
+        attributes_fn=lambda vh: {
+            WARNING: vh.sensors.doors.driver_seat.warning,
+            LAST_UPDATED: vh.sensors.last_updated,
+        },
+    ),
+    ToyotaBinaryEntityDescription(
+        key="passengerseat_door",
+        name="passengerseat door",
+        device_class=BinarySensorDeviceClass.DOOR,
+        entity_category=EntityCategory.DIAGNOSTIC,
+        value_fn=lambda vh: False if vh.sensors.doors.passenger_seat.closed else True,
+        attributes_fn=lambda vh: {
+            WARNING: vh.sensors.doors.passenger_seat.warning,
+            LAST_UPDATED: vh.sensors.last_updated,
+        },
+    ),
+    ToyotaBinaryEntityDescription(
+        key="passengerseat_lock",
+        name="passengerseat lock",
+        device_class=BinarySensorDeviceClass.LOCK,
+        entity_category=EntityCategory.DIAGNOSTIC,
+        value_fn=lambda vh: vh.sensors.doors.passenger_seat.locked,
+        attributes_fn=lambda vh: {
+            WARNING: vh.sensors.doors.passenger_seat.warning,
+            LAST_UPDATED: vh.sensors.last_updated,
+        },
+    ),
+    ToyotaBinaryEntityDescription(
+        key="leftrearseat_door",
+        name="leftrearseat door",
+        device_class=BinarySensorDeviceClass.DOOR,
+        entity_category=EntityCategory.DIAGNOSTIC,
+        value_fn=lambda vh: False if vh.sensors.doors.leftrear_seat.closed else True,
+        attributes_fn=lambda vh: {
+            WARNING: vh.sensors.doors.leftrear_seat.warning,
+            LAST_UPDATED: vh.sensors.last_updated,
+        },
+    ),
+    ToyotaBinaryEntityDescription(
+        key="leftrearseat_lock",
+        name="leftrearseat lock",
+        device_class=BinarySensorDeviceClass.LOCK,
+        entity_category=EntityCategory.DIAGNOSTIC,
+        value_fn=lambda vh: vh.sensors.doors.leftrear_seat.locked,
+        attributes_fn=lambda vh: {
+            WARNING: vh.sensors.doors.leftrear_seat.warning,
+            LAST_UPDATED: vh.sensors.last_updated,
+        },
+    ),
+    ToyotaBinaryEntityDescription(
+        key="rightrearseat_door",
+        name="rightrearseat door",
+        device_class=BinarySensorDeviceClass.DOOR,
+        entity_category=EntityCategory.DIAGNOSTIC,
+        value_fn=lambda vh: False if vh.sensors.doors.rightrear_seat.closed else True,
+        attributes_fn=lambda vh: {
+            WARNING: vh.sensors.doors.rightrear_seat.warning,
+            LAST_UPDATED: vh.sensors.last_updated,
+        },
+    ),
+    ToyotaBinaryEntityDescription(
+        key="rightrearseat_lock",
+        name="rightrearseat lock",
+        device_class=BinarySensorDeviceClass.LOCK,
+        entity_category=EntityCategory.DIAGNOSTIC,
+        value_fn=lambda vh: vh.sensors.doors.rightrear_seat.locked,
+        attributes_fn=lambda vh: {
+            WARNING: vh.sensors.doors.rightrear_seat.warning,
+            LAST_UPDATED: vh.sensors.last_updated,
+        },
+    ),
+    ToyotaBinaryEntityDescription(
+        key="trunk_door",
+        name="trunk",
+        device_class=BinarySensorDeviceClass.WINDOW,
+        entity_category=EntityCategory.DIAGNOSTIC,
+        value_fn=lambda vh: False if vh.sensors.doors.trunk.closed else True,
+        attributes_fn=lambda vh: {
+            WARNING: vh.sensors.doors.trunk.warning,
+            LAST_UPDATED: vh.sensors.last_updated,
+        },
+    ),
+    ToyotaBinaryEntityDescription(
+        key="trunk_lock",
+        name="trunk lock",
+        device_class=BinarySensorDeviceClass.LOCK,
+        entity_category=EntityCategory.DIAGNOSTIC,
+        value_fn=lambda vh: vh.sensors.doors.trunk.locked,
+        attributes_fn=lambda vh: {
+            WARNING: vh.sensors.doors.trunk.warning,
+            LAST_UPDATED: vh.sensors.last_updated,
+        },
+    ),
+)
+
+LIGHT_ENTITY_DESCRIPTIONS: tuple[ToyotaBinaryEntityDescription, ...] = (
+    ToyotaBinaryEntityDescription(
+        key="hazardlights",
+        name="hazardlights",
+        device_class=BinarySensorDeviceClass.LIGHT,
+        entity_category=EntityCategory.DIAGNOSTIC,
+        value_fn=lambda vh: vh.sensors.lights.hazardlights.off,
+        attributes_fn=lambda vh: {
+            WARNING: vh.sensors.lights.hazardlights.warning,
+            LAST_UPDATED: vh.sensors.last_updated,
+        },
+    ),
+    ToyotaBinaryEntityDescription(
+        key="headlights",
+        name="headlights",
+        device_class=BinarySensorDeviceClass.LIGHT,
+        entity_category=EntityCategory.DIAGNOSTIC,
+        value_fn=lambda vh: vh.sensors.lights.headlights.off,
+        attributes_fn=lambda vh: {
+            WARNING: vh.sensors.lights.headlights.warning,
+            LAST_UPDATED: vh.sensors.last_updated,
+        },
+    ),
+    ToyotaBinaryEntityDescription(
+        key="taillights",
+        name="taillights",
+        device_class=BinarySensorDeviceClass.LIGHT,
+        entity_category=EntityCategory.DIAGNOSTIC,
+        value_fn=lambda vh: vh.sensors.lights.taillights.off,
+        attributes_fn=lambda vh: {
+            WARNING: vh.sensors.lights.taillights.warning,
+            LAST_UPDATED: vh.sensors.last_updated,
+        },
+    ),
+)
 
 
 async def async_setup_entry(
     hass: HomeAssistant,
-    config_entry: ConfigEntry,
-    async_add_entities: AddEntitiesCallback,
+    entry: ConfigEntry,
+    async_add_devices: AddEntitiesCallback,
 ) -> None:
-    """Set up the sensor platform."""
+    """Set up the binary sensor platform."""
     binary_sensors = []
 
-    coordinator = hass.data[DOMAIN][config_entry.entry_id][DATA_COORDINATOR]
+    coordinator: DataUpdateCoordinator[list[VehicleData]] = hass.data[DOMAIN][
+        entry.entry_id
+    ]
 
-    for index, _ in enumerate(coordinator.data):
+    for index, vehicle in enumerate(coordinator.data):
+        vehicle = coordinator.data[index]["data"]
 
-        vehicle = coordinator.data[index]
-
-        if vehicle.is_connected:
-
-            if vehicle.sensors.overallstatus:
-                binary_sensors.extend(
-                    [
-                        ToyotaOverAllStatusBinarySensor(
-                            coordinator, index, "over all status"
-                        ),
-                    ]
-                )
-
-            if vehicle.sensors.windows:
-                # Add window sensors if available
-                binary_sensors.extend(
-                    [
-                        ToyotaWindowBinarySensor(
-                            coordinator, index, "driverseat window"
-                        ),
-                        ToyotaWindowBinarySensor(
-                            coordinator, index, "passengerseat window"
-                        ),
-                        ToyotaWindowBinarySensor(
-                            coordinator, index, "leftrearseat window"
-                        ),
-                        ToyotaWindowBinarySensor(
-                            coordinator, index, "rightrearseat window"
-                        ),
-                    ]
-                )
-
-            if vehicle.sensors.lights:
-                # Add light sensors if available
-                binary_sensors.extend(
-                    [
-                        ToyotaLightBinarySensor(coordinator, index, "front lights"),
-                        ToyotaLightBinarySensor(coordinator, index, "back lights"),
-                        ToyotaLightBinarySensor(coordinator, index, "hazard lights"),
-                    ]
-                )
-
-            if vehicle.sensors.hood:
-                # Add hood sensor if available
-                binary_sensors.extend(
-                    [
-                        ToyotaHoodBinarySensor(coordinator, index, "hood"),
-                    ]
-                )
-
-            if vehicle.sensors.doors:
-                # Add door sensors if available
-                binary_sensors.extend(
-                    [
-                        ToyotaDoorBinarySensor(coordinator, index, "driverseat door"),
-                        ToyotaDoorLockBinarySensor(
-                            coordinator, index, "driverseat lock"
-                        ),
-                        ToyotaDoorBinarySensor(
-                            coordinator, index, "passengerseat door"
-                        ),
-                        ToyotaDoorLockBinarySensor(
-                            coordinator, index, "passengerseat lock"
-                        ),
-                        ToyotaDoorBinarySensor(coordinator, index, "leftrearseat door"),
-                        ToyotaDoorLockBinarySensor(
-                            coordinator, index, "leftrearseat lock"
-                        ),
-                        ToyotaDoorBinarySensor(
-                            coordinator, index, "rightrearseat door"
-                        ),
-                        ToyotaDoorLockBinarySensor(
-                            coordinator, index, "rightrearseat lock"
-                        ),
-                        ToyotaDoorBinarySensor(coordinator, index, "trunk door"),
-                        ToyotaDoorLockBinarySensor(coordinator, index, "trunk lock"),
-                    ]
-                )
-
-            if vehicle.sensors.key:
-                # Add key in car sensor if available
-                binary_sensors.extend(
-                    [ToyotaKeyBinarySensor(coordinator, index, "key_in_car")]
-                )
-
+        if vehicle.is_connected_services_enabled:
             if vehicle.hvac and vehicle.hvac.legacy:
                 # Add defogger sensors if hvac is set to legacy
-                binary_sensors.extend(
-                    [
-                        ToyotaFrontDefoggerSensor(coordinator, index, "front defogger"),
-                        ToyotaRearDefoggerSensor(coordinator, index, "rear defogger"),
-                    ]
-                )
+                for description in DEFOGGER_ENTITY_DESCRIPTIONS:
+                    binary_sensors.append(
+                        ToyotaBinarySensor(
+                            coordinator=coordinator,
+                            entry_id=entry.entry_id,
+                            vehicle_index=vehicle,
+                            description=description,
+                        )
+                    )
 
-    async_add_entities(binary_sensors, True)
+            if vehicle.sensors:
+                if vehicle.sensors.overallstatus:
+                    binary_sensors.append(
+                        ToyotaBinarySensor(
+                            coordinator=coordinator,
+                            entry_id=entry.entry_id,
+                            vehicle_index=vehicle,
+                            description=OVER_ALL_STATUS_ENTITY_DESCRIPTION,
+                        )
+                    )
 
+                if vehicle.sensors.windows:
+                    # Add window sensors if available
+                    for description in WINDOW_ENTITY_DESCRIPTIONS:
+                        binary_sensors.append(
+                            ToyotaBinarySensor(
+                                coordinator=coordinator,
+                                entry_id=entry.entry_id,
+                                vehicle_index=vehicle,
+                                description=description,
+                            )
+                        )
 
-class ToyotaHoodBinarySensor(ToyotaBaseEntity, BinarySensorEntity):
-    """Class for the hood sensor"""
+                if vehicle.sensors.lights:
+                    # Add light sensors if available
+                    for description in LIGHT_ENTITY_DESCRIPTIONS:
+                        binary_sensors.append(
+                            ToyotaBinarySensor(
+                                coordinator=coordinator,
+                                entry_id=entry.entry_id,
+                                vehicle_index=vehicle,
+                                description=description,
+                            )
+                        )
 
-    _attr_device_class = BinarySensorDeviceClass.DOOR
-    _attr_icon = ICON_CAR_DOOR
-    _attr_entity_category = EntityCategory.DIAGNOSTIC
+                if vehicle.sensors.hood:
+                    # Add hood sensor if available
+                    binary_sensors.append(
+                        ToyotaBinarySensor(
+                            coordinator=coordinator,
+                            entry_id=entry.entry_id,
+                            vehicle_index=vehicle,
+                            description=HOOD_ENTITY_DESCRIPTION,
+                        )
+                    )
 
-    @property
-    def extra_state_attributes(self):
-        """Return the state attributes."""
-        return {
-            WARNING: self.coordinator.data[self.index].sensors.hood.warning,
-            LAST_UPDATED: self.coordinator.data[self.index].sensors.last_updated,
-        }
+                if vehicle.sensors.doors:
+                    # Add door sensors if available
+                    for description in DOOR_ENTITY_DESCRIPTIONS:
+                        binary_sensors.append(
+                            ToyotaBinarySensor(
+                                coordinator=coordinator,
+                                entry_id=entry.entry_id,
+                                vehicle_index=vehicle,
+                                description=description,
+                            )
+                        )
 
-    @property
-    def is_on(self) -> bool:
-        """Return true if the hood is open."""
-        return not self.coordinator.data[self.index].sensors.hood.closed
+                if vehicle.sensors.key:
+                    # Add key in car sensor if available
+                    binary_sensors.append(
+                        ToyotaBinarySensor(
+                            coordinator=coordinator,
+                            entry_id=entry.entry_id,
+                            vehicle_index=vehicle,
+                            description=KEY_ENTITY_DESCRIPTION,
+                        )
+                    )
 
-
-class ToyotaDoorBinarySensor(ToyotaBaseEntity, BinarySensorEntity):
-    """Class for door sensor"""
-
-    _attr_device_class = BinarySensorDeviceClass.DOOR
-    _attr_icon = ICON_CAR_DOOR
-    _attr_entity_category = EntityCategory.DIAGNOSTIC
-
-    @property
-    def extra_state_attributes(self):
-        """Return the state attributes."""
-
-        door = getattr(
-            self.coordinator.data[self.index].sensors.doors,
-            self.sensor_name.split(" ")[0],
-        )
-
-        return {
-            WARNING: door.warning,
-            LAST_UPDATED: self.coordinator.data[self.index].sensors.last_updated,
-        }
-
-    @property
-    def is_on(self) -> bool:
-        """Return true if the door is open."""
-
-        door = getattr(
-            self.coordinator.data[self.index].sensors.doors,
-            self.sensor_name.split(" ")[0],
-        )
-
-        return not door.closed
-
-
-class ToyotaDoorLockBinarySensor(ToyotaBaseEntity, BinarySensorEntity):
-    """Class for door locked sensor"""
-
-    _attr_device_class = BinarySensorDeviceClass.DOOR
-    _attr_icon = ICON_CAR_DOOR_LOCK
-    _attr_entity_category = EntityCategory.DIAGNOSTIC
-
-    @property
-    def extra_state_attributes(self):
-        """Return the state attributes."""
-
-        door = getattr(
-            self.coordinator.data[self.index].sensors.doors,
-            self.sensor_name.split(" ")[0],
-        )
-
-        return {
-            WARNING: door.warning,
-            LAST_UPDATED: self.coordinator.data[self.index].sensors.last_updated,
-        }
-
-    @property
-    def is_on(self) -> bool:
-        """Return true if the door is unlocked."""
-
-        door = getattr(
-            self.coordinator.data[self.index].sensors.doors,
-            self.sensor_name.split(" ")[0],
-        )
-
-        return not door.locked
+    async_add_devices(binary_sensors, True)
 
 
-class ToyotaKeyBinarySensor(ToyotaBaseEntity, BinarySensorEntity):
-    """Class for key in car binary sensor"""
-
-    _attr_icon = ICON_KEY
-    _attr_entity_category = EntityCategory.DIAGNOSTIC
+class ToyotaBinarySensor(ToyotaBaseEntity, BinarySensorEntity):
+    """Representation of a Toyota binary sensor."""
 
     @property
-    def extra_state_attributes(self):
-        """Return the state attributes."""
-        return {
-            WARNING: self.coordinator.data[self.index].sensors.key.warning,
-        }
+    def is_on(self) -> bool | None:
+        """Return the state of the sensor."""
+        if self.vehicle is None:
+            return None
+        return self.entity_description.value_fn(self.vehicle)
 
     @property
-    def is_on(self) -> bool:
-        """Return true if key is in car."""
-        return self.coordinator.data[self.index].sensors.key.in_car
-
-
-class ToyotaLightBinarySensor(ToyotaBaseEntity, BinarySensorEntity):
-    """Class for Light sensor"""
-
-    _attr_device_class = BinarySensorDeviceClass.LIGHT
-    _attr_icon = ICON_CAR_LIGHTS
-    _attr_entity_category = EntityCategory.DIAGNOSTIC
-
-    @property
-    def extra_state_attributes(self):
-        """Return the state attributes."""
-
-        light = getattr(
-            self.coordinator.data[self.index].sensors.lights,
-            self.sensor_name.split(" ")[0],
-        )
-
-        return {
-            WARNING: light.warning,
-            LAST_UPDATED: self.coordinator.data[self.index].sensors.last_updated,
-        }
-
-    @property
-    def is_on(self) -> bool:
-        """Return true if light is on."""
-
-        light = getattr(
-            self.coordinator.data[self.index].sensors.lights,
-            self.sensor_name.split(" ")[0],
-        )
-
-        return not light.off
-
-
-class ToyotaOverAllStatusBinarySensor(ToyotaBaseEntity, BinarySensorEntity):
-    """Class for the overall warning sensor"""
-
-    _attr_device_class = BinarySensorDeviceClass.PROBLEM
-
-    @property
-    def extra_state_attributes(self):
-        """Return the state attributes."""
-
-        return {
-            LAST_UPDATED: self.coordinator.data[self.index].sensors.last_updated,
-        }
-
-    @property
-    def is_on(self) -> bool:
-        """Return true if a overallstatus is not OK."""
-
-        return self.coordinator.data[self.index].sensors.overallstatus != "OK"
-
-
-class ToyotaWindowBinarySensor(ToyotaBaseEntity, BinarySensorEntity):
-    """Class for Window sensor"""
-
-    _attr_device_class = BinarySensorDeviceClass.WINDOW
-    _attr_entity_category = EntityCategory.DIAGNOSTIC
-
-    @property
-    def extra_state_attributes(self):
-        """Return the state attributes."""
-
-        window = getattr(
-            self.coordinator.data[self.index].sensors.windows,
-            self.sensor_name.split(" ")[0],
-        )
-
-        return {
-            WARNING: window.warning,
-            LAST_UPDATED: self.coordinator.data[self.index].sensors.last_updated,
-        }
-
-    @property
-    def is_on(self) -> bool:
-        """Return true if the window is down."""
-
-        window = getattr(
-            self.coordinator.data[self.index].sensors.windows,
-            self.sensor_name.split(" ")[0],
-        )
-
-        return window.state != "close"
-
-
-class ToyotaFrontDefoggerSensor(ToyotaBaseEntity, BinarySensorEntity):
-    """Class for HVAC sensor"""
-
-    _attr_icon = ICON_FRONT_DEFOGGER
-
-    @property
-    def is_on(self) -> bool:
-        """Return true if the defogger is on."""
-
-        return self.coordinator.data[self.index].hvac.front_defogger_on
-
-
-class ToyotaRearDefoggerSensor(ToyotaBaseEntity, BinarySensorEntity):
-    """Class for HVAC sensor"""
-
-    _attr_icon = ICON_REAR_DEFOGGER
-
-    @property
-    def is_on(self) -> bool:
-        """Return true if the defogger is on."""
-
-        return self.coordinator.data[self.index].hvac.rear_defogger_on
+    def extra_state_attributes(self) -> dict[str, Any] | None:
+        """Return the attributes of the sensor."""
+        if self.vehicle is None:
+            return None
+        return self.entity_description.attributes_fn(self.vehicle)

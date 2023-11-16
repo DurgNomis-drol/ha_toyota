@@ -1,370 +1,303 @@
-"""Sensor platform for Toyota sensor integration."""
+"""Sensor platform for Toyota integration"""
+from __future__ import annotations
+
+import logging
+from collections.abc import Callable
+from dataclasses import dataclass
+from typing import Any, Optional, Union
+
 import arrow
-from homeassistant.components.sensor import SensorDeviceClass
+from homeassistant.components.sensor import (
+    SensorDeviceClass,
+    SensorEntity,
+    SensorEntityDescription,
+    SensorStateClass,
+)
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import (
+    LENGTH_KILOMETERS,
+    LENGTH_MILES,
     PERCENTAGE,
-    STATE_UNAVAILABLE,
     STATE_UNKNOWN,
-    TEMP_CELSIUS,
 )
-from homeassistant.core import HomeAssistant
+from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.typing import StateType
+from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
+from mytoyota.models.vehicle import Vehicle
 
-from .const import (
-    BATTERY_HEALTH,
-    BUCKET,
-    DATA,
-    DATA_COORDINATOR,
-    DOMAIN,
-    FUEL_TYPE,
-    ICON_BATTERY,
-    ICON_CAR,
-    ICON_EV,
-    ICON_EV_BATTERY,
-    ICON_FUEL,
-    ICON_ODOMETER,
-    ICON_RANGE,
-    LAST_UPDATED,
-    LICENSE_PLATE,
-    PERIODE_START,
-    TOTAL_DISTANCE,
+from . import StatisticsData, VehicleData
+from .const import BUCKET, DATA, DOMAIN, LICENSE_PLATE, PERIODE_START, TOTAL_DISTANCE
+from .entity import ToyotaBaseEntity
+from .utils import format_statistics_attributes, round_number
+
+_LOGGER = logging.getLogger(__name__)
+
+
+@dataclass
+class ToyotaSensorEntityDescriptionMixin:
+    """Mixin for required keys."""
+
+    value_fn: Callable[[Vehicle], StateType]
+    attributes_fn: Callable[[Vehicle], Optional[dict[str, Any]]]
+
+
+@dataclass
+class ToyotaSensorEntityDescription(
+    SensorEntityDescription, ToyotaSensorEntityDescriptionMixin
+):
+    """Describes a Toyota sensor entity."""
+
+
+LICENSE_PLATE_ENTITY_DESCRIPTION = ToyotaSensorEntityDescription(
+    key="license_plate",
+    name="license plate",
+    icon="mdi:car-info",
+    entity_category=EntityCategory.DIAGNOSTIC,
+    device_class=SensorDeviceClass.ENUM,
+    native_unit_of_measurement=None,
+    state_class=None,
+    value_fn=lambda vehicle: vehicle.details.get(LICENSE_PLATE, STATE_UNKNOWN),
+    attributes_fn=lambda vehicle: vehicle.details,
 )
-from .entity import StatisticsBaseEntity, ToyotaBaseEntity
+STARTER_BATTERY_HEALTH_ENTITY_DESCRIPTIONS = ToyotaSensorEntityDescription(
+    key="starter_battery_health",
+    name="starter battery health",
+    icon="mdi:car_battery",
+    device_class=SensorDeviceClass.ENUM,
+    native_unit_of_measurement=None,
+    state_class=None,
+    value_fn=lambda vehicle: vehicle.details.get("batteryHealth").capitalize(),
+    attributes_fn=lambda vehicle: None,
+)
+ODOMETER_ENTITY_DESCRIPTION_KM = ToyotaSensorEntityDescription(
+    key="odometer",
+    name="odometer",
+    icon="mdi:counter",
+    device_class=SensorDeviceClass.DISTANCE,
+    native_unit_of_measurement=LENGTH_KILOMETERS,
+    state_class=SensorStateClass.MEASUREMENT,
+    value_fn=lambda vehicle: vehicle.dashboard.odometer,
+    suggested_display_precision=0,
+    attributes_fn=lambda vehicle: None,
+)
+ODOMETER_ENTITY_DESCRIPTION_MILES = ToyotaSensorEntityDescription(
+    key="odometer",
+    name="odometer",
+    icon="mdi:counter",
+    device_class=SensorDeviceClass.DISTANCE,
+    native_unit_of_measurement=LENGTH_MILES,
+    state_class=SensorStateClass.MEASUREMENT,
+    value_fn=lambda vehicle: vehicle.dashboard.odometer,
+    suggested_display_precision=0,
+    attributes_fn=lambda vehicle: None,
+)
+FUEL_LEVEL_ENTITY_DESCRIPTION = ToyotaSensorEntityDescription(
+    key="fuel_level",
+    name="fuel level",
+    icon="mdi:gas-station",
+    device_class=SensorDeviceClass.VOLUME_STORAGE,
+    native_unit_of_measurement=PERCENTAGE,
+    state_class=SensorStateClass.MEASUREMENT,
+    value_fn=lambda vehicle: round_number(vehicle.dashboard.fuel_level, 0),
+    suggested_display_precision=0,
+    attributes_fn=lambda vehicle: None,
+)
+
+
+@dataclass
+class ToyotaStatisticsSensorEntityDescriptionMixin:
+    """Mixin for required keys."""
+
+    period: str
+
+
+@dataclass
+class ToyotaStatisticsSensorEntityDescription(
+    SensorEntityDescription, ToyotaStatisticsSensorEntityDescriptionMixin
+):
+    """Describes a Toyota statistics sensor entity."""
+
+
+STATISTICS_ENTITY_DESCRIPTIONS: tuple[ToyotaStatisticsSensorEntityDescription, ...] = (
+    ToyotaStatisticsSensorEntityDescription(
+        key="current_day_statistics",
+        name="current day statistics",
+        icon="mdi:history",
+        device_class=SensorDeviceClass.DISTANCE,
+        state_class=SensorStateClass.MEASUREMENT,
+        suggested_display_precision=0,
+        period="day",
+    ),
+    ToyotaStatisticsSensorEntityDescription(
+        key="current_week_statistics",
+        name="current week statistics",
+        icon="mdi:history",
+        device_class=SensorDeviceClass.DISTANCE,
+        state_class=SensorStateClass.MEASUREMENT,
+        suggested_display_precision=0,
+        period="week",
+    ),
+    ToyotaStatisticsSensorEntityDescription(
+        key="current_month_statistics",
+        name="current month statistics",
+        icon="mdi:history",
+        device_class=SensorDeviceClass.DISTANCE,
+        state_class=SensorStateClass.MEASUREMENT,
+        suggested_display_precision=0,
+        period="month",
+    ),
+    ToyotaStatisticsSensorEntityDescription(
+        key="current_year_statistics",
+        name="current year statistics",
+        icon="mdi:history",
+        device_class=SensorDeviceClass.DISTANCE,
+        state_class=SensorStateClass.MEASUREMENT,
+        suggested_display_precision=0,
+        period="year",
+    ),
+)
 
 
 async def async_setup_entry(
     hass: HomeAssistant,
-    config_entry: ConfigEntry,
-    async_add_entities: AddEntitiesCallback,
+    entry: ConfigEntry,
+    async_add_devices: AddEntitiesCallback,
 ) -> None:
     """Set up the sensor platform."""
-    sensors = []
+    coordinator: DataUpdateCoordinator[list[VehicleData]] = hass.data[DOMAIN][
+        entry.entry_id
+    ]
 
-    coordinator = hass.data[DOMAIN][config_entry.entry_id][DATA_COORDINATOR]
-
+    sensors: list[Union[ToyotaSensor, ToyotaStatisticsSensor]] = []
     for index, _ in enumerate(coordinator.data):
+        vehicle = coordinator.data[index]["data"]
 
-        vehicle = coordinator.data[index]
+        sensors.append(
+            ToyotaSensor(
+                coordinator=coordinator,
+                entry_id=entry.entry_id,
+                vehicle_index=index,
+                description=LICENSE_PLATE_ENTITY_DESCRIPTION,
+            )
+        )
 
-        sensors.append(ToyotaCarSensor(coordinator, index, "numberplate"))
-
-        # If Connected Services is setup for the car, setup additional sensors
-        if vehicle.is_connected:
-
-            if BATTERY_HEALTH in vehicle.details:
+        if vehicle.is_connected_services_enabled:
+            for description in STATISTICS_ENTITY_DESCRIPTIONS:
                 sensors.append(
-                    ToyotaStarterBatterySensor(
-                        coordinator, index, "starter battery health"
+                    ToyotaStatisticsSensor(
+                        coordinator=coordinator,
+                        entry_id=entry.entry_id,
+                        vehicle_index=index,
+                        description=description,
                     )
                 )
-            if vehicle.energy.level:
-                sensors.append(
-                    ToyotaFuelRemainingSensor(coordinator, index, "fuel tank")
+
+        if vehicle.details.get("batteryHealth") is not None:
+            sensors.append(
+                ToyotaSensor(
+                    coordinator=coordinator,
+                    entry_id=entry.entry_id,
+                    vehicle_index=index,
+                    description=STARTER_BATTERY_HEALTH_ENTITY_DESCRIPTIONS,
                 )
-
-            if vehicle.energy.range:
-                sensors.append(ToyotaRangeSensor(coordinator, index, "range"))
-
-            if vehicle.energy.chargeinfo:
-                sensors.append(ToyotaEVSensor(coordinator, index, "EV battery status"))
-                sensors.append(
-                    ToyotaEVBatterySensor(coordinator, index, "EV remaining charge")
-                )
-
-            sensors.extend(
-                [
-                    ToyotaOdometerSensor(coordinator, index, "odometer"),
-                    ToyotaCurrentWeekSensor(
-                        coordinator, index, "current week statistics"
-                    ),
-                    ToyotaCurrentMonthSensor(
-                        coordinator, index, "current month statistics"
-                    ),
-                    ToyotaCurrentYearSensor(
-                        coordinator, index, "current year statistics"
-                    ),
-                ]
             )
 
-            if vehicle.hvac:
-                sensors.append(ToyotaHVACSensor(coordinator, index, "hvac"))
-
-    async_add_entities(sensors, True)
-
-
-class ToyotaCarSensor(ToyotaBaseEntity):
-    """Class for car details and numberplate sensor."""
-
-    _attr_icon = ICON_CAR
-    _attr_entity_category = EntityCategory.DIAGNOSTIC
-
-    @property
-    def extra_state_attributes(self):
-        """Return the state attributes."""
-        return self.coordinator.data[self.index].details
-
-    @property
-    def state(self) -> StateType:
-        """Return the state of the sensor."""
-        if LICENSE_PLATE in self.coordinator.data[self.index].details:
-            license_plate = self.coordinator.data[self.index].details[LICENSE_PLATE]
-            return None if license_plate is None else license_plate
-
-        return STATE_UNKNOWN
-
-
-class ToyotaOdometerSensor(ToyotaBaseEntity):
-    """Class for the odometer sensor."""
-
-    _attr_icon = ICON_ODOMETER
-
-    @property
-    def unit_of_measurement(self):
-        """Return the unit of measurement."""
-        return self.vehicle.odometer.unit
-
-    @property
-    def state(self) -> StateType:
-        """Return the state of the sensor."""
-        mileage = None
-
-        if self.coordinator.data[self.index].odometer:
-            mileage = self.coordinator.data[self.index].odometer.mileage
-        return None if mileage is None else mileage
-
-
-class ToyotaStarterBatterySensor(ToyotaBaseEntity):
-    """Class for the starter battery health sensor."""
-
-    _attr_icon = ICON_BATTERY
-
-    @property
-    def state(self) -> StateType:
-        """Return the state of the sensor."""
-
-        return (
-            self.coordinator.data[self.index]
-            .details[BATTERY_HEALTH]
-            .lower()
-            .capitalize()
+        sensors.append(
+            ToyotaSensor(
+                coordinator=coordinator,
+                entry_id=entry.entry_id,
+                vehicle_index=index,
+                description=ODOMETER_ENTITY_DESCRIPTION_KM
+                if vehicle.dashboard.is_metric
+                else ODOMETER_ENTITY_DESCRIPTION_MILES,
+            )
         )
 
-
-class ToyotaFuelRemainingSensor(ToyotaBaseEntity):
-    """Class for the fuel/energy remaining sensor."""
-
-    _attr_icon = ICON_FUEL
-    _attr_unit_of_measurement = PERCENTAGE
-
-    @property
-    def extra_state_attributes(self):
-        """Return the state attributes."""
-        return {
-            FUEL_TYPE: self.vehicle.energy.type,
-        }
-
-    @property
-    def state(self) -> StateType:
-        """Return fuellevel/battery capacity of the vehicle."""
-        level = self.coordinator.data[self.index].energy.level
-        return round(level, 1) if level else None
-
-
-class ToyotaRangeSensor(ToyotaBaseEntity):
-    """Class for range sensor."""
-
-    _attr_icon = ICON_RANGE
-
-    @property
-    def unit_of_measurement(self):
-        """Return the unit of measurement."""
-        return self.vehicle.odometer.unit
-
-    @property
-    def extra_state_attributes(self):
-        """Return the state attributes."""
-        return {
-            "Range_with_aircon_on": self.coordinator.data[
-                self.index
-            ].energy.range_with_aircon,
-            LAST_UPDATED: self.coordinator.data[self.index].energy.last_updated,
-        }
-
-    @property
-    def state(self):
-        """Return remaining range."""
-
-        return self.coordinator.data[self.index].energy.range
-
-
-class ToyotaEVSensor(ToyotaBaseEntity):
-    """Class for EV sensor."""
-
-    _attr_icon = ICON_EV
-
-    @property
-    def extra_state_attributes(self):
-        """Return the state attributes."""
-
-        return {
-            "Start_time": self.coordinator.data[self.index].energy.chargeinfo.get(
-                "start_time", None
-            ),
-            "End_time": self.coordinator.data[self.index].energy.chargeinfo.get(
-                "end_time", None
-            ),
-            "Remaining_time": self.coordinator.data[self.index].energy.chargeinfo.get(
-                "remaining_time", None
-            ),
-        }
-
-    @property
-    def state(self):
-        """Return battery information for EV's."""
-
-        return self.coordinator.data[self.index].energy.chargeinfo.get("status", None)
-
-
-class ToyotaEVBatterySensor(ToyotaBaseEntity):
-    """Class for EV battery sensor."""
-
-    _attr_icon = ICON_EV_BATTERY
-    _attr_device_class = SensorDeviceClass.BATTERY
-    _attr_unit_of_measurement = PERCENTAGE
-
-    @property
-    def state(self) -> StateType:
-        """Return remaining charge of the EV battery."""
-        level = self.coordinator.data[self.index].energy.chargeinfo.get(
-            "remaining_amount", None
+        sensors.append(
+            ToyotaSensor(
+                coordinator=coordinator,
+                entry_id=entry.entry_id,
+                vehicle_index=index,
+                description=FUEL_LEVEL_ENTITY_DESCRIPTION,
+            )
         )
-        return round(level, 0) if level else None
+
+    async_add_devices(sensors)
 
 
-class ToyotaHVACSensor(ToyotaBaseEntity):
-    """Class for hvac temperature sensor"""
-
-    _attr_device_class = SensorDeviceClass.TEMPERATURE
-    _attr_native_unit_of_measurement = TEMP_CELSIUS
+class ToyotaSensor(ToyotaBaseEntity, SensorEntity):
+    """Representation of a Toyota sensor."""
 
     @property
-    def extra_state_attributes(self):
-        """Return the state attributes."""
-
-        hvac = self.coordinator.data[self.index].hvac
-
-        attributes = {
-            "target_temperature": hvac.target_temperature,
-            LAST_UPDATED: hvac.last_updated,
-            "legacy": hvac.legacy,
-        }
-
-        if hvac.legacy:
-            attributes["blower_status"] = hvac.blower_on
-        else:
-            attributes |= {
-                "started_at": hvac.started_at,
-                "status": hvac.status,
-                "type": hvac.type,
-                "duration": hvac.duration,
-                "options": hvac.options,
-                "command_id": hvac.options,
-            }
-
-        return attributes
+    def native_value(self) -> StateType:
+        """Return the state of the sensor."""
+        return self.entity_description.value_fn(self.vehicle)
 
     @property
-    def native_value(self):
-        """Return current temperature."""
-        return self.coordinator.data[self.index].hvac.current_temperature
+    def extra_state_attributes(self) -> Optional[dict[str, Any]]:
+        """Return the attributes of the sensor."""
+        return self.entity_description.attributes_fn(self.vehicle)
 
 
-class ToyotaTargetTemperatureSensor(ToyotaBaseEntity):
-    """Class for hvac temperature sensor"""
+class ToyotaStatisticsSensor(ToyotaSensor):
+    """Representation of a Toyota statistics sensor."""
 
-    _attr_device_class = SensorDeviceClass.TEMPERATURE
-    _attr_native_unit_of_measurement = TEMP_CELSIUS
+    statistics: StatisticsData
+
+    def __init__(
+        self,
+        coordinator: DataUpdateCoordinator[list[VehicleData]],
+        entry_id: str,
+        vehicle_index: int,
+        description: ToyotaStatisticsSensorEntityDescription,
+    ) -> None:
+        super().__init__(coordinator, entry_id, vehicle_index, description)
+        self.period = description.period
+        self._attr_native_unit_of_measurement = (
+            LENGTH_KILOMETERS if self.vehicle.dashboard.is_metric else LENGTH_MILES
+        )
 
     @property
-    def native_value(self):
-        """Return current temperature."""
-        return self.coordinator.data[self.index].hvac.target_temperature
+    def native_value(self) -> StateType:
+        """Return the state of the sensor."""
+        data = self.coordinator.data[self.index]["statistics"][self.period][0]
+        return round(data[DATA][TOTAL_DISTANCE], 1) if DATA in data else None
 
-
-class ToyotaCurrentWeekSensor(StatisticsBaseEntity):
-    """Class for current week statistics sensor."""
-
-    @property
-    def extra_state_attributes(self):
-        """Return the state attributes."""
-        data = self.coordinator.data[self.index].statistics.weekly[0]
-        from_dt = arrow.now().floor("week").format("YYYY-MM-DD")
-        to_dt = arrow.now().ceil("week").format("YYYY-MM-DD")
-
-        attributes = self.get_statistics_attributes(data.get(DATA, {}))
-        attributes.update(
-            {
+    def _get_time_period_attributes(self, data: dict[str, Any]):
+        """Helper function to get time period attributes."""
+        now = arrow.now()
+        if self.period == "day":
+            dt = now.floor("day").format("YYYY-MM-DD")
+            return {"Day": data[BUCKET]["date"] if BUCKET in data else dt}
+        elif self.period == "week":
+            from_dt = now.floor("week").format("YYYY-MM-DD")
+            to_dt = now.ceil("week").format("YYYY-MM-DD")
+            return {
                 "From": data[BUCKET][PERIODE_START] if BUCKET in data else from_dt,
                 "To": to_dt,
             }
-        )
-        return attributes
-
-    @property
-    def native_value(self) -> StateType:
-        """Return the state of the sensor."""
-        data = self.coordinator.data[self.index].statistics.weekly[0]
-
-        total_distance = round(data[DATA][TOTAL_DISTANCE], 1) if DATA in data else None
-        return STATE_UNAVAILABLE if total_distance is None else total_distance
-
-
-class ToyotaCurrentMonthSensor(StatisticsBaseEntity):
-    """Class for current month statistics sensor."""
+        elif self.period == "month":
+            from_month = now.floor("month").format("MMMM")
+            return {"Month": from_month}
+        elif self.period == "year":
+            from_year = now.floor("year").format("YYYY")
+            return {"Year": data[BUCKET]["year"] if BUCKET in data else from_year}
+        return None
 
     @property
     def extra_state_attributes(self):
         """Return the state attributes."""
-        data = self.coordinator.data[self.index].statistics.monthly[0]
-        from_month = arrow.now().floor("month").format("MMMM")
-
-        attributes = self.get_statistics_attributes(data.get(DATA, {}))
-        attributes.update({"Month": from_month})
-
-        return attributes
-
-    @property
-    def native_value(self) -> StateType:
-        """Return the state of the sensor."""
-        data = self.coordinator.data[self.index].statistics.monthly[0]
-
-        total_distance = round(data[DATA][TOTAL_DISTANCE], 1) if DATA in data else None
-        return STATE_UNAVAILABLE if total_distance is None else total_distance
-
-
-class ToyotaCurrentYearSensor(StatisticsBaseEntity):
-    """Class for current year statistics sensor."""
-
-    @property
-    def extra_state_attributes(self):
-        """Return the state attributes."""
-        data = self.coordinator.data[self.index].statistics.yearly[0]
-        from_year = arrow.now().floor("year").format("YYYY")
-
-        attributes = self.get_statistics_attributes(data.get(DATA, {}))
-        attributes.update(
-            {"Year": data[BUCKET]["year"] if BUCKET in data else from_year}
+        data = self.coordinator.data[self.index]["statistics"][self.period][0]
+        attributes = format_statistics_attributes(
+            data.get(DATA, {}), self.vehicle.hybrid
         )
-
+        attributes.update(self._get_time_period_attributes(data))
         return attributes
 
-    @property
-    def native_value(self) -> StateType:
-        """Return the state of the sensor."""
-        data = self.coordinator.data[self.index].statistics.yearly[0]
-
-        total_distance = round(data[DATA][TOTAL_DISTANCE], 1) if DATA in data else None
-        return STATE_UNAVAILABLE if total_distance is None else total_distance
+    @callback
+    def _handle_coordinator_update(self) -> None:
+        """Handle updated data from the coordinator."""
+        self.statistics = self.coordinator.data[self.index]["statistics"]
+        super()._handle_coordinator_update()
