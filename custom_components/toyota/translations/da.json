@@ -5,16 +5,13 @@
         "description": "Angiv venligst din email og adgangskode til MyT nedenfor.",
         "data": {
           "email": "Email",
-          "password": "Adgangskode",
-          "region": "Region (Kun Europa er understøttet lige nu)"
+          "password": "Adgangskode"
         }
       }
     },
     "error": {
       "invalid_username": "Email skal indeholde @.",
-      "region_not_supported": "Region er ikke understøttet",
       "invalid_auth": "Email/Adgangskode er forkert.",
-      "invalid_locale": "Landekode format er ikke korrekt.",
       "unknown": "Uventet fejl."
     }
   },

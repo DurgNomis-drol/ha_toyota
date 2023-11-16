@@ -5,16 +5,13 @@
         "description": "Voer uw e-mailadres en wachtwoord voor MyT in hieronder.",
         "data": {
           "email": "E-mail",
-          "password": "Wachtwoord",
-          "region": "Regio (Alleen Europe is op dit moment ondersteund)"
+          "password": "Wachtwoord"
         }
       }
     },
     "error": {
       "invalid_username": "E-mail moet een @ bevatten.",
-      "region_not_supported": "Regio is niet ondersteund.",
       "invalid_auth": "E-mail/wachtwoord is ongeldig.",
-      "invalid_locale": "Taalcode is ongeldig.",
       "unknown": "Onverwachte fout."
     }
   }

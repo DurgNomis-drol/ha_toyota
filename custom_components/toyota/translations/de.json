@@ -5,16 +5,13 @@
         "description": "Bitte gebe unten deine E-Mail-Adresse und dein Passwort für MyT ein.",
         "data": {
           "email": "E-Mail",
-          "password": "Passwort",
-          "region": "Region (Zurzeit wird nur Europa unterstützt)"
+          "password": "Passwort"
         }
       }
     },
     "error": {
       "invalid_username": "E-Mail muss @ enthalten.",
-      "region_not_supported": "Region wird nicht unterstützt.",
       "invalid_auth": "E-Mail/Passwort ist falsch.",
-      "invalid_locale": "Der Sprachcode ist nicht gültig.",
       "unknown": "Unerwarteter Fehler."
     }
   },
