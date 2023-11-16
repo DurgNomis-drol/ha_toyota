@@ -16,7 +16,7 @@ from .entity import ToyotaBaseEntity
 
 PARKING_TRACKER_DESCRIPTION: EntityDescription = EntityDescription(
     key="parking_location",
-    name="parking location",
+    translation_key="parking_location",
     icon=ICON_PARKING,
 )
 

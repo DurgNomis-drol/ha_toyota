@@ -23,5 +23,35 @@
         }
       }
     }
+  },
+  "entity": {
+    "device_tracker": {
+      "parking_location": {
+        "name": "Parking location"
+      }
+    },
+    "sensor": {
+      "starter_battery_health": {
+        "name": "Starter battery health"
+      },
+      "odometer": {
+        "name": "Odometer"
+      },
+      "fuel_level": {
+        "name": "Fuel level"
+      },
+      "current_day_statistics": {
+        "name": "Current day statistics"
+      },
+      "current_week_statistics": {
+        "name": "Current week statistics"
+      },
+      "current_month_statistics": {
+        "name": "Current month statistics"
+      },
+      "current_year_statistics": {
+        "name": "Current year statistics"
+      }
+    }
   }
 }

@@ -23,5 +23,38 @@
         }
       }
     }
+  },
+  "entity": {
+    "device_tracker": {
+      "parking_location": {
+        "name": "Lokation"
+      }
+    },
+    "sensor": {
+      "starter_battery_health": {
+        "name": "Starter batteri stand",
+        "state": {
+          "Good": "God stand"
+        }
+      },
+      "odometer": {
+        "name": "Odometer"
+      },
+      "fuel_level": {
+        "name": "Brændstof niveau"
+      },
+      "current_day_statistics": {
+        "name": "Statistik for denne dag"
+      },
+      "current_week_statistics": {
+        "name": "Statistik for denne uge"
+      },
+      "current_month_statistics": {
+        "name": "Statistik for denne måned"
+      },
+      "current_year_statistics": {
+        "name": "Statistik for dette år"
+      }
+    }
   }
 }
