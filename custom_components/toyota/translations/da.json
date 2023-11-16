@@ -32,9 +32,9 @@
     },
     "sensor": {
       "starter_battery_health": {
-        "name": "Starter batteri stand",
+        "name": "Starter batteri tilstand",
         "state": {
-          "Good": "God stand"
+          "Good": "God"
         }
       },
       "odometer": {
@@ -54,6 +54,74 @@
       },
       "current_year_statistics": {
         "name": "Statistik for dette år"
+      }
+    },
+    "binary_sensor" :{
+      "over_all_status": {
+        "name": "Status"
+      },
+      "hood": {
+        "name": "Kølerhjelm"
+      },
+      "key_in_car": {
+        "name": "Nøgle sidder i bilen"
+      },
+      "front_defogger": {
+        "name": "Afrimer forrude"
+      },
+      "rear_defogger": {
+        "name": "Afrimer bagrude"
+      },
+      "driverseat_window": {
+        "name": "Føreside vindue"
+      },
+      "passengerseat_window": {
+        "name": "Passagererside vindue"
+      },
+      "leftrearseat_window": {
+        "name": "Venstre bagsæde vindue"
+      },
+      "rightrearseat_window": {
+        "name": "Højre bagsæde vindue"
+      },
+      "driverseat_door": {
+        "name": "Føreside dør"
+      },
+      "driverseat_lock": {
+        "name": "Føreside lås"
+      },
+      "passengerseat_door": {
+        "name": "Passagererside dør"
+      },
+      "passengerseat_lock": {
+        "name": "Passagererside lås"
+      },
+      "leftrearseat_door": {
+        "name": "Venstre bagsæde dør"
+      },
+      "leftrearseat_lock": {
+        "name": "Venstre bagsæde lås"
+      },
+      "rightrearseat_door": {
+        "name": "Højre bagsæde dør"
+      },
+      "rightrearseat_lock": {
+        "name": "Højre bagsæde lås"
+      },
+      "trunk_door": {
+        "name": "Baggagerum"
+      },
+      "trunk_lock": {
+        "name": "Baggagerum lås"
+      },
+      "hazardlights": {
+        "name": "Katastrofeblink"
+      },
+      "headlights": {
+        "name": "Forlygter"
+      },
+      "taillights": {
+        "name": "Baglygter"
       }
     }
   }

@@ -14,5 +14,103 @@
       "invalid_auth": "E-mail/wachtwoord is ongeldig.",
       "unknown": "Onverwachte fout."
     }
+  },
+  "entity": {
+    "device_tracker": {
+      "parking_location": {
+        "name": "Parking location"
+      }
+    },
+    "sensor": {
+      "starter_battery_health": {
+        "name": "Starter battery health"
+      },
+      "odometer": {
+        "name": "Odometer"
+      },
+      "fuel_level": {
+        "name": "Fuel level"
+      },
+      "current_day_statistics": {
+        "name": "Current day statistics"
+      },
+      "current_week_statistics": {
+        "name": "Current week statistics"
+      },
+      "current_month_statistics": {
+        "name": "Current month statistics"
+      },
+      "current_year_statistics": {
+        "name": "Current year statistics"
+      }
+    },
+    "binary_sensor" :{
+      "over_all_status": {
+        "name": "Over all status"
+      },
+      "hood": {
+        "name": "Hood"
+      },
+      "key_in_car": {
+        "name": "Key in car"
+      },
+      "front_defogger": {
+        "name": "Front defogger"
+      },
+      "rear_defogger": {
+        "name": "Rear defogger"
+      },
+      "driverseat_window": {
+        "name": "Driverseat window"
+      },
+      "passengerseat_window": {
+        "name": "Passengerseat window"
+      },
+      "leftrearseat_window": {
+        "name": "Leftrearseat window"
+      },
+      "rightrearseat_window": {
+        "name": "Rightrearseat window"
+      },
+      "driverseat_door": {
+        "name": "Driverseat door"
+      },
+      "driverseat_lock": {
+        "name": "Driverseat lock"
+      },
+      "passengerseat_door": {
+        "name": "Passengerseat door"
+      },
+      "passengerseat_lock": {
+        "name": "Passengerseat lock"
+      },
+      "leftrearseat_door": {
+        "name": "Leftrearseat door"
+      },
+      "leftrearseat_lock": {
+        "name": "Leftrearseat lock"
+      },
+      "rightrearseat_door": {
+        "name": "Rightrearseat door"
+      },
+      "rightrearseat_lock": {
+        "name": "Rightrearseat lock"
+      },
+      "trunk_door": {
+        "name": "Trunk"
+      },
+      "trunk_lock": {
+        "name": "Trunk lock"
+      },
+      "hazardlights": {
+        "name": "Hazardlights"
+      },
+      "headlights": {
+        "name": "Headlights"
+      },
+      "taillights": {
+        "name": "Taillights"
+      }
+    }
   }
 }
