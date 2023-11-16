@@ -36,6 +36,15 @@ class ToyotaBinaryEntityDescription(
 ):
     """Describes a Toyota binary entity."""
 
+STARTER_BATTERY_HEALTH_ENTITY_DESCRIPTIONS = ToyotaBinaryEntityDescription(
+    key="starter_battery_health",
+    name="Starter battery health",
+    icon="mdi:car-battery",
+    device_class=BinarySensorDeviceClass.PROBLEM,
+    entity_category=EntityCategory.DIAGNOSTIC,
+    value_fn=lambda vh: vh.details.get("batteryHealth") == "good",
+    attributes_fn=lambda vh: None,
+)
 
 OVER_ALL_STATUS_ENTITY_DESCRIPTION = ToyotaBinaryEntityDescription(
     key="over_all_status",
@@ -298,6 +307,16 @@ async def async_setup_entry(
 
     for index, vehicle in enumerate(coordinator.data):
         vehicle = coordinator.data[index]["data"]
+
+        if vehicle.details.get("batteryHealth") is not None:
+            binary_sensors.append(
+                ToyotaBinarySensor(
+                    coordinator=coordinator,
+                    entry_id=entry.entry_id,
+                    vehicle_index=index,
+                    description=STARTER_BATTERY_HEALTH_ENTITY_DESCRIPTIONS,
+                )
+            )
 
         if vehicle.is_connected_services_enabled:
             if vehicle.hvac and vehicle.hvac.legacy:

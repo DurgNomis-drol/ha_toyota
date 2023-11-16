@@ -61,16 +61,6 @@ LICENSE_PLATE_ENTITY_DESCRIPTION = ToyotaSensorEntityDescription(
     value_fn=lambda vehicle: vehicle.details.get(LICENSE_PLATE, STATE_UNKNOWN),
     attributes_fn=lambda vehicle: vehicle.details,
 )
-STARTER_BATTERY_HEALTH_ENTITY_DESCRIPTIONS = ToyotaSensorEntityDescription(
-    key="starter_battery_health",
-    translation_key="starter_battery_health",
-    icon="mdi:car_battery",
-    device_class=SensorDeviceClass.ENUM,
-    native_unit_of_measurement=None,
-    state_class=None,
-    value_fn=lambda vehicle: vehicle.details.get("batteryHealth").capitalize(),
-    attributes_fn=lambda vehicle: None,
-)
 ODOMETER_ENTITY_DESCRIPTION_KM = ToyotaSensorEntityDescription(
     key="odometer",
     translation_key="odometer",
@@ -193,16 +183,6 @@ async def async_setup_entry(
                         description=description,
                     )
                 )
-
-        if vehicle.details.get("batteryHealth") is not None:
-            sensors.append(
-                ToyotaSensor(
-                    coordinator=coordinator,
-                    entry_id=entry.entry_id,
-                    vehicle_index=index,
-                    description=STARTER_BATTERY_HEALTH_ENTITY_DESCRIPTIONS,
-                )
-            )
 
         sensors.append(
             ToyotaSensor(
