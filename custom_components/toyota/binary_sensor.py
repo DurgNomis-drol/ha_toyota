@@ -36,6 +36,8 @@ class ToyotaBinaryEntityDescription(
 ):
     """Describes a Toyota binary entity."""
 
+
+
 STARTER_BATTERY_HEALTH_ENTITY_DESCRIPTIONS = ToyotaBinaryEntityDescription(
     key="starter_battery_health",
     name="Starter battery health",
