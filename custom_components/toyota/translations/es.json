@@ -18,98 +18,98 @@
   "entity": {
     "device_tracker": {
       "parking_location": {
-        "name": "Parking location"
+        "name": "Aparcamiento"
       }
     },
     "sensor": {
       "starter_battery_health": {
-        "name": "Starter battery health"
+        "name": "Salud de la batería de arranque"
       },
       "odometer": {
-        "name": "Odometer"
+        "name": "Odometro"
       },
       "fuel_level": {
-        "name": "Fuel level"
+        "name": "Nivel de combustible"
       },
       "current_day_statistics": {
-        "name": "Current day statistics"
+        "name": "Estadísticas de hoy"
       },
       "current_week_statistics": {
-        "name": "Current week statistics"
+        "name": "Estadísticas de esta semana"
       },
       "current_month_statistics": {
-        "name": "Current month statistics"
+        "name": "Estadísticas de este mes"
       },
       "current_year_statistics": {
-        "name": "Current year statistics"
+        "name": "Estadísticas de este año"
       }
     },
     "binary_sensor" :{
       "over_all_status": {
-        "name": "Over all status"
+        "name": "Estado general"
       },
       "hood": {
-        "name": "Hood"
+        "name": "Capó"
       },
       "key_in_car": {
-        "name": "Key in car"
+        "name": "Llave en el coche"
       },
       "front_defogger": {
-        "name": "Front defogger"
+        "name": "Desempañador delantero"
       },
       "rear_defogger": {
-        "name": "Rear defogger"
+        "name": "Desempañador trasero"
       },
       "driverseat_window": {
-        "name": "Driverseat window"
+        "name": "Ventana conductor"
       },
       "passengerseat_window": {
-        "name": "Passengerseat window"
+        "name": "Ventana pasajero"
       },
       "leftrearseat_window": {
-        "name": "Leftrearseat window"
+        "name": "Ventana trasera izquierda"
       },
       "rightrearseat_window": {
-        "name": "Rightrearseat window"
+        "name": "Ventana trasera derecha"
       },
       "driverseat_door": {
-        "name": "Driverseat door"
+        "name": "Puerta conductor"
       },
       "driverseat_lock": {
-        "name": "Driverseat lock"
+        "name": "Bloqueo conductor"
       },
       "passengerseat_door": {
-        "name": "Passengerseat door"
+        "name": "Puerta pasajero"
       },
       "passengerseat_lock": {
-        "name": "Passengerseat lock"
+        "name": "Bloqueo pasajero"
       },
       "leftrearseat_door": {
-        "name": "Leftrearseat door"
+        "name": "Puerta trasera izquierda"
       },
       "leftrearseat_lock": {
-        "name": "Leftrearseat lock"
+        "name": "Bloqueo puerta trasera izquierda"
       },
       "rightrearseat_door": {
-        "name": "Rightrearseat door"
+        "name": "Puerta trasera derecha"
       },
       "rightrearseat_lock": {
-        "name": "Rightrearseat lock"
+        "name": "Bloqueo puerta trasera derecha"
       },
       "trunk_door": {
-        "name": "Trunk"
+        "name": "Maletero"
       },
       "trunk_lock": {
-        "name": "Trunk lock"
+        "name": "Bloqueo mealetero"
       },
       "hazardlights": {
-        "name": "Hazardlights"
+        "name": "Luces de emergencia"
       },
       "headlights": {
-        "name": "Headlights"
+        "name": "Faros delanteros"
       },
       "taillights": {
-        "name": "Taillights"
+        "name": "Faros traseros"
       }
     }
   }
