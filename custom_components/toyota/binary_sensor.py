@@ -39,7 +39,7 @@ class ToyotaBinaryEntityDescription(
 
 OVER_ALL_STATUS_ENTITY_DESCRIPTION = ToyotaBinaryEntityDescription(
     key="over_all_status",
-    name="over all status",
+    translation_key="over_all_status",
     icon="mdi:alert",
     device_class=BinarySensorDeviceClass.PROBLEM,
     value_fn=lambda vh: vh.sensors.overallstatus == "OK",
@@ -48,7 +48,7 @@ OVER_ALL_STATUS_ENTITY_DESCRIPTION = ToyotaBinaryEntityDescription(
 
 HOOD_ENTITY_DESCRIPTION = ToyotaBinaryEntityDescription(
     key="hood",
-    name="hood",
+    translation_key="hood",
     device_class=BinarySensorDeviceClass.DOOR,
     entity_category=EntityCategory.DIAGNOSTIC,
     value_fn=lambda vh: False if vh.sensors.hood.closed else True,
@@ -60,7 +60,7 @@ HOOD_ENTITY_DESCRIPTION = ToyotaBinaryEntityDescription(
 
 KEY_ENTITY_DESCRIPTION = ToyotaBinaryEntityDescription(
     key="key_in_car",
-    name="key in car",
+    translation_key="key_in_car",
     icon="mdi:car-key",
     entity_category=EntityCategory.DIAGNOSTIC,
     value_fn=lambda vh: vh.sensors.key.in_car,
@@ -73,14 +73,14 @@ KEY_ENTITY_DESCRIPTION = ToyotaBinaryEntityDescription(
 DEFOGGER_ENTITY_DESCRIPTIONS: tuple[ToyotaBinaryEntityDescription, ...] = (
     ToyotaBinaryEntityDescription(
         key="front_defogger",
-        name="front defogger",
+        translation_key="front_defogger",
         icon="mdi:car-defrost-front",
         value_fn=lambda vh: vh.hvac.front_defogger_is_on,
         attributes_fn=None,
     ),
     ToyotaBinaryEntityDescription(
         key="rear_defogger",
-        name="rear defogger",
+        translation_key="rear_defogger",
         icon="mdi:car-defrost-rear",
         value_fn=lambda vh: vh.hvac.rear_defogger_is_on,
         attributes_fn=None,
@@ -90,7 +90,7 @@ DEFOGGER_ENTITY_DESCRIPTIONS: tuple[ToyotaBinaryEntityDescription, ...] = (
 WINDOW_ENTITY_DESCRIPTIONS: tuple[ToyotaBinaryEntityDescription, ...] = (
     ToyotaBinaryEntityDescription(
         key="driverseat_window",
-        name="driverseat window",
+        translation_key="driverseat_window",
         device_class=BinarySensorDeviceClass.WINDOW,
         entity_category=EntityCategory.DIAGNOSTIC,
         value_fn=lambda vh: vh.sensors.windows.driver_seat.state != "close",
@@ -101,7 +101,7 @@ WINDOW_ENTITY_DESCRIPTIONS: tuple[ToyotaBinaryEntityDescription, ...] = (
     ),
     ToyotaBinaryEntityDescription(
         key="passengerseat_window",
-        name="passengerseat window",
+        translation_key="passengerseat_window",
         device_class=BinarySensorDeviceClass.WINDOW,
         entity_category=EntityCategory.DIAGNOSTIC,
         value_fn=lambda vh: vh.sensors.windows.passenger_seat.state != "close",
@@ -112,7 +112,7 @@ WINDOW_ENTITY_DESCRIPTIONS: tuple[ToyotaBinaryEntityDescription, ...] = (
     ),
     ToyotaBinaryEntityDescription(
         key="leftrearseat_window",
-        name="leftrearseat window",
+        translation_key="leftrearseat_window",
         device_class=BinarySensorDeviceClass.WINDOW,
         entity_category=EntityCategory.DIAGNOSTIC,
         value_fn=lambda vh: vh.sensors.windows.leftrear_seat.state != "close",
@@ -123,7 +123,7 @@ WINDOW_ENTITY_DESCRIPTIONS: tuple[ToyotaBinaryEntityDescription, ...] = (
     ),
     ToyotaBinaryEntityDescription(
         key="rightrearseat_window",
-        name="rightrearseat window",
+        translation_key="rightrearseat_window",
         device_class=BinarySensorDeviceClass.WINDOW,
         entity_category=EntityCategory.DIAGNOSTIC,
         value_fn=lambda vh: vh.sensors.windows.rightrear_seat.state != "close",
@@ -137,7 +137,7 @@ WINDOW_ENTITY_DESCRIPTIONS: tuple[ToyotaBinaryEntityDescription, ...] = (
 DOOR_ENTITY_DESCRIPTIONS: tuple[ToyotaBinaryEntityDescription, ...] = (
     ToyotaBinaryEntityDescription(
         key="driverseat_door",
-        name="driverseat door",
+        translation_key="driverseat_door",
         device_class=BinarySensorDeviceClass.DOOR,
         entity_category=EntityCategory.DIAGNOSTIC,
         value_fn=lambda vh: False if vh.sensors.doors.driver_seat.closed else True,
@@ -148,7 +148,7 @@ DOOR_ENTITY_DESCRIPTIONS: tuple[ToyotaBinaryEntityDescription, ...] = (
     ),
     ToyotaBinaryEntityDescription(
         key="driverseat_lock",
-        name="driverseat lock",
+        translation_key="driverseat_lock",
         device_class=BinarySensorDeviceClass.LOCK,
         entity_category=EntityCategory.DIAGNOSTIC,
         value_fn=lambda vh: vh.sensors.doors.driver_seat.locked,
@@ -159,7 +159,7 @@ DOOR_ENTITY_DESCRIPTIONS: tuple[ToyotaBinaryEntityDescription, ...] = (
     ),
     ToyotaBinaryEntityDescription(
         key="passengerseat_door",
-        name="passengerseat door",
+        translation_key="passengerseat_door",
         device_class=BinarySensorDeviceClass.DOOR,
         entity_category=EntityCategory.DIAGNOSTIC,
         value_fn=lambda vh: False if vh.sensors.doors.passenger_seat.closed else True,
@@ -170,7 +170,7 @@ DOOR_ENTITY_DESCRIPTIONS: tuple[ToyotaBinaryEntityDescription, ...] = (
     ),
     ToyotaBinaryEntityDescription(
         key="passengerseat_lock",
-        name="passengerseat lock",
+        translation_key="passengerseat_lock",
         device_class=BinarySensorDeviceClass.LOCK,
         entity_category=EntityCategory.DIAGNOSTIC,
         value_fn=lambda vh: vh.sensors.doors.passenger_seat.locked,
@@ -181,7 +181,7 @@ DOOR_ENTITY_DESCRIPTIONS: tuple[ToyotaBinaryEntityDescription, ...] = (
     ),
     ToyotaBinaryEntityDescription(
         key="leftrearseat_door",
-        name="leftrearseat door",
+        translation_key="leftrearseat_door",
         device_class=BinarySensorDeviceClass.DOOR,
         entity_category=EntityCategory.DIAGNOSTIC,
         value_fn=lambda vh: False if vh.sensors.doors.leftrear_seat.closed else True,
@@ -192,7 +192,7 @@ DOOR_ENTITY_DESCRIPTIONS: tuple[ToyotaBinaryEntityDescription, ...] = (
     ),
     ToyotaBinaryEntityDescription(
         key="leftrearseat_lock",
-        name="leftrearseat lock",
+        translation_key="leftrearseat_lock",
         device_class=BinarySensorDeviceClass.LOCK,
         entity_category=EntityCategory.DIAGNOSTIC,
         value_fn=lambda vh: vh.sensors.doors.leftrear_seat.locked,
@@ -203,7 +203,7 @@ DOOR_ENTITY_DESCRIPTIONS: tuple[ToyotaBinaryEntityDescription, ...] = (
     ),
     ToyotaBinaryEntityDescription(
         key="rightrearseat_door",
-        name="rightrearseat door",
+        translation_key="rightrearseat_door",
         device_class=BinarySensorDeviceClass.DOOR,
         entity_category=EntityCategory.DIAGNOSTIC,
         value_fn=lambda vh: False if vh.sensors.doors.rightrear_seat.closed else True,
@@ -214,7 +214,7 @@ DOOR_ENTITY_DESCRIPTIONS: tuple[ToyotaBinaryEntityDescription, ...] = (
     ),
     ToyotaBinaryEntityDescription(
         key="rightrearseat_lock",
-        name="rightrearseat lock",
+        translation_key="rightrearseat_lock",
         device_class=BinarySensorDeviceClass.LOCK,
         entity_category=EntityCategory.DIAGNOSTIC,
         value_fn=lambda vh: vh.sensors.doors.rightrear_seat.locked,
@@ -225,7 +225,7 @@ DOOR_ENTITY_DESCRIPTIONS: tuple[ToyotaBinaryEntityDescription, ...] = (
     ),
     ToyotaBinaryEntityDescription(
         key="trunk_door",
-        name="trunk",
+        translation_key="trunk_door",
         device_class=BinarySensorDeviceClass.WINDOW,
         entity_category=EntityCategory.DIAGNOSTIC,
         value_fn=lambda vh: False if vh.sensors.doors.trunk.closed else True,
@@ -236,7 +236,7 @@ DOOR_ENTITY_DESCRIPTIONS: tuple[ToyotaBinaryEntityDescription, ...] = (
     ),
     ToyotaBinaryEntityDescription(
         key="trunk_lock",
-        name="trunk lock",
+        translation_key="trunk_lock",
         device_class=BinarySensorDeviceClass.LOCK,
         entity_category=EntityCategory.DIAGNOSTIC,
         value_fn=lambda vh: vh.sensors.doors.trunk.locked,
@@ -250,7 +250,7 @@ DOOR_ENTITY_DESCRIPTIONS: tuple[ToyotaBinaryEntityDescription, ...] = (
 LIGHT_ENTITY_DESCRIPTIONS: tuple[ToyotaBinaryEntityDescription, ...] = (
     ToyotaBinaryEntityDescription(
         key="hazardlights",
-        name="hazardlights",
+        translation_key="hazardlights",
         device_class=BinarySensorDeviceClass.LIGHT,
         entity_category=EntityCategory.DIAGNOSTIC,
         value_fn=lambda vh: vh.sensors.lights.hazardlights.off,
@@ -261,7 +261,7 @@ LIGHT_ENTITY_DESCRIPTIONS: tuple[ToyotaBinaryEntityDescription, ...] = (
     ),
     ToyotaBinaryEntityDescription(
         key="headlights",
-        name="headlights",
+        translation_key="headlights",
         device_class=BinarySensorDeviceClass.LIGHT,
         entity_category=EntityCategory.DIAGNOSTIC,
         value_fn=lambda vh: vh.sensors.lights.headlights.off,
@@ -272,7 +272,7 @@ LIGHT_ENTITY_DESCRIPTIONS: tuple[ToyotaBinaryEntityDescription, ...] = (
     ),
     ToyotaBinaryEntityDescription(
         key="taillights",
-        name="taillights",
+        translation_key="taillights",
         device_class=BinarySensorDeviceClass.LIGHT,
         entity_category=EntityCategory.DIAGNOSTIC,
         value_fn=lambda vh: vh.sensors.lights.taillights.off,

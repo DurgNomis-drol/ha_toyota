@@ -15,6 +15,7 @@ from .const import DOMAIN
 
 class ToyotaBaseEntity(CoordinatorEntity):
     """Defines a base Toyota entity."""
+
     _attr_has_entity_name = True
 
     def __init__(
