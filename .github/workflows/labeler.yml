@@ -1,0 +1,18 @@
+---
+name: "Manage labels"
+
+on:
+  schedule:
+    - cron: "0 0 * * *"
+
+jobs:
+  labeler:
+    name: "Labeler"
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: "⤵️ Check out code from GitHub"
+        uses: "actions/checkout@v4"
+      - name: "\U0001F680 Run Labeler"
+        uses: "crazy-max/ghaction-github-labeler@v5"
+        with:
+          skip-delete: false
