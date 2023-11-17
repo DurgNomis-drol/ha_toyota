@@ -61,28 +61,28 @@
         "name": "Desempañador trasero"
       },
       "driverseat_window": {
-        "name": "Ventana conductor"
+        "name": "Ventanilla conductor"
       },
       "passengerseat_window": {
-        "name": "Ventana pasajero"
+        "name": "Ventanilla pasajero"
       },
       "leftrearseat_window": {
-        "name": "Ventana trasera izquierda"
+        "name": "Ventanilla trasera izquierda"
       },
       "rightrearseat_window": {
-        "name": "Ventana trasera derecha"
+        "name": "Ventanilla trasera derecha"
       },
       "driverseat_door": {
         "name": "Puerta conductor"
       },
       "driverseat_lock": {
-        "name": "Bloqueo conductor"
+        "name": "Bloqueo puerta conductor"
       },
       "passengerseat_door": {
         "name": "Puerta pasajero"
       },
       "passengerseat_lock": {
-        "name": "Bloqueo pasajero"
+        "name": "Bloqueo puerta pasajero"
       },
       "leftrearseat_door": {
         "name": "Puerta trasera izquierda"
