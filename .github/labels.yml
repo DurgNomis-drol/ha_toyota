@@ -33,7 +33,7 @@
 - name: ":mega: feedback"
   color: "03a9f4"
   description: ""
-- name: ":rocket: future maybe"
+- name: ":clock10: future maybe"
   color: "fef2c0"
   description: ""
 - name: ":hatching_chick: good first issue"
