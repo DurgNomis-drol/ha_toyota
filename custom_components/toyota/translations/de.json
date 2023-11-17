@@ -27,98 +27,98 @@
   "entity": {
     "device_tracker": {
       "parking_location": {
-        "name": "Parking location"
+        "name": "Parkposition"
       }
     },
     "sensor": {
       "starter_battery_health": {
-        "name": "Starter battery health"
+        "name": "Zustand Starterbatterie"
       },
       "odometer": {
-        "name": "Odometer"
+        "name": "Kilometerzähler"
       },
       "fuel_level": {
-        "name": "Fuel level"
+        "name": "Kraftstoffstand"
       },
       "current_day_statistics": {
-        "name": "Current day statistics"
+        "name": "Aktuelle Tagesstatistiken"
       },
       "current_week_statistics": {
-        "name": "Current week statistics"
+        "name": "Aktuelle Wochenstatistiken"
       },
       "current_month_statistics": {
-        "name": "Current month statistics"
+        "name": "Aktuelle Monatsstatistiken"
       },
       "current_year_statistics": {
-        "name": "Current year statistics"
+        "name": "Aktuelle Jahresstatistiken"
       }
     },
-    "binary_sensor" :{
+    "binary_sensor": {
       "over_all_status": {
-        "name": "Over all status"
+        "name": "Gesamtstatus"
       },
       "hood": {
-        "name": "Hood"
+        "name": "Motorhaube"
       },
       "key_in_car": {
-        "name": "Key in car"
+        "name": "Schlüssel im Auto"
       },
       "front_defogger": {
-        "name": "Front defogger"
+        "name": "Enteisungsanlage vorne"
       },
       "rear_defogger": {
-        "name": "Rear defogger"
+        "name": "Enteisungsanlage hinten"
       },
       "driverseat_window": {
-        "name": "Driverseat window"
+        "name": "Fenster Fahrertür"
       },
       "passengerseat_window": {
-        "name": "Passengerseat window"
+        "name": "Fenster Beifahrertür"
       },
       "leftrearseat_window": {
-        "name": "Leftrearseat window"
+        "name": "Fenster linke Rücksitztür"
       },
       "rightrearseat_window": {
-        "name": "Rightrearseat window"
+        "name": "Fenster rechte Rücksitztür"
       },
       "driverseat_door": {
-        "name": "Driverseat door"
+        "name": "Fahrertür"
       },
       "driverseat_lock": {
-        "name": "Driverseat lock"
+        "name": "Verriegelung Fahrertür"
       },
       "passengerseat_door": {
-        "name": "Passengerseat door"
+        "name": "Beifahrertür"
       },
       "passengerseat_lock": {
-        "name": "Passengerseat lock"
+        "name": "Verriegelung Beifahrertür"
       },
       "leftrearseat_door": {
-        "name": "Leftrearseat door"
+        "name": "Linke Rücksitztür"
       },
       "leftrearseat_lock": {
-        "name": "Leftrearseat lock"
+        "name": "Verriegelung linke Rücksitztür"
       },
       "rightrearseat_door": {
-        "name": "Rightrearseat door"
+        "name": "Rechte Rücksitztür"
       },
       "rightrearseat_lock": {
-        "name": "Rightrearseat lock"
+        "name": "Verriegelung rechte Rücksitztür"
       },
       "trunk_door": {
-        "name": "Trunk"
+        "name": "Kofferraumklappe"
       },
       "trunk_lock": {
-        "name": "Trunk lock"
+        "name": "Verriegelung Kofferraumklappe"
       },
       "hazardlights": {
-        "name": "Hazardlights"
+        "name": "Warnleuchten"
       },
       "headlights": {
-        "name": "Headlights"
+        "name": "Hauptscheinwerfer"
       },
       "taillights": {
-        "name": "Taillights"
+        "name": "Rückleuchten"
       }
     }
   }
