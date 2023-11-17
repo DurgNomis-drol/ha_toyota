@@ -14,5 +14,103 @@
       "invalid_auth": "Correo electrónico/Contraseña incorrecta.",
       "unknown": "Error inesperado."
     }
+  },
+  "entity": {
+    "device_tracker": {
+      "parking_location": {
+        "name": "Aparcamiento"
+      }
+    },
+    "sensor": {
+      "starter_battery_health": {
+        "name": "Salud de la batería de arranque"
+      },
+      "odometer": {
+        "name": "Odometro"
+      },
+      "fuel_level": {
+        "name": "Nivel de combustible"
+      },
+      "current_day_statistics": {
+        "name": "Estadísticas de hoy"
+      },
+      "current_week_statistics": {
+        "name": "Estadísticas de esta semana"
+      },
+      "current_month_statistics": {
+        "name": "Estadísticas de este mes"
+      },
+      "current_year_statistics": {
+        "name": "Estadísticas de este año"
+      }
+    },
+    "binary_sensor" :{
+      "over_all_status": {
+        "name": "Estado general"
+      },
+      "hood": {
+        "name": "Capó"
+      },
+      "key_in_car": {
+        "name": "Llave en el coche"
+      },
+      "front_defogger": {
+        "name": "Desempañador delantero"
+      },
+      "rear_defogger": {
+        "name": "Desempañador trasero"
+      },
+      "driverseat_window": {
+        "name": "Ventanilla conductor"
+      },
+      "passengerseat_window": {
+        "name": "Ventanilla pasajero"
+      },
+      "leftrearseat_window": {
+        "name": "Ventanilla trasera izquierda"
+      },
+      "rightrearseat_window": {
+        "name": "Ventanilla trasera derecha"
+      },
+      "driverseat_door": {
+        "name": "Puerta conductor"
+      },
+      "driverseat_lock": {
+        "name": "Bloqueo puerta conductor"
+      },
+      "passengerseat_door": {
+        "name": "Puerta pasajero"
+      },
+      "passengerseat_lock": {
+        "name": "Bloqueo puerta pasajero"
+      },
+      "leftrearseat_door": {
+        "name": "Puerta trasera izquierda"
+      },
+      "leftrearseat_lock": {
+        "name": "Bloqueo puerta trasera izquierda"
+      },
+      "rightrearseat_door": {
+        "name": "Puerta trasera derecha"
+      },
+      "rightrearseat_lock": {
+        "name": "Bloqueo puerta trasera derecha"
+      },
+      "trunk_door": {
+        "name": "Maletero"
+      },
+      "trunk_lock": {
+        "name": "Bloqueo mealetero"
+      },
+      "hazardlights": {
+        "name": "Luces de emergencia"
+      },
+      "headlights": {
+        "name": "Faros delanteros"
+      },
+      "taillights": {
+        "name": "Faros traseros"
+      }
+    }
   }
 }

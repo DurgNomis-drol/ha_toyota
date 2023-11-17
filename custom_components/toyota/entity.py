@@ -16,6 +16,8 @@ from .const import DOMAIN
 class ToyotaBaseEntity(CoordinatorEntity):
     """Defines a base Toyota entity."""
 
+    _attr_has_entity_name = True
+
     def __init__(
         self,
         coordinator: DataUpdateCoordinator[list[VehicleData]],
@@ -30,7 +32,6 @@ class ToyotaBaseEntity(CoordinatorEntity):
         self.vehicle: Vehicle = coordinator.data[self.index]["data"]
 
         self._attr_unique_id = f"{entry_id}_{self.vehicle.vin}/{description.key}"
-        self._attr_name = f"{self.vehicle.alias} {description.name}"
 
         self._attr_device_info = DeviceInfo(
             identifiers={(DOMAIN, self.vehicle.vin)},

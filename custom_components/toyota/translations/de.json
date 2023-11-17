@@ -23,5 +23,103 @@
         }
       }
     }
+  },
+  "entity": {
+    "device_tracker": {
+      "parking_location": {
+        "name": "Parkposition"
+      }
+    },
+    "sensor": {
+      "starter_battery_health": {
+        "name": "Zustand Starterbatterie"
+      },
+      "odometer": {
+        "name": "Kilometerzähler"
+      },
+      "fuel_level": {
+        "name": "Kraftstoffstand"
+      },
+      "current_day_statistics": {
+        "name": "Aktuelle Tagesstatistiken"
+      },
+      "current_week_statistics": {
+        "name": "Aktuelle Wochenstatistiken"
+      },
+      "current_month_statistics": {
+        "name": "Aktuelle Monatsstatistiken"
+      },
+      "current_year_statistics": {
+        "name": "Aktuelle Jahresstatistiken"
+      }
+    },
+    "binary_sensor": {
+      "over_all_status": {
+        "name": "Gesamtstatus"
+      },
+      "hood": {
+        "name": "Motorhaube"
+      },
+      "key_in_car": {
+        "name": "Schlüssel im Auto"
+      },
+      "front_defogger": {
+        "name": "Enteisungsanlage vorne"
+      },
+      "rear_defogger": {
+        "name": "Enteisungsanlage hinten"
+      },
+      "driverseat_window": {
+        "name": "Fenster Fahrertür"
+      },
+      "passengerseat_window": {
+        "name": "Fenster Beifahrertür"
+      },
+      "leftrearseat_window": {
+        "name": "Fenster linke Rücksitztür"
+      },
+      "rightrearseat_window": {
+        "name": "Fenster rechte Rücksitztür"
+      },
+      "driverseat_door": {
+        "name": "Fahrertür"
+      },
+      "driverseat_lock": {
+        "name": "Verriegelung Fahrertür"
+      },
+      "passengerseat_door": {
+        "name": "Beifahrertür"
+      },
+      "passengerseat_lock": {
+        "name": "Verriegelung Beifahrertür"
+      },
+      "leftrearseat_door": {
+        "name": "Linke Rücksitztür"
+      },
+      "leftrearseat_lock": {
+        "name": "Verriegelung linke Rücksitztür"
+      },
+      "rightrearseat_door": {
+        "name": "Rechte Rücksitztür"
+      },
+      "rightrearseat_lock": {
+        "name": "Verriegelung rechte Rücksitztür"
+      },
+      "trunk_door": {
+        "name": "Kofferraumklappe"
+      },
+      "trunk_lock": {
+        "name": "Verriegelung Kofferraumklappe"
+      },
+      "hazardlights": {
+        "name": "Warnleuchten"
+      },
+      "headlights": {
+        "name": "Hauptscheinwerfer"
+      },
+      "taillights": {
+        "name": "Rückleuchten"
+      }
+    }
   }
 }

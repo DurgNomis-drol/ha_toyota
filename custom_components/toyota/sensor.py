@@ -52,7 +52,7 @@ class ToyotaSensorEntityDescription(
 
 LICENSE_PLATE_ENTITY_DESCRIPTION = ToyotaSensorEntityDescription(
     key="license_plate",
-    name="license plate",
+    translation_key="license_plate",
     icon="mdi:car-info",
     entity_category=EntityCategory.DIAGNOSTIC,
     device_class=SensorDeviceClass.ENUM,
@@ -63,7 +63,7 @@ LICENSE_PLATE_ENTITY_DESCRIPTION = ToyotaSensorEntityDescription(
 )
 STARTER_BATTERY_HEALTH_ENTITY_DESCRIPTIONS = ToyotaSensorEntityDescription(
     key="starter_battery_health",
-    name="starter battery health",
+    translation_key="starter_battery_health",
     icon="mdi:car_battery",
     device_class=SensorDeviceClass.ENUM,
     native_unit_of_measurement=None,
@@ -73,7 +73,7 @@ STARTER_BATTERY_HEALTH_ENTITY_DESCRIPTIONS = ToyotaSensorEntityDescription(
 )
 ODOMETER_ENTITY_DESCRIPTION_KM = ToyotaSensorEntityDescription(
     key="odometer",
-    name="odometer",
+    translation_key="odometer",
     icon="mdi:counter",
     device_class=SensorDeviceClass.DISTANCE,
     native_unit_of_measurement=LENGTH_KILOMETERS,
@@ -84,7 +84,7 @@ ODOMETER_ENTITY_DESCRIPTION_KM = ToyotaSensorEntityDescription(
 )
 ODOMETER_ENTITY_DESCRIPTION_MILES = ToyotaSensorEntityDescription(
     key="odometer",
-    name="odometer",
+    translation_key="odometer",
     icon="mdi:counter",
     device_class=SensorDeviceClass.DISTANCE,
     native_unit_of_measurement=LENGTH_MILES,
@@ -95,7 +95,7 @@ ODOMETER_ENTITY_DESCRIPTION_MILES = ToyotaSensorEntityDescription(
 )
 FUEL_LEVEL_ENTITY_DESCRIPTION = ToyotaSensorEntityDescription(
     key="fuel_level",
-    name="fuel level",
+    translation_key="fuel_level",
     icon="mdi:gas-station",
     device_class=SensorDeviceClass.VOLUME_STORAGE,
     native_unit_of_measurement=PERCENTAGE,
@@ -123,7 +123,7 @@ class ToyotaStatisticsSensorEntityDescription(
 STATISTICS_ENTITY_DESCRIPTIONS: tuple[ToyotaStatisticsSensorEntityDescription, ...] = (
     ToyotaStatisticsSensorEntityDescription(
         key="current_day_statistics",
-        name="current day statistics",
+        translation_key="current_day_statistics",
         icon="mdi:history",
         device_class=SensorDeviceClass.DISTANCE,
         state_class=SensorStateClass.MEASUREMENT,
@@ -132,7 +132,7 @@ STATISTICS_ENTITY_DESCRIPTIONS: tuple[ToyotaStatisticsSensorEntityDescription, .
     ),
     ToyotaStatisticsSensorEntityDescription(
         key="current_week_statistics",
-        name="current week statistics",
+        translation_key="current_week_statistics",
         icon="mdi:history",
         device_class=SensorDeviceClass.DISTANCE,
         state_class=SensorStateClass.MEASUREMENT,
@@ -141,7 +141,7 @@ STATISTICS_ENTITY_DESCRIPTIONS: tuple[ToyotaStatisticsSensorEntityDescription, .
     ),
     ToyotaStatisticsSensorEntityDescription(
         key="current_month_statistics",
-        name="current month statistics",
+        translation_key="current_month_statistics",
         icon="mdi:history",
         device_class=SensorDeviceClass.DISTANCE,
         state_class=SensorStateClass.MEASUREMENT,
@@ -150,7 +150,7 @@ STATISTICS_ENTITY_DESCRIPTIONS: tuple[ToyotaStatisticsSensorEntityDescription, .
     ),
     ToyotaStatisticsSensorEntityDescription(
         key="current_year_statistics",
-        name="current year statistics",
+        translation_key="current_year_statistics",
         icon="mdi:history",
         device_class=SensorDeviceClass.DISTANCE,
         state_class=SensorStateClass.MEASUREMENT,
