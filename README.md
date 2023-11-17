@@ -121,7 +121,7 @@ If you can confirm that it is working as advertised on older version please open
 ### HACS installation (Recommended)
 
 Open HACS and search for `Toyota Connected Services` under integrations.
-You can choose to install a specific version or from master (Not recommended).
+You can choose to install a specific version or from main (Not recommended).
 
 ### Manual Installation
 
@@ -132,7 +132,7 @@ You can choose to install a specific version or from master (Not recommended).
 #### Git clone method
 
 This is a preferred method of manual installation, because it allows you to keep the `git` functionality,
-allowing you to manually install updates just by running `git pull origin master` from the created directory.
+allowing you to manually install updates just by running `git pull origin main` from the created directory.
 
 Now you can clone the repository somewhere else and symlink it to Home Assistant like so:
 
@@ -151,7 +151,7 @@ ln -s ha_toyota/custom_components/toyota ~/.homeassistant/custom_components/toyo
 
 #### Copy method
 
-1. Download [ZIP](https://github.com/DurgNomis-drol/ha_toyota/archive/master.zip) with the code.
+1. Download [ZIP](https://github.com/DurgNomis-drol/ha_toyota/archive/main.zip) with the code.
 2. Unpack it.
 3. Copy the `custom_components/toyota/` from the unpacked archive to `custom_components`
    in your Home Assistant configuration directory.
@@ -185,9 +185,9 @@ Under the hood this integration uses the [mytoyota](https://github.com/DurgNomis
 [hacsbadge]: https://img.shields.io/badge/HACS-Default-orange.svg?style=for-the-badge
 [releases-shield]: https://img.shields.io/github/release/DurgNomis-drol/ha_toyota.svg?style=for-the-badge
 [releases]: https://github.com/DurgNomis-drol/ha_toyota/releases
-[workflow-shield]: https://img.shields.io/github/actions/workflow/status/DurgNomis-drol/ha_toyota/linting.yml?branch=master&style=for-the-badge
+[workflow-shield]: https://img.shields.io/github/actions/workflow/status/DurgNomis-drol/ha_toyota/linting.yml?branch=main&style=for-the-badge
 [workflow]: https://github.com/DurgNomis-drol/ha_toyota/actions
 [installs-shield]: https://img.shields.io/endpoint?style=for-the-badge&url=https%3A%2F%2Ftoyota-installs-for-shield-io-b910bxm1lt58.runkit.sh%2F
 [installs]: https://analytics.home-assistant.io/custom_integrations.json
 [commits-shield]: https://img.shields.io/github/commit-activity/y/DurgNomis-drol/ha_toyota.svg?style=for-the-badge
-[commits]: https://github.com/DurgNomis-drol/ha_toyota/commits/master
+[commits]: https://github.com/DurgNomis-drol/ha_toyota/commits/main
