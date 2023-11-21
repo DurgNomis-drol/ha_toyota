@@ -27,98 +27,98 @@
   "entity": {
     "device_tracker": {
       "parking_location": {
-        "name": "Parking location"
+        "name": "Emplacement de stationnement"
       }
     },
     "sensor": {
       "starter_battery_health": {
-        "name": "Starter battery health"
+        "name": "État de la batterie de démarrage"
       },
       "odometer": {
-        "name": "Odometer"
+        "name": "Odomètre"
       },
       "fuel_level": {
-        "name": "Fuel level"
+        "name": "Niveau de carburant"
       },
       "current_day_statistics": {
-        "name": "Current day statistics"
+        "name": "Statistiques aujourd'hui"
       },
       "current_week_statistics": {
-        "name": "Current week statistics"
+        "name": "Statistiques semaine en cours"
       },
       "current_month_statistics": {
-        "name": "Current month statistics"
+        "name": "Statistiques mois en cours"
       },
       "current_year_statistics": {
-        "name": "Current year statistics"
+        "name": "Statistiques année en cours"
       }
     },
     "binary_sensor" :{
       "over_all_status": {
-        "name": "Over all status"
+        "name": "Situation globale"
       },
       "hood": {
-        "name": "Hood"
+        "name": "Capot"
       },
       "key_in_car": {
-        "name": "Key in car"
+        "name": "Clé dans la voiture"
       },
       "front_defogger": {
-        "name": "Front defogger"
+        "name": "Dégivrage avant"
       },
       "rear_defogger": {
-        "name": "Rear defogger"
+        "name": "Dégivrage arrière"
       },
       "driverseat_window": {
-        "name": "Driverseat window"
+        "name": "Fenêtre siège conducteur"
       },
       "passengerseat_window": {
-        "name": "Passengerseat window"
+        "name": "Fenêtre siège passager"
       },
       "leftrearseat_window": {
-        "name": "Leftrearseat window"
+        "name": "Fenêtre arrière gauche"
       },
       "rightrearseat_window": {
-        "name": "Rightrearseat window"
+        "name": "Fenêtre arrière droite"
       },
       "driverseat_door": {
-        "name": "Driverseat door"
+        "name": "Porte siège conducteur"
       },
       "driverseat_lock": {
-        "name": "Driverseat lock"
+        "name": "Verrouillage siège conducteur"
       },
       "passengerseat_door": {
-        "name": "Passengerseat door"
+        "name": "Porte siège passager"
       },
       "passengerseat_lock": {
-        "name": "Passengerseat lock"
+        "name": "Verrouillage siège passager"
       },
       "leftrearseat_door": {
-        "name": "Leftrearseat door"
+        "name": "Porte arrière gauche"
       },
       "leftrearseat_lock": {
-        "name": "Leftrearseat lock"
+        "name": "Verrouillage siège arrière gauche"
       },
       "rightrearseat_door": {
-        "name": "Rightrearseat door"
+        "name": "Porte arrière droite"
       },
       "rightrearseat_lock": {
-        "name": "Rightrearseat lock"
+        "name": "Verrouillage siège arrière droit"
       },
       "trunk_door": {
-        "name": "Trunk"
+        "name": "Coffre"
       },
       "trunk_lock": {
-        "name": "Trunk lock"
+        "name": "Coffre fermé"
       },
       "hazardlights": {
-        "name": "Hazardlights"
+        "name": "Feux de détresse"
       },
       "headlights": {
-        "name": "Headlights"
+        "name": "Feux avants"
       },
       "taillights": {
-        "name": "Taillights"
+        "name": "Feux arrières"
       }
     }
   }
