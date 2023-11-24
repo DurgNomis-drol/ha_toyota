@@ -5,5 +5,5 @@ from pytest_homeassistant_custom_component.common import load_fixture
 
 
 def test_load_fixture():
-    data = json.loads(load_fixture("test_data.json"))
-    assert data == {"test_key": "test_value"}
+    data = json.loads(load_fixture("gather_all_information.json"))
+    assert data[0]["vin"] == "JTXXXXXXXXXXXXXXX"

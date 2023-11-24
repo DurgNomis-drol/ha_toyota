@@ -1,5 +1,4 @@
 import pytest
-from homeassistant import loader
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.area_registry import AreaRegistry
 from homeassistant.helpers.device_registry import DeviceRegistry
@@ -19,7 +18,7 @@ def auto_enable_custom_integrations(enable_custom_integrations: bool) -> None:
 @pytest.fixture
 def enable_custom_integrations(hass: HomeAssistant) -> None:
     """Enable custom integrations defined in the test dir."""
-    hass.data.pop(loader.DATA_CUSTOM_COMPONENTS)
+    # hass.data.pop(loader.DATA_CUSTOM_COMPONENTS)
 
 
 @pytest.fixture
