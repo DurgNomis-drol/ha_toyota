@@ -8,7 +8,7 @@ from custom_components.toyota.const import DOMAIN
 @pytest.mark.asyncio
 async def test_config_form(hass):
     # When
-    await setup.async_setup_component(hass, "persistent_notification", {})
+    await setup.async_setup_component(hass, domain="persistent_notification", config={})
     setup_result = await hass.config_entries.flow.async_init(
         DOMAIN, context={"source": config_entries.SOURCE_USER}
     )
