@@ -14,6 +14,7 @@ from homeassistant.components.binary_sensor import (
 )
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 from mytoyota.models.vehicle import Vehicle
@@ -27,7 +28,7 @@ from .entity import ToyotaBaseEntity
 class ToyotaBinaryEntityDescriptionMixin:
     """Mixin for required keys."""
 
-    value_fn: Callable[[Vehicle], bool]
+    value_fn: Callable[[Vehicle], Optional[bool]]
     attributes_fn: Callable[[Vehicle], Optional[dict[str, Any]]]
 
 
@@ -42,6 +43,7 @@ OVER_ALL_STATUS_ENTITY_DESCRIPTION = ToyotaBinaryEntityDescription(
     key="over_all_status",
     translation_key="over_all_status",
     icon="mdi:alert",
+    entity_category=EntityCategory.DIAGNOSTIC,
     device_class=BinarySensorDeviceClass.PROBLEM,
     value_fn=lambda vehicle: vehicle.sensors.overallstatus == "OK",
     attributes_fn=lambda vehicle: {LAST_UPDATED: vehicle.sensors.last_updated},
@@ -51,6 +53,7 @@ HOOD_ENTITY_DESCRIPTION = ToyotaBinaryEntityDescription(
     key="hood",
     translation_key="hood",
     icon="mdi:car-door",
+    entity_category=EntityCategory.DIAGNOSTIC,
     device_class=BinarySensorDeviceClass.DOOR,
     value_fn=lambda vehicle: not vehicle.sensors.hood.closed,
     attributes_fn=lambda vehicle: {
@@ -63,6 +66,7 @@ KEY_ENTITY_DESCRIPTION = ToyotaBinaryEntityDescription(
     key="key_in_car",
     translation_key="key_in_car",
     icon="mdi:car-key",
+    entity_category=EntityCategory.DIAGNOSTIC,
     value_fn=lambda vehicle: vehicle.sensors.key.in_car,
     attributes_fn=lambda vehicle: {
         WARNING: vehicle.sensors.key.warning,
@@ -75,6 +79,7 @@ DEFOGGER_ENTITY_DESCRIPTIONS: tuple[ToyotaBinaryEntityDescription, ...] = (
         key="front_defogger",
         translation_key="front_defogger",
         icon="mdi:car-defrost-front",
+        entity_category=EntityCategory.DIAGNOSTIC,
         value_fn=lambda vehicle: vehicle.hvac.front_defogger_is_on,
         attributes_fn=lambda vehicle: None,
     ),
@@ -82,6 +87,7 @@ DEFOGGER_ENTITY_DESCRIPTIONS: tuple[ToyotaBinaryEntityDescription, ...] = (
         key="rear_defogger",
         translation_key="rear_defogger",
         icon="mdi:car-defrost-rear",
+        entity_category=EntityCategory.DIAGNOSTIC,
         value_fn=lambda vehicle: vehicle.hvac.rear_defogger_is_on,
         attributes_fn=lambda vehicle: None,
     ),
@@ -92,6 +98,7 @@ WINDOW_ENTITY_DESCRIPTIONS: tuple[ToyotaBinaryEntityDescription, ...] = (
         key="driverseat_window",
         translation_key="driverseat_window",
         icon="mdi:car-door",
+        entity_category=EntityCategory.DIAGNOSTIC,
         device_class=BinarySensorDeviceClass.WINDOW,
         value_fn=lambda vehicle: vehicle.sensors.windows.driver_seat.state != "close",
         attributes_fn=lambda vehicle: {
@@ -103,6 +110,7 @@ WINDOW_ENTITY_DESCRIPTIONS: tuple[ToyotaBinaryEntityDescription, ...] = (
         key="passengerseat_window",
         translation_key="passengerseat_window",
         icon="mdi:car-door",
+        entity_category=EntityCategory.DIAGNOSTIC,
         device_class=BinarySensorDeviceClass.WINDOW,
         value_fn=lambda vehicle: vehicle.sensors.windows.passenger_seat.state
         != "close",
@@ -115,6 +123,7 @@ WINDOW_ENTITY_DESCRIPTIONS: tuple[ToyotaBinaryEntityDescription, ...] = (
         key="leftrearseat_window",
         translation_key="leftrearseat_window",
         icon="mdi:car-door",
+        entity_category=EntityCategory.DIAGNOSTIC,
         device_class=BinarySensorDeviceClass.WINDOW,
         value_fn=lambda vehicle: vehicle.sensors.windows.leftrear_seat.state != "close",
         attributes_fn=lambda vehicle: {
@@ -126,6 +135,7 @@ WINDOW_ENTITY_DESCRIPTIONS: tuple[ToyotaBinaryEntityDescription, ...] = (
         key="rightrearseat_window",
         translation_key="rightrearseat_window",
         icon="mdi:car-door",
+        entity_category=EntityCategory.DIAGNOSTIC,
         device_class=BinarySensorDeviceClass.WINDOW,
         value_fn=lambda vehicle: vehicle.sensors.windows.rightrear_seat.state
         != "close",
@@ -141,6 +151,7 @@ DOOR_ENTITY_DESCRIPTIONS: tuple[ToyotaBinaryEntityDescription, ...] = (
         key="driverseat_door",
         translation_key="driverseat_door",
         icon="mdi:car-door",
+        entity_category=EntityCategory.DIAGNOSTIC,
         device_class=BinarySensorDeviceClass.DOOR,
         value_fn=lambda vehicle: not vehicle.sensors.doors.driver_seat.closed,
         attributes_fn=lambda vehicle: {
@@ -152,6 +163,7 @@ DOOR_ENTITY_DESCRIPTIONS: tuple[ToyotaBinaryEntityDescription, ...] = (
         key="driverseat_lock",
         translation_key="driverseat_lock",
         icon="mdi:car-door",
+        entity_category=EntityCategory.DIAGNOSTIC,
         device_class=BinarySensorDeviceClass.LOCK,
         value_fn=lambda vehicle: vehicle.sensors.doors.driver_seat.locked,
         attributes_fn=lambda vehicle: {
@@ -163,6 +175,7 @@ DOOR_ENTITY_DESCRIPTIONS: tuple[ToyotaBinaryEntityDescription, ...] = (
         key="passengerseat_door",
         translation_key="passengerseat_door",
         icon="mdi:car-door",
+        entity_category=EntityCategory.DIAGNOSTIC,
         device_class=BinarySensorDeviceClass.DOOR,
         value_fn=lambda vehicle: not vehicle.sensors.doors.passenger_seat.closed,
         attributes_fn=lambda vehicle: {
@@ -174,6 +187,7 @@ DOOR_ENTITY_DESCRIPTIONS: tuple[ToyotaBinaryEntityDescription, ...] = (
         key="passengerseat_lock",
         translation_key="passengerseat_lock",
         icon="mdi:car-door-lock",
+        entity_category=EntityCategory.DIAGNOSTIC,
         device_class=BinarySensorDeviceClass.LOCK,
         value_fn=lambda vehicle: vehicle.sensors.doors.passenger_seat.locked,
         attributes_fn=lambda vehicle: {
@@ -185,6 +199,7 @@ DOOR_ENTITY_DESCRIPTIONS: tuple[ToyotaBinaryEntityDescription, ...] = (
         key="leftrearseat_door",
         translation_key="leftrearseat_door",
         icon="mdi:car-door",
+        entity_category=EntityCategory.DIAGNOSTIC,
         device_class=BinarySensorDeviceClass.DOOR,
         value_fn=lambda vehicle: not vehicle.sensors.doors.leftrear_seat.closed,
         attributes_fn=lambda vehicle: {
@@ -196,6 +211,7 @@ DOOR_ENTITY_DESCRIPTIONS: tuple[ToyotaBinaryEntityDescription, ...] = (
         key="leftrearseat_lock",
         translation_key="leftrearseat_lock",
         icon="mdi:car-door-lock",
+        entity_category=EntityCategory.DIAGNOSTIC,
         device_class=BinarySensorDeviceClass.LOCK,
         value_fn=lambda vehicle: vehicle.sensors.doors.leftrear_seat.locked,
         attributes_fn=lambda vehicle: {
@@ -207,6 +223,7 @@ DOOR_ENTITY_DESCRIPTIONS: tuple[ToyotaBinaryEntityDescription, ...] = (
         key="rightrearseat_door",
         translation_key="rightrearseat_door",
         icon="mdi:car-door",
+        entity_category=EntityCategory.DIAGNOSTIC,
         device_class=BinarySensorDeviceClass.DOOR,
         value_fn=lambda vehicle: not vehicle.sensors.doors.rightrear_seat.closed,
         attributes_fn=lambda vehicle: {
@@ -218,6 +235,7 @@ DOOR_ENTITY_DESCRIPTIONS: tuple[ToyotaBinaryEntityDescription, ...] = (
         key="rightrearseat_lock",
         translation_key="rightrearseat_lock",
         icon="mdi:car-door-lock",
+        entity_category=EntityCategory.DIAGNOSTIC,
         device_class=BinarySensorDeviceClass.LOCK,
         value_fn=lambda vehicle: vehicle.sensors.doors.rightrear_seat.locked,
         attributes_fn=lambda vehicle: {
@@ -229,6 +247,7 @@ DOOR_ENTITY_DESCRIPTIONS: tuple[ToyotaBinaryEntityDescription, ...] = (
         key="trunk_door",
         translation_key="trunk_door",
         icon="mdi:car-door",
+        entity_category=EntityCategory.DIAGNOSTIC,
         device_class=BinarySensorDeviceClass.WINDOW,
         value_fn=lambda vehicle: not vehicle.sensors.doors.trunk.closed,
         attributes_fn=lambda vehicle: {
@@ -240,6 +259,7 @@ DOOR_ENTITY_DESCRIPTIONS: tuple[ToyotaBinaryEntityDescription, ...] = (
         key="trunk_lock",
         translation_key="trunk_lock",
         icon="mdi:car-door-lock",
+        entity_category=EntityCategory.DIAGNOSTIC,
         device_class=BinarySensorDeviceClass.LOCK,
         value_fn=lambda vehicle: vehicle.sensors.doors.trunk.locked,
         attributes_fn=lambda vehicle: {
@@ -254,6 +274,7 @@ LIGHT_ENTITY_DESCRIPTIONS: tuple[ToyotaBinaryEntityDescription, ...] = (
         key="hazardlights",
         translation_key="hazardlights",
         icon="mdi:car-light-high",
+        entity_category=EntityCategory.DIAGNOSTIC,
         device_class=BinarySensorDeviceClass.LIGHT,
         value_fn=lambda vehicle: vehicle.sensors.lights.hazardlights.off,
         attributes_fn=lambda vehicle: {
@@ -265,6 +286,7 @@ LIGHT_ENTITY_DESCRIPTIONS: tuple[ToyotaBinaryEntityDescription, ...] = (
         key="headlights",
         translation_key="headlights",
         icon="mdi:car-light-high",
+        entity_category=EntityCategory.DIAGNOSTIC,
         device_class=BinarySensorDeviceClass.LIGHT,
         value_fn=lambda vehicle: vehicle.sensors.lights.headlights.off,
         attributes_fn=lambda vehicle: {
@@ -276,6 +298,7 @@ LIGHT_ENTITY_DESCRIPTIONS: tuple[ToyotaBinaryEntityDescription, ...] = (
         key="taillights",
         translation_key="taillights",
         icon="mdi:car-light-high",
+        entity_category=EntityCategory.DIAGNOSTIC,
         device_class=BinarySensorDeviceClass.LIGHT,
         value_fn=lambda vehicle: vehicle.sensors.lights.taillights.off,
         attributes_fn=lambda vehicle: {
@@ -292,24 +315,23 @@ async def async_setup_entry(
     async_add_devices: AddEntitiesCallback,
 ) -> None:
     """Set up the binary sensor platform."""
-    binary_sensors = []
 
     coordinator: DataUpdateCoordinator[list[VehicleData]] = hass.data[DOMAIN][
         entry.entry_id
     ]
 
-    for index, vehicle in enumerate(coordinator.data):
+    binary_sensors: list[ToyotaBinarySensor] = []
+    for index, _ in enumerate(coordinator.data):
         vehicle = coordinator.data[index]["data"]
 
         if vehicle.is_connected_services_enabled:
             if vehicle.hvac and vehicle.hvac.legacy:
-                # Add defogger sensors if hvac is set to legacy
                 for description in DEFOGGER_ENTITY_DESCRIPTIONS:
                     binary_sensors.append(
                         ToyotaBinarySensor(
                             coordinator=coordinator,
                             entry_id=entry.entry_id,
-                            vehicle_index=vehicle,
+                            vehicle_index=index,
                             description=description,
                         )
                     )
@@ -320,65 +342,60 @@ async def async_setup_entry(
                         ToyotaBinarySensor(
                             coordinator=coordinator,
                             entry_id=entry.entry_id,
-                            vehicle_index=vehicle,
+                            vehicle_index=index,
                             description=OVER_ALL_STATUS_ENTITY_DESCRIPTION,
                         )
                     )
 
                 if vehicle.sensors.windows:
-                    # Add window sensors if available
                     for description in WINDOW_ENTITY_DESCRIPTIONS:
                         binary_sensors.append(
                             ToyotaBinarySensor(
                                 coordinator=coordinator,
                                 entry_id=entry.entry_id,
-                                vehicle_index=vehicle,
+                                vehicle_index=index,
                                 description=description,
                             )
                         )
 
                 if vehicle.sensors.lights:
-                    # Add light sensors if available
                     for description in LIGHT_ENTITY_DESCRIPTIONS:
                         binary_sensors.append(
                             ToyotaBinarySensor(
                                 coordinator=coordinator,
                                 entry_id=entry.entry_id,
-                                vehicle_index=vehicle,
+                                vehicle_index=index,
                                 description=description,
                             )
                         )
 
                 if vehicle.sensors.hood:
-                    # Add hood sensor if available
                     binary_sensors.append(
                         ToyotaBinarySensor(
                             coordinator=coordinator,
                             entry_id=entry.entry_id,
-                            vehicle_index=vehicle,
+                            vehicle_index=index,
                             description=HOOD_ENTITY_DESCRIPTION,
                         )
                     )
 
                 if vehicle.sensors.doors:
-                    # Add door sensors if available
                     for description in DOOR_ENTITY_DESCRIPTIONS:
                         binary_sensors.append(
                             ToyotaBinarySensor(
                                 coordinator=coordinator,
                                 entry_id=entry.entry_id,
-                                vehicle_index=vehicle,
+                                vehicle_index=index,
                                 description=description,
                             )
                         )
 
                 if vehicle.sensors.key:
-                    # Add key in car sensor if available
                     binary_sensors.append(
                         ToyotaBinarySensor(
                             coordinator=coordinator,
                             entry_id=entry.entry_id,
-                            vehicle_index=vehicle,
+                            vehicle_index=index,
                             description=KEY_ENTITY_DESCRIPTION,
                         )
                     )
@@ -390,7 +407,7 @@ class ToyotaBinarySensor(ToyotaBaseEntity, BinarySensorEntity):
     """Representation of a Toyota binary sensor."""
 
     @property
-    def is_on(self) -> bool:
+    def is_on(self) -> Optional[bool]:
         """Return the state of the sensor."""
         return self.entity_description.value_fn(self.vehicle)
 
