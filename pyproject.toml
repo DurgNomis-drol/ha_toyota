@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "toyota"
-version = "v2.0.0"
+version = "v1.3.0"
 description = "Toyota Connected Services integration for Home Assistant"
 authors = ["DurgNomis-drol <simongrud@gmail.com>"]
 license = "MIT"

@@ -1,32 +1,48 @@
 ---
-name: "Release"
+name: Release
 
 on:
   release:
-    types: ["published"]
+    types:
+      - published
 
 jobs:
-  release_zip_file:
-    name: "Prepare release asset"
-    runs-on: "ubuntu-latest"
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
     steps:
-      - name: "⤵️ Check out code from GitHub"
-        uses: "actions/checkout@v4"
-      - name: "⚙️ Get version"
-        id: "version"
-        uses: "home-assistant/actions/helpers/version@master"
-      - name: "⚙️ Set version number"
+      - name: ⤵️ Check out code from GitHub
+        uses: actions/checkout@v4.1.1
+
+      - name: 🔢 Adjust version number
+        shell: bash
         run: |
-          "python3 ${{ github.workspace }}/.github/scripts/update_manifest.py --version ${{ steps.version.outputs.version }}"
-      - name: "📦 Create zip"
+          version="${{ github.event.release.tag_name }}"
+          version="${version,,}"
+          version="${version#v}"
+          yq e -P -o=json \
+            -i ".version = \"${version}\"" \
+            "${{ github.workspace }}/custom_components/toyota/manifest.json"
+
+      - name: 📦 Created zipped release package
+        shell: bash
         run: |
-          cd custom_components/toyota
+          cd "${{ github.workspace }}/custom_components/toyota"
           zip toyota.zip -r ./
-      - name: "⬆️ Upload zip to release"
-        uses: "svenstaro/upload-release-action@v2"
+
+      - name: 🔏 Sign release package
+        uses: sigstore/gh-action-sigstore-python@v2.1.1
         with:
-          repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          file: "./custom_components/toyota/toyota.zip"
-          asset_name: "toyota.zip"
-          tag: "${{ github.ref }}"
-          overwrite: true
+          inputs: ${{ github.workspace }}/custom_components/toyota/toyota.zip
+
+      - name: ⬆️ Upload zip to release
+        uses: softprops/action-gh-release@v0.1.15
+        with:
+          files: ${{ github.workspace }}/custom_components/toyota/toyota.zip
+
+        # Upload this one in the future, currently problematic for HACS
+        # https://github.com/frenck/spook/issues/286
+        # ${{ github.workspace }}/custom_components/spook/spook.zip.sigstore
