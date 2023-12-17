@@ -5,19 +5,26 @@ on:
   release:
     types: ["published"]
 
+env:
+  PYTHON_VERSION: "3.11"
+
 jobs:
   release_zip_file:
-    name: "Prepare release asset"
+    name: "Update manifest and upload zip file"
     runs-on: "ubuntu-latest"
     steps:
       - name: "⤵️ Check out code from GitHub"
         uses: "actions/checkout@v4"
+      - name: Set up Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
       - name: "⚙️ Get version"
         id: "version"
         uses: "home-assistant/actions/helpers/version@master"
       - name: "⚙️ Set version number"
         run: |
-          "python .github/scripts/update_manifest.py --version ${{ steps.version.outputs.version }}"
+          "python script/update_manifest.py --version ${{ steps.version.outputs.version }}"
       - name: "📦 Create zip"
         run: |
           cd custom_components/toyota
