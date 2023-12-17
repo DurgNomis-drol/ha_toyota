@@ -25,23 +25,23 @@ jobs:
           version="${version#v}"
           yq e -P -o=json \
             -i ".version = \"${version}\"" \
-            "${{ github.workspace }}/custom_components/ha_toyota/manifest.json"
+            "${{ github.workspace }}/custom_components/toyota/manifest.json"
 
       - name: 📦 Created zipped release package
         shell: bash
         run: |
-          cd "${{ github.workspace }}/custom_components/ha_toyota"
-          zip ha_toyota.zip -r ./
+          cd "${{ github.workspace }}/custom_components/toyota"
+          zip toyota.zip -r ./
 
       - name: 🔏 Sign release package
         uses: sigstore/gh-action-sigstore-python@v2.1.1
         with:
-          inputs: ${{ github.workspace }}/custom_components/ha_toyota/ha_toyota.zip
+          inputs: ${{ github.workspace }}/custom_components/toyota/toyota.zip
 
       - name: ⬆️ Upload zip to release
         uses: softprops/action-gh-release@v0.1.15
         with:
-          files: ${{ github.workspace }}/custom_components/ha_toyota/ha_toyota.zip
+          files: ${{ github.workspace }}/custom_components/toyota/toyota.zip
 
         # Upload this one in the future, currently problematic for HACS
         # https://github.com/frenck/spook/issues/286
