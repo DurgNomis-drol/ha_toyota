@@ -17,7 +17,7 @@ jobs:
         uses: "home-assistant/actions/helpers/version@master"
       - name: "⚙️ Set version number"
         run: |
-          "python3 ${{ scripts/update_manifest.py --version ${{ steps.version.outputs.version }}"
+          "python ${{ scripts/update_manifest.py --version ${{ steps.version.outputs.version }}"
       - name: "📦 Create zip"
         run: |
           cd custom_components/toyota
