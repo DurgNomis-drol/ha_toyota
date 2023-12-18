@@ -56,17 +56,14 @@ class ToyotaConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 errors["base"] = "unknown"
                 _LOGGER.error("An unknown error occurred during login request: %s", ex)
             else:
-                return self.async_create_entry(
-                    title=user_input[CONF_EMAIL], data=user_input
-                )
+                return self.async_create_entry(title=user_input[CONF_EMAIL], data=user_input)
 
-        return self.async_show_form(
-            step_id="user", data_schema=DATA_SCHEMA, errors=errors
-        )
+        return self.async_show_form(step_id="user", data_schema=DATA_SCHEMA, errors=errors)
 
     @staticmethod
     @callback
     def async_get_options_flow(config_entry):
+        """Get async options flow."""
         return ToyotaOptionsFlowHandler(config_entry)
 
 
@@ -82,9 +79,7 @@ class ToyotaOptionsFlowHandler(config_entries.OptionsFlow):
         """Manage the options."""
         if user_input is not None:
             self.options.update(user_input)
-            return self.async_create_entry(
-                title=self.config_entry.data.get(CONF_EMAIL), data=self.options
-            )
+            return self.async_create_entry(title=self.config_entry.data.get(CONF_EMAIL), data=self.options)
 
         return self.async_show_form(
             step_id="init",
@@ -92,9 +87,7 @@ class ToyotaOptionsFlowHandler(config_entries.OptionsFlow):
                 {
                     vol.Optional(
                         CONF_USE_LITERS_PER_100_MILES,
-                        default=self.config_entry.options.get(
-                            CONF_USE_LITERS_PER_100_MILES, False
-                        ),
+                        default=self.config_entry.options.get(CONF_USE_LITERS_PER_100_MILES, False),
                     ): bool,
                 }
             ),

@@ -1,9 +1,7 @@
 ---
-name: "Linting"
+name: "Lint code"
 
 on:
-  push:
-    branches: ["master", "main"]
   pull_request:
 
 jobs:
