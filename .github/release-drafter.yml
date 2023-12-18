@@ -3,22 +3,17 @@ tag-template: "v$RESOLVED_VERSION"
 sort-direction: ascending
 categories:
   - title: "⚠ Breaking changes"
-    label: "breaking change"
+    labels: [":warning: breaking change"]
   - title: "🚀 Features"
-    labels:
-      - "feature"
+    labels: [":rocket: feature"]
   - title: "🔧 Code enhancements"
-    labels:
-      - "enhancement"
+    labels: [":wrench: enhancement"]
   - title: "🐛 Bug Fixes"
-    labels:
-      - "fix"
-      - "bugfix"
-      - "bug"
+    labels: [":bug: bug"]
   - title: "🈵 Translations"
-    label: "translation"
+    labels: [":speech_balloon: translation"]
   - title: "📄 Documentation"
-    label: "documentation"
+    labels: [":memo: documentation"]
 change-template: "- $TITLE @$AUTHOR (#$NUMBER)"
 change-title-escapes: '\<*_&' # You can add # and @ to disable mentions, and add ` to disable code blocks.
 template: |

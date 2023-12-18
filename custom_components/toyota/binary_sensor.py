@@ -1,4 +1,4 @@
-"""Binary sensor platform for Toyota integration"""
+"""Binary sensor platform for Toyota integration."""
 
 
 from __future__ import annotations
@@ -33,9 +33,7 @@ class ToyotaBinaryEntityDescriptionMixin:
 
 
 @dataclass
-class ToyotaBinaryEntityDescription(
-    BinarySensorEntityDescription, ToyotaBinaryEntityDescriptionMixin
-):
+class ToyotaBinaryEntityDescription(BinarySensorEntityDescription, ToyotaBinaryEntityDescriptionMixin):
     """Describes a Toyota binary entity."""
 
 
@@ -81,7 +79,7 @@ DEFOGGER_ENTITY_DESCRIPTIONS: tuple[ToyotaBinaryEntityDescription, ...] = (
         icon="mdi:car-defrost-front",
         entity_category=EntityCategory.DIAGNOSTIC,
         value_fn=lambda vehicle: vehicle.hvac.front_defogger_is_on,
-        attributes_fn=lambda vehicle: None,
+        attributes_fn=lambda vehicle: None,  # noqa : ARG005
     ),
     ToyotaBinaryEntityDescription(
         key="rear_defogger",
@@ -89,7 +87,7 @@ DEFOGGER_ENTITY_DESCRIPTIONS: tuple[ToyotaBinaryEntityDescription, ...] = (
         icon="mdi:car-defrost-rear",
         entity_category=EntityCategory.DIAGNOSTIC,
         value_fn=lambda vehicle: vehicle.hvac.rear_defogger_is_on,
-        attributes_fn=lambda vehicle: None,
+        attributes_fn=lambda vehicle: None,  # noqa : ARG005
     ),
 )
 
@@ -112,8 +110,7 @@ WINDOW_ENTITY_DESCRIPTIONS: tuple[ToyotaBinaryEntityDescription, ...] = (
         icon="mdi:car-door",
         entity_category=EntityCategory.DIAGNOSTIC,
         device_class=BinarySensorDeviceClass.WINDOW,
-        value_fn=lambda vehicle: vehicle.sensors.windows.passenger_seat.state
-        != "close",
+        value_fn=lambda vehicle: vehicle.sensors.windows.passenger_seat.state != "close",
         attributes_fn=lambda vehicle: {
             WARNING: vehicle.sensors.windows.passenger_seat.warning,
             LAST_UPDATED: vehicle.sensors.last_updated,
@@ -137,8 +134,7 @@ WINDOW_ENTITY_DESCRIPTIONS: tuple[ToyotaBinaryEntityDescription, ...] = (
         icon="mdi:car-door",
         entity_category=EntityCategory.DIAGNOSTIC,
         device_class=BinarySensorDeviceClass.WINDOW,
-        value_fn=lambda vehicle: vehicle.sensors.windows.rightrear_seat.state
-        != "close",
+        value_fn=lambda vehicle: vehicle.sensors.windows.rightrear_seat.state != "close",
         attributes_fn=lambda vehicle: {
             WARNING: vehicle.sensors.windows.rightrear_seat.warning,
             LAST_UPDATED: vehicle.sensors.last_updated,
@@ -309,16 +305,13 @@ LIGHT_ENTITY_DESCRIPTIONS: tuple[ToyotaBinaryEntityDescription, ...] = (
 )
 
 
-async def async_setup_entry(
+async def async_setup_entry(  # noqa: PLR0912
     hass: HomeAssistant,
     entry: ConfigEntry,
     async_add_devices: AddEntitiesCallback,
 ) -> None:
     """Set up the binary sensor platform."""
-
-    coordinator: DataUpdateCoordinator[list[VehicleData]] = hass.data[DOMAIN][
-        entry.entry_id
-    ]
+    coordinator: DataUpdateCoordinator[list[VehicleData]] = hass.data[DOMAIN][entry.entry_id]
 
     binary_sensors: list[ToyotaBinarySensor] = []
     for index, _ in enumerate(coordinator.data):

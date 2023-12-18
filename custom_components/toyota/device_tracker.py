@@ -1,4 +1,4 @@
-"""Device tracker platform for Toyota Connected Services"""
+"""Device tracker platform for Toyota Connected Services."""
 
 from typing import Optional
 
@@ -27,9 +27,7 @@ async def async_setup_entry(
     async_add_devices: AddEntitiesCallback,
 ) -> None:
     """Set up the Toyota Connected Services tracker from config entry."""
-    coordinator: DataUpdateCoordinator[list[VehicleData]] = hass.data[DOMAIN][
-        entry.entry_id
-    ]
+    coordinator: DataUpdateCoordinator[list[VehicleData]] = hass.data[DOMAIN][entry.entry_id]
 
     async_add_devices(
         ToyotaParkingTracker(
@@ -39,8 +37,7 @@ async def async_setup_entry(
             description=PARKING_TRACKER_DESCRIPTION,
         )
         for index, vehicle in enumerate(coordinator.data)
-        if vehicle["data"].is_connected_services_enabled
-        and vehicle["data"].parkinglocation
+        if vehicle["data"].is_connected_services_enabled and vehicle["data"].parkinglocation
     )
 
 

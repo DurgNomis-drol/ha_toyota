@@ -1,4 +1,4 @@
-"""Custom coordinator entity base classes for Toyota Connected Services integration"""
+"""Custom coordinator entity base classes for Toyota Connected Services integration."""
 from __future__ import annotations
 
 from homeassistant.core import callback
