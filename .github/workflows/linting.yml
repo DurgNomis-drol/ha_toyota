@@ -1,5 +1,5 @@
 ---
-name: "Linting"
+name: "Lint code"
 
 on:
   pull_request:
