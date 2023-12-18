@@ -1,4 +1,4 @@
-"""Sensor platform for Toyota integration"""
+"""Sensor platform for Toyota integration."""
 from __future__ import annotations
 
 import logging
@@ -44,9 +44,7 @@ class ToyotaSensorEntityDescriptionMixin:
 
 
 @dataclass
-class ToyotaSensorEntityDescription(
-    SensorEntityDescription, ToyotaSensorEntityDescriptionMixin
-):
+class ToyotaSensorEntityDescription(SensorEntityDescription, ToyotaSensorEntityDescriptionMixin):
     """Describes a Toyota sensor entity."""
 
 
@@ -69,7 +67,7 @@ STARTER_BATTERY_HEALTH_ENTITY_DESCRIPTIONS = ToyotaSensorEntityDescription(
     native_unit_of_measurement=None,
     state_class=None,
     value_fn=lambda vehicle: vehicle.details.get("batteryHealth").capitalize(),
-    attributes_fn=lambda vehicle: None,
+    attributes_fn=lambda vehicle: None,  # noqa : ARG005
 )
 ODOMETER_ENTITY_DESCRIPTION_KM = ToyotaSensorEntityDescription(
     key="odometer",
@@ -80,7 +78,7 @@ ODOMETER_ENTITY_DESCRIPTION_KM = ToyotaSensorEntityDescription(
     state_class=SensorStateClass.MEASUREMENT,
     value_fn=lambda vehicle: vehicle.dashboard.odometer,
     suggested_display_precision=0,
-    attributes_fn=lambda vehicle: None,
+    attributes_fn=lambda vehicle: None,  # noqa : ARG005
 )
 ODOMETER_ENTITY_DESCRIPTION_MILES = ToyotaSensorEntityDescription(
     key="odometer",
@@ -91,18 +89,18 @@ ODOMETER_ENTITY_DESCRIPTION_MILES = ToyotaSensorEntityDescription(
     state_class=SensorStateClass.MEASUREMENT,
     value_fn=lambda vehicle: vehicle.dashboard.odometer,
     suggested_display_precision=0,
-    attributes_fn=lambda vehicle: None,
+    attributes_fn=lambda vehicle: None,  # noqa : ARG005
 )
 FUEL_LEVEL_ENTITY_DESCRIPTION = ToyotaSensorEntityDescription(
     key="fuel_level",
     translation_key="fuel_level",
     icon="mdi:gas-station",
-    device_class=SensorDeviceClass.VOLUME_STORAGE,
+    device_class=None,
     native_unit_of_measurement=PERCENTAGE,
     state_class=SensorStateClass.MEASUREMENT,
     value_fn=lambda vehicle: round_number(vehicle.dashboard.fuel_level, 0),
     suggested_display_precision=0,
-    attributes_fn=lambda vehicle: None,
+    attributes_fn=lambda vehicle: None,  # noqa : ARG005
 )
 
 
@@ -114,9 +112,7 @@ class ToyotaStatisticsSensorEntityDescriptionMixin:
 
 
 @dataclass
-class ToyotaStatisticsSensorEntityDescription(
-    SensorEntityDescription, ToyotaStatisticsSensorEntityDescriptionMixin
-):
+class ToyotaStatisticsSensorEntityDescription(SensorEntityDescription, ToyotaStatisticsSensorEntityDescriptionMixin):
     """Describes a Toyota statistics sensor entity."""
 
 
@@ -166,9 +162,7 @@ async def async_setup_entry(
     async_add_devices: AddEntitiesCallback,
 ) -> None:
     """Set up the sensor platform."""
-    coordinator: DataUpdateCoordinator[list[VehicleData]] = hass.data[DOMAIN][
-        entry.entry_id
-    ]
+    coordinator: DataUpdateCoordinator[list[VehicleData]] = hass.data[DOMAIN][entry.entry_id]
 
     sensors: list[Union[ToyotaSensor, ToyotaStatisticsSensor]] = []
     for index, _ in enumerate(coordinator.data):
@@ -253,11 +247,10 @@ class ToyotaStatisticsSensor(ToyotaSensor):
         vehicle_index: int,
         description: ToyotaStatisticsSensorEntityDescription,
     ) -> None:
+        """Initialise the ToyotaStatisticsSensor class."""
         super().__init__(coordinator, entry_id, vehicle_index, description)
         self.period = description.period
-        self._attr_native_unit_of_measurement = (
-            LENGTH_KILOMETERS if self.vehicle.dashboard.is_metric else LENGTH_MILES
-        )
+        self._attr_native_unit_of_measurement = LENGTH_KILOMETERS if self.vehicle.dashboard.is_metric else LENGTH_MILES
 
     @property
     def native_value(self) -> StateType:
@@ -266,7 +259,7 @@ class ToyotaStatisticsSensor(ToyotaSensor):
         return round(data[DATA][TOTAL_DISTANCE], 1) if DATA in data else None
 
     def _get_time_period_attributes(self, data: dict[str, Any]):
-        """Helper function to get time period attributes."""
+        """Get time period attributes."""
         now = arrow.now()
         if self.period == "day":
             dt = now.floor("day").format("YYYY-MM-DD")
@@ -290,9 +283,7 @@ class ToyotaStatisticsSensor(ToyotaSensor):
     def extra_state_attributes(self):
         """Return the state attributes."""
         data = self.coordinator.data[self.index]["statistics"][self.period][0]
-        attributes = format_statistics_attributes(
-            data.get(DATA, {}), self.vehicle.hybrid
-        )
+        attributes = format_statistics_attributes(data.get(DATA, {}), self.vehicle.hybrid)
         attributes.update(self._get_time_period_attributes(data))
         return attributes
 
