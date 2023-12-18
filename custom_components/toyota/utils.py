@@ -32,7 +32,7 @@ def round_number(number: int | float | None, places: int = 0) -> int | float | N
 
 
 def format_statistics_attributes(statistics: dict[str, Any], is_hybrid: bool):
-    """Formats and returns statistics attributes."""
+    """Format and returns statistics attributes."""
 
     def get_timedelta(time):
         return str(timedelta(seconds=time))
@@ -67,12 +67,8 @@ def format_statistics_attributes(statistics: dict[str, Any], is_hybrid: bool):
         attr.update(
             {
                 "Average_driver_score": round(statistics.get(DRIVER_SCORE, 0), 1),
-                "Average_driver_score_accelerations": round(
-                    statistics.get(DRIVER_SCORE_ACCELERATIONS, 0), 1
-                ),
-                "Average_driver_score_braking": round(
-                    statistics.get(DRIVER_SCORE_BRAKING, 0), 1
-                ),
+                "Average_driver_score_accelerations": round(statistics.get(DRIVER_SCORE_ACCELERATIONS, 0), 1),
+                "Average_driver_score_braking": round(statistics.get(DRIVER_SCORE_BRAKING, 0), 1),
             }
         )
 
@@ -81,12 +77,8 @@ def format_statistics_attributes(statistics: dict[str, Any], is_hybrid: bool):
             {
                 "EV_distance": round(statistics.get(EV_DISTANCE, 0), 1),
                 "EV_driving_time": get_timedelta(statistics.get(EV_DURATION, 0)),
-                "EV_distance_percentage": round(
-                    statistics.get(EV_DISTANCE_PERCENTAGE, 0), 1
-                ),
-                "EV_duration_percentage": round(
-                    statistics.get(EV_DURATION_PERCENTAGE, 0), 1
-                ),
+                "EV_distance_percentage": round(statistics.get(EV_DISTANCE_PERCENTAGE, 0), 1),
+                "EV_duration_percentage": round(statistics.get(EV_DURATION_PERCENTAGE, 0), 1),
             }
         )
 

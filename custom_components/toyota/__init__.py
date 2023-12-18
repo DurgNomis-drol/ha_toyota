@@ -1,4 +1,4 @@
-"""Toyota integration"""
+"""Toyota integration."""
 from __future__ import annotations
 
 import asyncio
@@ -73,13 +73,10 @@ async def async_setup_entry(  # pylint: disable=too-many-statements
     except ToyotaLoginError as ex:
         raise ConfigEntryAuthFailed(ex) from ex
     except (httpx.ConnectTimeout, httpcore.ConnectTimeout) as ex:
-        raise ConfigEntryNotReady(
-            "Unable to connect to Toyota Connected Services"
-        ) from ex
+        raise ConfigEntryNotReady("Unable to connect to Toyota Connected Services") from ex
 
     async def async_get_vehicle_data() -> list[VehicleData]:
         """Fetch vehicle data from Toyota API."""
-
         try:
             vehicles = await asyncio.wait_for(client.get_vehicles(), 15)
             vehicle_informations: list[VehicleData] = []
@@ -93,11 +90,7 @@ async def async_setup_entry(  # pylint: disable=too-many-statements
                     False: CONF_UNIT_SYSTEM_IMPERIAL,
                     True: CONF_UNIT_SYSTEM_IMPERIAL_LITERS,
                 }
-                unit = (
-                    CONF_UNIT_SYSTEM_METRIC
-                    if vehicle_status.dashboard.is_metric
-                    else unit_system_map[use_liters]
-                )
+                unit = CONF_UNIT_SYSTEM_METRIC if vehicle_status.dashboard.is_metric else unit_system_map[use_liters]
 
                 _LOGGER.debug(f"The car is reporting data in {unit}")
                 if use_liters and not vehicle_status.dashboard.is_metric:
@@ -105,22 +98,13 @@ async def async_setup_entry(  # pylint: disable=too-many-statements
                 elif not vehicle_status.dashboard.is_metric:
                     _LOGGER.debug("Getting statistics in imperial and MPG")
 
-                if (
-                    vehicle_status.is_connected_services_enabled
-                    and vehicle_status.vin is not None
-                ):
+                if vehicle_status.is_connected_services_enabled and vehicle_status.vin is not None:
                     # Use parallel request to get car statistics.
                     driving_statistics = await asyncio.gather(
-                        client.get_driving_statistics(
-                            vehicle_status.vin, interval="day", unit=unit
-                        ),
-                        client.get_driving_statistics(
-                            vehicle_status.vin, interval="isoweek", unit=unit
-                        ),
+                        client.get_driving_statistics(vehicle_status.vin, interval="day", unit=unit),
+                        client.get_driving_statistics(vehicle_status.vin, interval="isoweek", unit=unit),
                         client.get_driving_statistics(vehicle_status.vin, unit=unit),
-                        client.get_driving_statistics(
-                            vehicle_status.vin, interval="year", unit=unit
-                        ),
+                        client.get_driving_statistics(vehicle_status.vin, interval="year", unit=unit),
                     )
 
                     vehicle_data["statistics"] = StatisticsData(
@@ -149,8 +133,7 @@ async def async_setup_entry(  # pylint: disable=too-many-statements
             httpx.ReadTimeout,
         ) as ex:
             raise UpdateFailed(
-                "Update canceled! Toyota's API was too slow to respond."
-                " Will try again later..."
+                "Update canceled! Toyota's API was too slow to respond." " Will try again later..."
             ) from ex
 
     coordinator = DataUpdateCoordinator(
