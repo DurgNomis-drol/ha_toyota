@@ -15,7 +15,7 @@ CONF_REGION_SUPPORTED = [
     "europe",
 ]
 CONF_UNIT_SYSTEM_IMPERIAL_LITERS = "imperial_liters"
-CONF_USE_LITERS_PER_100_MILES = "use_liters"
+CONF_METRIC_VALUES = "use_metric_values"
 
 # DEFAULTS
 DEFAULT_LOCALE = "en-gb"

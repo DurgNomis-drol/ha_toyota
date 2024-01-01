@@ -10,10 +10,7 @@ from mytoyota.client import MyT
 from mytoyota.exceptions import ToyotaInvalidUsername, ToyotaLoginError
 
 # https://github.com/PyCQA/pylint/issues/3202
-from .const import (  # pylint: disable=unused-import
-    CONF_USE_LITERS_PER_100_MILES,
-    DOMAIN,
-)
+from .const import CONF_METRIC_VALUES, DOMAIN  # pylint: disable=unused-import
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -41,7 +38,6 @@ class ToyotaConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 client = MyT(
                     username=user_input[CONF_EMAIL],
                     password=user_input[CONF_PASSWORD],
-                    disable_locale_check=True,
                 )
 
                 await client.login()
@@ -86,8 +82,8 @@ class ToyotaOptionsFlowHandler(config_entries.OptionsFlow):
             data_schema=vol.Schema(
                 {
                     vol.Optional(
-                        CONF_USE_LITERS_PER_100_MILES,
-                        default=self.config_entry.options.get(CONF_USE_LITERS_PER_100_MILES, False),
+                        CONF_METRIC_VALUES,
+                        default=self.config_entry.options.get(CONF_METRIC_VALUES, True),
                     ): bool,
                 }
             ),
