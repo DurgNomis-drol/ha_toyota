@@ -132,9 +132,7 @@ async def async_setup_entry(  # pylint: disable=too-many-statements
             asyncioexceptions.TimeoutError,
             httpx.ReadTimeout,
         ) as ex:
-            raise UpdateFailed(
-                "Update canceled! Toyota's API was too slow to respond." " Will try again later..."
-            ) from ex
+            raise UpdateFailed("Update canceled! Toyota's API was too slow to respond. Will try again later...") from ex
 
     coordinator = DataUpdateCoordinator(
         hass,
