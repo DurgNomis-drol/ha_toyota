@@ -36,7 +36,7 @@ class ToyotaBaseEntity(CoordinatorEntity):
         self._attr_device_info = DeviceInfo(
             identifiers={(DOMAIN, self.vehicle.vin)},
             name=self.vehicle.alias,
-            model=self.vehicle.details.get("modelName"),
+            model=self.vehicle._vehicle_info.car_model_name,
             manufacturer=DOMAIN.capitalize(),
         )
         self.entity_description = description
