@@ -5,31 +5,22 @@ import asyncio
 import asyncio.exceptions as asyncioexceptions
 import logging
 from datetime import timedelta
-from typing import Any, Optional, TypedDict
+from typing import Optional, TypedDict
 
 import httpcore
 import httpx
+from arrow import Arrow
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import (
-    CONF_EMAIL,
-    CONF_PASSWORD,
-    CONF_UNIT_SYSTEM_IMPERIAL,
-    CONF_UNIT_SYSTEM_METRIC,
-)
+from homeassistant.const import CONF_EMAIL, CONF_PASSWORD
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryAuthFailed, ConfigEntryNotReady
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 from mytoyota import MyT
 from mytoyota.exceptions import ToyotaApiError, ToyotaInternalError, ToyotaLoginError
+from mytoyota.models.summary import Summary, SummaryType
 from mytoyota.models.vehicle import Vehicle
 
-from .const import (
-    CONF_METRIC_VALUES,
-    CONF_UNIT_SYSTEM_IMPERIAL_LITERS,
-    DOMAIN,
-    PLATFORMS,
-    STARTUP_MESSAGE,
-)
+from .const import CONF_METRIC_VALUES, DOMAIN, PLATFORMS, STARTUP_MESSAGE
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -37,10 +28,10 @@ _LOGGER = logging.getLogger(__name__)
 class StatisticsData(TypedDict):
     """Representing Statistics data."""
 
-    day: list[dict[str, Any]]
-    week: list[dict[str, Any]]
-    month: list[dict[str, Any]]
-    year: list[dict[str, Any]]
+    day: Optional[Summary]
+    week: Optional[Summary]
+    month: Optional[Summary]
+    year: Optional[Summary]
 
 
 class VehicleData(TypedDict):
@@ -72,44 +63,48 @@ async def async_setup_entry(  # pylint: disable=too-many-statements
     except ToyotaLoginError as ex:
         raise ConfigEntryAuthFailed(ex) from ex
     except (httpx.ConnectTimeout, httpcore.ConnectTimeout) as ex:
-        raise ConfigEntryNotReady(
-            "Unable to connect to Toyota Connected Services"
-        ) from ex
+        raise ConfigEntryNotReady("Unable to connect to Toyota Connected Services") from ex
 
-    async def async_get_vehicle_data() -> list[VehicleData]:
+    async def async_get_vehicle_data() -> Optional[list[VehicleData]]:
         """Fetch vehicle data from Toyota API."""
         try:
-            vehicles = await asyncio.wait_for(
-                client.get_vehicles(metric=use_metric_values), 15
-            )
+            vehicles = await asyncio.wait_for(client.get_vehicles(metric=use_metric_values), 15)
             vehicle_informations: list[VehicleData] = []
             if vehicles is not None:
                 for vehicle in vehicles:
                     await vehicle.update()
+                    vehicle_data = VehicleData(data=vehicle, statistics=None)
 
-
-                    vehicle_data = VehicleData(data=vehicle_status, statistics=None)
-
-
+                    if vehicle.vin is not None:
                         # Use parallel request to get car statistics.
                         driving_statistics = await asyncio.gather(
-                            client.get_driving_statistics(
-                                vehicle_status.vin, interval="day", unit=unit
+                            vehicle.get_summary(
+                                Arrow.now().date(),
+                                Arrow.now().date(),
+                                summary_type=SummaryType.DAILY,
                             ),
-                            client.get_driving_statistics(
-                                vehicle_status.vin, interval="isoweek", unit=unit
+                            vehicle.get_summary(
+                                Arrow.now().floor("week").date(),
+                                Arrow.now().date(),
+                                summary_type=SummaryType.WEEKLY,
                             ),
-                            client.get_driving_statistics(vehicle_status.vin, unit=unit),
-                            client.get_driving_statistics(
-                                vehicle_status.vin, interval="year", unit=unit
+                            vehicle.get_summary(
+                                Arrow.now().floor("month").date(),
+                                Arrow.now().date(),
+                                summary_type=SummaryType.MONTHLY,
+                            ),
+                            vehicle.get_summary(
+                                Arrow.now().floor("year").date(),
+                                Arrow.now().date(),
+                                summary_type=SummaryType.YEARLY,
                             ),
                         )
 
                         vehicle_data["statistics"] = StatisticsData(
-                            day=driving_statistics[0],
-                            week=driving_statistics[1],
-                            month=driving_statistics[2],
-                            year=driving_statistics[3],
+                            day=next(iter(driving_statistics[0] or []), None),
+                            week=next(iter(driving_statistics[1] or []), None),
+                            month=next(iter(driving_statistics[2] or []), None),
+                            year=next(iter(driving_statistics[3] or []), None),
                         )
 
                     vehicle_informations.append(vehicle_data)
@@ -130,9 +125,7 @@ async def async_setup_entry(  # pylint: disable=too-many-statements
             asyncioexceptions.TimeoutError,
             httpx.ReadTimeout,
         ) as ex:
-            raise UpdateFailed(
-                "Update canceled! Toyota's API was too slow to respond. Will try again later..."
-            ) from ex
+            raise UpdateFailed("Update canceled! Toyota's API was too slow to respond. Will try again later...") from ex
 
     coordinator = DataUpdateCoordinator(
         hass,
