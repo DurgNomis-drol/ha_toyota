@@ -233,7 +233,7 @@ TRUNK_DOOR_OPEN_ENTITY_DESCRIPTION = ToyotaBinaryEntityDescription(
 )
 
 
-async def async_setup_entry(  # noqa: PLR0912
+async def async_setup_entry(
     hass: HomeAssistant,
     entry: ConfigEntry,
     async_add_devices: AddEntitiesCallback,
@@ -244,128 +244,71 @@ async def async_setup_entry(  # noqa: PLR0912
     binary_sensors: list[ToyotaBinarySensor] = []
     for index, _ in enumerate(coordinator.data):
         vehicle = coordinator.data[index]["data"]
+        capabilities_descriptions = [
+            (
+                vehicle._vehicle_info.extended_capabilities.bonnet_status,
+                HOOD_STATUS_ENTITY_DESCRIPTION,
+            ),
+            (
+                vehicle._vehicle_info.extended_capabilities.front_driver_door_lock_status,
+                FRONT_DRIVER_DOOR_LOCK_STATUS_ENTITY_DESCRIPTION,
+            ),
+            (
+                vehicle._vehicle_info.extended_capabilities.front_driver_door_open_status,
+                FRONT_DRIVER_DOOR_OPEN_STATUS_ENTITY_DESCRIPTION,
+            ),
+            (
+                vehicle._vehicle_info.extended_capabilities.front_driver_door_window_status,
+                FRONT_DRIVER_DOOR_WINDOW_STATUS_ENTITY_DESCRIPTION,
+            ),
+            (
+                vehicle._vehicle_info.extended_capabilities.front_passenger_door_lock_status,
+                FRONT_PASSENGER_DOOR_LOCK_STATUS_ENTITY_DESCRIPTION,
+            ),
+            (
+                vehicle._vehicle_info.extended_capabilities.front_passenger_door_open_status,
+                FRONT_PASSENGER_DOOR_OPEN_STATUS_ENTITY_DESCRIPTION,
+            ),
+            (
+                vehicle._vehicle_info.extended_capabilities.front_passenger_door_window_status,
+                FRONT_PASSENGER_DOOR_WINDOW_STATUS_ENTITY_DESCRIPTION,
+            ),
+            (
+                vehicle._vehicle_info.extended_capabilities.rear_driver_door_lock_status,
+                REAR_DRIVER_DOOR_LOCK_STATUS_ENTITY_DESCRIPTION,
+            ),
+            (
+                vehicle._vehicle_info.extended_capabilities.rear_driver_door_open_status,
+                REAR_DRIVER_DOOR_OPEN_STATUS_ENTITY_DESCRIPTION,
+            ),
+            (
+                vehicle._vehicle_info.extended_capabilities.rear_driver_door_window_status,
+                REAR_DRIVER_DOOR_WINDOW_STATUS_ENTITY_DESCRIPTION,
+            ),
+            (
+                vehicle._vehicle_info.extended_capabilities.rear_passenger_door_lock_status,
+                REAR_PASSENGER_DOOR_LOCK_STATUS_ENTITY_DESCRIPTION,
+            ),
+            (
+                vehicle._vehicle_info.extended_capabilities.rear_passenger_door_open_status,
+                REAR_PASSENGER_DOOR_OPEN_STATUS_ENTITY_DESCRIPTION,
+            ),
+            (
+                vehicle._vehicle_info.extended_capabilities.rear_passenger_door_window_status,
+                REAR_PASSENGER_DOOR_WINDOW_STATUS_ENTITY_DESCRIPTION,
+            ),
+        ]
 
-        if vehicle._vehicle_info.extended_capabilities.bonnet_status:
-            binary_sensors.append(
-                ToyotaBinarySensor(
-                    coordinator=coordinator,
-                    entry_id=entry.entry_id,
-                    vehicle_index=index,
-                    description=HOOD_STATUS_ENTITY_DESCRIPTION,
+        for capability, description in capabilities_descriptions:
+            if capability:
+                binary_sensors.append(
+                    ToyotaBinarySensor(
+                        coordinator=coordinator,
+                        entry_id=entry.entry_id,
+                        vehicle_index=index,
+                        description=description,
+                    )
                 )
-            )
-
-        if vehicle._vehicle_info.extended_capabilities.front_driver_door_lock_status:
-            binary_sensors.append(
-                ToyotaBinarySensor(
-                    coordinator=coordinator,
-                    entry_id=entry.entry_id,
-                    vehicle_index=index,
-                    description=FRONT_DRIVER_DOOR_LOCK_STATUS_ENTITY_DESCRIPTION,
-                )
-            )
-        if vehicle._vehicle_info.extended_capabilities.front_driver_door_open_status:
-            binary_sensors.append(
-                ToyotaBinarySensor(
-                    coordinator=coordinator,
-                    entry_id=entry.entry_id,
-                    vehicle_index=index,
-                    description=FRONT_DRIVER_DOOR_OPEN_STATUS_ENTITY_DESCRIPTION,
-                )
-            )
-        if vehicle._vehicle_info.extended_capabilities.front_driver_door_window_status:
-            binary_sensors.append(
-                ToyotaBinarySensor(
-                    coordinator=coordinator,
-                    entry_id=entry.entry_id,
-                    vehicle_index=index,
-                    description=FRONT_DRIVER_DOOR_WINDOW_STATUS_ENTITY_DESCRIPTION,
-                )
-            )
-
-        if vehicle._vehicle_info.extended_capabilities.front_passenger_door_lock_status:
-            binary_sensors.append(
-                ToyotaBinarySensor(
-                    coordinator=coordinator,
-                    entry_id=entry.entry_id,
-                    vehicle_index=index,
-                    description=FRONT_PASSENGER_DOOR_LOCK_STATUS_ENTITY_DESCRIPTION,
-                )
-            )
-        if vehicle._vehicle_info.extended_capabilities.front_passenger_door_open_status:
-            binary_sensors.append(
-                ToyotaBinarySensor(
-                    coordinator=coordinator,
-                    entry_id=entry.entry_id,
-                    vehicle_index=index,
-                    description=FRONT_PASSENGER_DOOR_OPEN_STATUS_ENTITY_DESCRIPTION,
-                )
-            )
-        if vehicle._vehicle_info.extended_capabilities.front_passenger_door_window_status:
-            binary_sensors.append(
-                ToyotaBinarySensor(
-                    coordinator=coordinator,
-                    entry_id=entry.entry_id,
-                    vehicle_index=index,
-                    description=FRONT_PASSENGER_DOOR_WINDOW_STATUS_ENTITY_DESCRIPTION,
-                )
-            )
-
-        if vehicle._vehicle_info.extended_capabilities.rear_driver_door_lock_status:
-            binary_sensors.append(
-                ToyotaBinarySensor(
-                    coordinator=coordinator,
-                    entry_id=entry.entry_id,
-                    vehicle_index=index,
-                    description=REAR_DRIVER_DOOR_LOCK_STATUS_ENTITY_DESCRIPTION,
-                )
-            )
-        if vehicle._vehicle_info.extended_capabilities.rear_driver_door_open_status:
-            binary_sensors.append(
-                ToyotaBinarySensor(
-                    coordinator=coordinator,
-                    entry_id=entry.entry_id,
-                    vehicle_index=index,
-                    description=REAR_DRIVER_DOOR_OPEN_STATUS_ENTITY_DESCRIPTION,
-                )
-            )
-        if vehicle._vehicle_info.extended_capabilities.rear_driver_door_window_status:
-            binary_sensors.append(
-                ToyotaBinarySensor(
-                    coordinator=coordinator,
-                    entry_id=entry.entry_id,
-                    vehicle_index=index,
-                    description=REAR_DRIVER_DOOR_WINDOW_STATUS_ENTITY_DESCRIPTION,
-                )
-            )
-
-        if vehicle._vehicle_info.extended_capabilities.rear_passenger_door_lock_status:
-            binary_sensors.append(
-                ToyotaBinarySensor(
-                    coordinator=coordinator,
-                    entry_id=entry.entry_id,
-                    vehicle_index=index,
-                    description=REAR_PASSENGER_DOOR_LOCK_STATUS_ENTITY_DESCRIPTION,
-                )
-            )
-        if vehicle._vehicle_info.extended_capabilities.rear_passenger_door_open_status:
-            binary_sensors.append(
-                ToyotaBinarySensor(
-                    coordinator=coordinator,
-                    entry_id=entry.entry_id,
-                    vehicle_index=index,
-                    description=REAR_PASSENGER_DOOR_OPEN_STATUS_ENTITY_DESCRIPTION,
-                )
-            )
-        if vehicle._vehicle_info.extended_capabilities.rear_passenger_door_window_status:
-            binary_sensors.append(
-                ToyotaBinarySensor(
-                    coordinator=coordinator,
-                    entry_id=entry.entry_id,
-                    vehicle_index=index,
-                    description=REAR_PASSENGER_DOOR_WINDOW_STATUS_ENTITY_DESCRIPTION,
-                )
-            )
 
         # TODO: Find matching capabilities in _vehicle_info
         binary_sensors.append(
