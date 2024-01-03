@@ -40,7 +40,7 @@ class ToyotaBaseEntity(CoordinatorEntity):
             identifiers={(DOMAIN, self.vehicle.vin)},
             name=self.vehicle.alias,
             model=self.vehicle._vehicle_info.car_model_name,
-            manufacturer=DOMAIN.capitalize(),
+            manufacturer=self.vehicle._vehicle_info.brand,
         )
 
     @callback
