@@ -20,7 +20,7 @@ from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 from mytoyota.models.vehicle import Vehicle
 
 from . import VehicleData
-from .const import DOMAIN, LAST_UPDATED, WARNING
+from .const import DOMAIN, LAST_UPDATED
 from .entity import ToyotaBaseEntity
 
 
@@ -43,10 +43,9 @@ HOOD_STATUS_ENTITY_DESCRIPTION = ToyotaBinaryEntityDescription(
     icon="mdi:car-door",
     entity_category=EntityCategory.DIAGNOSTIC,
     device_class=BinarySensorDeviceClass.DOOR,
-    value_fn=lambda vehicle: not vehicle.sensors.hood.closed,
+    value_fn=lambda vehicle: vehicle.lock_status.hood.closed,
     attributes_fn=lambda vehicle: {
-        WARNING: vehicle.sensors.hood.warning,
-        LAST_UPDATED: vehicle.sensors.last_updated,
+        LAST_UPDATED: vehicle.lock_status.last_updated,
     },
 )
 
@@ -56,10 +55,9 @@ FRONT_DRIVER_DOOR_LOCK_STATUS_ENTITY_DESCRIPTION = ToyotaBinaryEntityDescription
     icon="mdi:car-door",
     entity_category=EntityCategory.DIAGNOSTIC,
     device_class=BinarySensorDeviceClass.LOCK,
-    value_fn=lambda vehicle: vehicle.sensors.doors.driver_seat.locked,
+    value_fn=lambda vehicle: vehicle.lock_status.doors.driver_seat.locked,
     attributes_fn=lambda vehicle: {
-        WARNING: vehicle.sensors.doors.driver_seat.warning,
-        LAST_UPDATED: vehicle.sensors.last_updated,
+        LAST_UPDATED: vehicle.lock_status.last_updated,
     },
 )
 
@@ -69,10 +67,9 @@ FRONT_DRIVER_DOOR_OPEN_STATUS_ENTITY_DESCRIPTION = ToyotaBinaryEntityDescription
     icon="mdi:car-door",
     entity_category=EntityCategory.DIAGNOSTIC,
     device_class=BinarySensorDeviceClass.DOOR,
-    value_fn=lambda vehicle: not vehicle.sensors.doors.driver_seat.closed,
+    value_fn=lambda vehicle: vehicle.lock_status.doors.driver_seat.closed,
     attributes_fn=lambda vehicle: {
-        WARNING: vehicle.sensors.doors.driver_seat.warning,
-        LAST_UPDATED: vehicle.sensors.last_updated,
+        LAST_UPDATED: vehicle.lock_status.last_updated,
     },
 )
 
@@ -82,10 +79,9 @@ FRONT_DRIVER_DOOR_WINDOW_STATUS_ENTITY_DESCRIPTION = ToyotaBinaryEntityDescripti
     icon="mdi:car-door",
     entity_category=EntityCategory.DIAGNOSTIC,
     device_class=BinarySensorDeviceClass.WINDOW,
-    value_fn=lambda vehicle: vehicle.sensors.windows.driver_seat.state != "close",
+    value_fn=lambda vehicle: vehicle.lock_status.windows.driver_seat.closed,
     attributes_fn=lambda vehicle: {
-        WARNING: vehicle.sensors.windows.driver_seat.warning,
-        LAST_UPDATED: vehicle.sensors.last_updated,
+        LAST_UPDATED: vehicle.lock_status.last_updated,
     },
 )
 
@@ -95,10 +91,9 @@ FRONT_PASSENGER_DOOR_LOCK_STATUS_ENTITY_DESCRIPTION = ToyotaBinaryEntityDescript
     icon="mdi:car-door-lock",
     entity_category=EntityCategory.DIAGNOSTIC,
     device_class=BinarySensorDeviceClass.LOCK,
-    value_fn=lambda vehicle: vehicle.sensors.doors.passenger_seat.locked,
+    value_fn=lambda vehicle: vehicle.lock_status.doors.passenger_seat.locked,
     attributes_fn=lambda vehicle: {
-        WARNING: vehicle.sensors.doors.passenger_seat.warning,
-        LAST_UPDATED: vehicle.sensors.last_updated,
+        LAST_UPDATED: vehicle.lock_status.last_updated,
     },
 )
 
@@ -108,10 +103,9 @@ FRONT_PASSENGER_DOOR_OPEN_STATUS_ENTITY_DESCRIPTION = ToyotaBinaryEntityDescript
     icon="mdi:car-door",
     entity_category=EntityCategory.DIAGNOSTIC,
     device_class=BinarySensorDeviceClass.DOOR,
-    value_fn=lambda vehicle: not vehicle.sensors.doors.passenger_seat.closed,
+    value_fn=lambda vehicle: vehicle.lock_status.doors.passenger_seat.closed,
     attributes_fn=lambda vehicle: {
-        WARNING: vehicle.sensors.doors.passenger_seat.warning,
-        LAST_UPDATED: vehicle.sensors.last_updated,
+        LAST_UPDATED: vehicle.lock_status.last_updated,
     },
 )
 
@@ -121,10 +115,9 @@ FRONT_PASSENGER_DOOR_WINDOW_STATUS_ENTITY_DESCRIPTION = ToyotaBinaryEntityDescri
     icon="mdi:car-door",
     entity_category=EntityCategory.DIAGNOSTIC,
     device_class=BinarySensorDeviceClass.WINDOW,
-    value_fn=lambda vehicle: vehicle.sensors.windows.passenger_seat.state != "close",
+    value_fn=lambda vehicle: vehicle.lock_status.windows.passenger_seat.closed,
     attributes_fn=lambda vehicle: {
-        WARNING: vehicle.sensors.windows.passenger_seat.warning,
-        LAST_UPDATED: vehicle.sensors.last_updated,
+        LAST_UPDATED: vehicle.lock_status.last_updated,
     },
 )
 
@@ -134,10 +127,9 @@ REAR_DRIVER_DOOR_LOCK_STATUS_ENTITY_DESCRIPTION = ToyotaBinaryEntityDescription(
     icon="mdi:car-door-lock",
     entity_category=EntityCategory.DIAGNOSTIC,
     device_class=BinarySensorDeviceClass.LOCK,
-    value_fn=lambda vehicle: vehicle.sensors.doors.leftrear_seat.locked,
+    value_fn=lambda vehicle: vehicle.lock_status.doors.driver_rear_seat.locked,
     attributes_fn=lambda vehicle: {
-        WARNING: vehicle.sensors.doors.leftrear_seat.warning,
-        LAST_UPDATED: vehicle.sensors.last_updated,
+        LAST_UPDATED: vehicle.lock_status.last_updated,
     },
 )
 
@@ -147,10 +139,9 @@ REAR_DRIVER_DOOR_OPEN_STATUS_ENTITY_DESCRIPTION = ToyotaBinaryEntityDescription(
     icon="mdi:car-door",
     entity_category=EntityCategory.DIAGNOSTIC,
     device_class=BinarySensorDeviceClass.DOOR,
-    value_fn=lambda vehicle: not vehicle.sensors.doors.leftrear_seat.closed,
+    value_fn=lambda vehicle: vehicle.lock_status.doors.driver_rear_seat.closed,
     attributes_fn=lambda vehicle: {
-        WARNING: vehicle.sensors.doors.leftrear_seat.warning,
-        LAST_UPDATED: vehicle.sensors.last_updated,
+        LAST_UPDATED: vehicle.lock_status.last_updated,
     },
 )
 
@@ -160,10 +151,9 @@ REAR_DRIVER_DOOR_WINDOW_STATUS_ENTITY_DESCRIPTION = ToyotaBinaryEntityDescriptio
     icon="mdi:car-door",
     entity_category=EntityCategory.DIAGNOSTIC,
     device_class=BinarySensorDeviceClass.WINDOW,
-    value_fn=lambda vehicle: vehicle.sensors.windows.leftrear_seat.state != "close",
+    value_fn=lambda vehicle: vehicle.lock_status.windows.driver_rear_seat.closed,
     attributes_fn=lambda vehicle: {
-        WARNING: vehicle.sensors.windows.leftrear_seat.warning,
-        LAST_UPDATED: vehicle.sensors.last_updated,
+        LAST_UPDATED: vehicle.lock_status.last_updated,
     },
 )
 
@@ -173,10 +163,9 @@ REAR_PASSENGER_DOOR_LOCK_STATUS_ENTITY_DESCRIPTION = ToyotaBinaryEntityDescripti
     icon="mdi:car-door-lock",
     entity_category=EntityCategory.DIAGNOSTIC,
     device_class=BinarySensorDeviceClass.LOCK,
-    value_fn=lambda vehicle: vehicle.sensors.doors.rightrear_seat.locked,
+    value_fn=lambda vehicle: vehicle.lock_status.doors.passenger_seat.locked,
     attributes_fn=lambda vehicle: {
-        WARNING: vehicle.sensors.doors.rightrear_seat.warning,
-        LAST_UPDATED: vehicle.sensors.last_updated,
+        LAST_UPDATED: vehicle.lock_status.last_updated,
     },
 )
 
@@ -186,10 +175,9 @@ REAR_PASSENGER_DOOR_OPEN_STATUS_ENTITY_DESCRIPTION = ToyotaBinaryEntityDescripti
     icon="mdi:car-door",
     entity_category=EntityCategory.DIAGNOSTIC,
     device_class=BinarySensorDeviceClass.DOOR,
-    value_fn=lambda vehicle: not vehicle.sensors.doors.rightrear_seat.closed,
+    value_fn=lambda vehicle: vehicle.lock_status.doors.passenger_rear_seat.closed,
     attributes_fn=lambda vehicle: {
-        WARNING: vehicle.sensors.doors.rightrear_seat.warning,
-        LAST_UPDATED: vehicle.sensors.last_updated,
+        LAST_UPDATED: vehicle.lock_status.last_updated,
     },
 )
 
@@ -199,10 +187,9 @@ REAR_PASSENGER_DOOR_WINDOW_STATUS_ENTITY_DESCRIPTION = ToyotaBinaryEntityDescrip
     icon="mdi:car-door",
     entity_category=EntityCategory.DIAGNOSTIC,
     device_class=BinarySensorDeviceClass.WINDOW,
-    value_fn=lambda vehicle: vehicle.sensors.windows.rightrear_seat.state != "close",
+    value_fn=lambda vehicle: vehicle.lock_status.windows.passenger_rear_seat.closed,
     attributes_fn=lambda vehicle: {
-        WARNING: vehicle.sensors.windows.rightrear_seat.warning,
-        LAST_UPDATED: vehicle.sensors.last_updated,
+        LAST_UPDATED: vehicle.lock_status.last_updated,
     },
 )
 
@@ -212,10 +199,9 @@ TRUNK_DOOR_LOCK_ENTITY_DESCRIPTION = ToyotaBinaryEntityDescription(
     icon="mdi:car-door-lock",
     entity_category=EntityCategory.DIAGNOSTIC,
     device_class=BinarySensorDeviceClass.LOCK,
-    value_fn=lambda vehicle: vehicle.sensors.doors.trunk.locked,
+    value_fn=lambda vehicle: vehicle.lock_status.doors.trunk.locked,
     attributes_fn=lambda vehicle: {
-        WARNING: vehicle.sensors.doors.trunk.warning,
-        LAST_UPDATED: vehicle.sensors.last_updated,
+        LAST_UPDATED: vehicle.lock_status.last_updated,
     },
 )
 
@@ -225,10 +211,9 @@ TRUNK_DOOR_OPEN_ENTITY_DESCRIPTION = ToyotaBinaryEntityDescription(
     icon="mdi:car-door",
     entity_category=EntityCategory.DIAGNOSTIC,
     device_class=BinarySensorDeviceClass.WINDOW,
-    value_fn=lambda vehicle: not vehicle.sensors.doors.trunk.closed,
+    value_fn=lambda vehicle: vehicle.lock_status.doors.trunk.closed,
     attributes_fn=lambda vehicle: {
-        WARNING: vehicle.sensors.doors.trunk.warning,
-        LAST_UPDATED: vehicle.sensors.last_updated,
+        LAST_UPDATED: vehicle.lock_status.last_updated,
     },
 )
 
