@@ -7,7 +7,7 @@ from homeassistant.const import CONF_EMAIL, CONF_PASSWORD
 from homeassistant.core import callback
 from homeassistant.data_entry_flow import FlowResult
 from mytoyota.client import MyT
-from mytoyota.exceptions import ToyotaInvalidUsername, ToyotaLoginError
+from mytoyota.exceptions import ToyotaInvalidUsernameError, ToyotaLoginError
 
 # https://github.com/PyCQA/pylint/issues/3202
 from .const import CONF_METRIC_VALUES, DOMAIN  # pylint: disable=unused-import
@@ -45,7 +45,7 @@ class ToyotaConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             except ToyotaLoginError as ex:
                 errors["base"] = "invalid_auth"
                 _LOGGER.error(ex)
-            except ToyotaInvalidUsername as ex:
+            except ToyotaInvalidUsernameError as ex:
                 errors["base"] = "invalid_username"
                 _LOGGER.error(ex)
             except Exception as ex:  # pylint: disable=broad-except
