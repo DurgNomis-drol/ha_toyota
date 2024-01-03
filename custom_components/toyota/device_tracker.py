@@ -49,14 +49,14 @@ class ToyotaParkingTracker(ToyotaBaseEntity, TrackerEntity):
     @property
     def latitude(self) -> Optional[float]:
         """Return latitude value of the device."""
-        parking = self.coordinator.data[self.index]["data"].location
-        return parking.latitude if parking else None
+        location = self.vehicle.location
+        return location.latitude if location else None
 
     @property
     def longitude(self) -> Optional[float]:
         """Return longitude value of the device."""
-        parking = self.coordinator.data[self.index]["data"].location
-        return parking.longitude if parking else None
+        location = self.vehicle.location
+        return location.longitude if location else None
 
     @property
     def source_type(self) -> str:
