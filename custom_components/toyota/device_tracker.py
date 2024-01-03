@@ -37,7 +37,7 @@ async def async_setup_entry(
             description=PARKING_TRACKER_DESCRIPTION,
         )
         for index, vehicle in enumerate(coordinator.data)
-        if vehicle["data"].location
+        if vehicle["data"]._vehicle_info.features.last_parked
     )
 
 
