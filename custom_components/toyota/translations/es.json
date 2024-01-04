@@ -5,7 +5,8 @@
         "description": "Ingrese su dirección de correo electrónico y contraseña para la aplicación de MyT abajo",
         "data": {
           "email": "Dirección de correo electonico",
-          "password": "Contraseña"
+          "password": "Contraseña",
+          "use_metric_values": "Utilizar unidades métricas (por ejemplo, km en lugar de millas)"
         }
       }
     },
@@ -44,7 +45,7 @@
         "name": "Estadísticas de este año"
       }
     },
-    "binary_sensor" :{
+    "binary_sensor": {
       "over_all_status": {
         "name": "Estado general"
       },

@@ -5,7 +5,8 @@
         "description": "Angiv venligst din email og adgangskode til MyT nedenfor.",
         "data": {
           "email": "Email",
-          "password": "Adgangskode"
+          "password": "Adgangskode",
+          "use_metric_values": "Brug metriske enheder (f.eks. km i stedet for miles)"
         }
       }
     },
@@ -56,7 +57,7 @@
         "name": "Statistik for dette år"
       }
     },
-    "binary_sensor" :{
+    "binary_sensor": {
       "over_all_status": {
         "name": "Status"
       },

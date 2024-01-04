@@ -5,7 +5,8 @@
         "description": "Introduïu el vostre correu electrònic i contrasenya de la aplicació MyT abaix",
         "data": {
           "email": "Correu electrònic",
-          "password": "Contrasenya"
+          "password": "Contrasenya",
+          "use_metric_values": "Use metric units (e.g. km instead of miles)"
         }
       }
     },
@@ -44,7 +45,7 @@
         "name": "Current year statistics"
       }
     },
-    "binary_sensor" :{
+    "binary_sensor": {
       "over_all_status": {
         "name": "Over all status"
       },

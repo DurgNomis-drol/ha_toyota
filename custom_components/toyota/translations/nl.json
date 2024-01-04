@@ -5,7 +5,8 @@
         "description": "Voer uw e-mailadres en wachtwoord voor MyT in hieronder.",
         "data": {
           "email": "E-mail",
-          "password": "Wachtwoord"
+          "password": "Wachtwoord",
+          "use_metric_values": "Gebruik metrische eenheden (bijv. km in plaats van mijlen)"
         }
       }
     },
@@ -44,7 +45,7 @@
         "name": "Current year statistics"
       }
     },
-    "binary_sensor" :{
+    "binary_sensor": {
       "over_all_status": {
         "name": "Over all status"
       },

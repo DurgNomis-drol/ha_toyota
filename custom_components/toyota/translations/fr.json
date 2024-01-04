@@ -5,7 +5,8 @@
         "description": "Merci d'insérer vos identifiant et mot de passe MyT ci-dessous.",
         "data": {
           "email": "Email",
-          "password": "Mot de passe"
+          "password": "Mot de passe",
+          "use_metric_values": "Utiliser des unités métriques (par exemple, km au lieu de miles)"
         }
       }
     },
@@ -53,7 +54,7 @@
         "name": "Statistiques année en cours"
       }
     },
-    "binary_sensor" :{
+    "binary_sensor": {
       "over_all_status": {
         "name": "Situation globale"
       },

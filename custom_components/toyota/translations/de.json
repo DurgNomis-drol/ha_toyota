@@ -5,7 +5,8 @@
         "description": "Bitte gebe unten deine E-Mail-Adresse und dein Passwort für MyT ein.",
         "data": {
           "email": "E-Mail",
-          "password": "Passwort"
+          "password": "Passwort",
+          "use_metric_values": "Benutze metrische Einheiten (bspw. km anstatt Meilen)"
         }
       }
     },

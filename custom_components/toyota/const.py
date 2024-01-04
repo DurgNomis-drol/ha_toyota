@@ -11,10 +11,6 @@ NAME = "Toyota Connected Services"
 ISSUES_URL = "https://github.com/DurgNomis-drol/ha_toyota/issues"
 
 # CONF
-CONF_REGION_SUPPORTED = [
-    "europe",
-]
-CONF_UNIT_SYSTEM_IMPERIAL_LITERS = "imperial_liters"
 CONF_METRIC_VALUES = "use_metric_values"
 
 # DEFAULTS
