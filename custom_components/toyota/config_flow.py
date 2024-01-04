@@ -6,6 +6,7 @@ from homeassistant import config_entries
 from homeassistant.const import CONF_EMAIL, CONF_PASSWORD
 from homeassistant.core import callback
 from homeassistant.data_entry_flow import FlowResult
+from homeassistant.helpers import selector
 from mytoyota.client import MyT
 from mytoyota.exceptions import ToyotaInvalidUsernameError, ToyotaLoginError
 
@@ -18,7 +19,10 @@ DATA_SCHEMA = vol.Schema(
     {
         vol.Required(CONF_EMAIL): str,
         vol.Required(CONF_PASSWORD): str,
-        vol.Required(CONF_METRIC_VALUES): bool,
+        vol.Required(
+            CONF_METRIC_VALUES,
+            default=True,
+        ): selector.BooleanSelector(),
     }
 )
 
