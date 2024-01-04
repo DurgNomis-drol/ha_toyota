@@ -51,7 +51,7 @@ async def async_setup_entry(  # pylint: disable=too-many-statements
 
     email = entry.data[CONF_EMAIL]
     password = entry.data[CONF_PASSWORD]
-    use_metric_values = entry.options.get(CONF_METRIC_VALUES, True)
+    use_metric_values = entry.data[CONF_METRIC_VALUES]
 
     client = MyT(
         username=email,

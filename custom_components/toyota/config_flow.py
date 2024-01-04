@@ -18,6 +18,7 @@ DATA_SCHEMA = vol.Schema(
     {
         vol.Required(CONF_EMAIL): str,
         vol.Required(CONF_PASSWORD): str,
+        vol.Required(CONF_METRIC_VALUES): bool,
     }
 )
 
@@ -76,15 +77,3 @@ class ToyotaOptionsFlowHandler(config_entries.OptionsFlow):
         if user_input is not None:
             self.options.update(user_input)
             return self.async_create_entry(title=self.config_entry.data.get(CONF_EMAIL), data=self.options)
-
-        return self.async_show_form(
-            step_id="init",
-            data_schema=vol.Schema(
-                {
-                    vol.Optional(
-                        CONF_METRIC_VALUES,
-                        default=self.config_entry.options.get(CONF_METRIC_VALUES, True),
-                    ): bool,
-                }
-            ),
-        )
