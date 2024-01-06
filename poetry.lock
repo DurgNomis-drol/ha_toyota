@@ -1199,13 +1199,13 @@ files = [
 
 [[package]]
 name = "mytoyota"
-version = "1.1.0"
+version = "1.1.2"
 description = "Python client for Toyota Connected Services."
 optional = false
 python-versions = ">=3.8.1,<4.0.0"
 files = [
-    {file = "mytoyota-1.1.0-py3-none-any.whl", hash = "sha256:57f18ddc3f7be98db030fa74fe69d7a7309a324e05255ba979886a16606a0d20"},
-    {file = "mytoyota-1.1.0.tar.gz", hash = "sha256:b1f1962fd49bef319a6bd370a608cdc8ad636c29b7a3e6607f05f165f86f9cf0"},
+    {file = "mytoyota-1.1.2-py3-none-any.whl", hash = "sha256:7e9fc9ab5c0502afad09c62ed829cbba08fd819ee14cc0273c60851430293819"},
+    {file = "mytoyota-1.1.2.tar.gz", hash = "sha256:388d6d0485b58610063628ecd3d384fe1a67d0dd0e016143f1ce2683b4824f05"},
 ]
 
 [package.dependencies]
@@ -1641,13 +1641,13 @@ files = [
 
 [[package]]
 name = "types-python-dateutil"
-version = "2.8.19.14"
+version = "2.8.19.20240106"
 description = "Typing stubs for python-dateutil"
 optional = false
-python-versions = "*"
+python-versions = ">=3.8"
 files = [
-    {file = "types-python-dateutil-2.8.19.14.tar.gz", hash = "sha256:1f4f10ac98bb8b16ade9dbee3518d9ace017821d94b057a425b069f834737f4b"},
-    {file = "types_python_dateutil-2.8.19.14-py3-none-any.whl", hash = "sha256:f977b8de27787639986b4e28963263fd0e5158942b3ecef91b9335c130cb1ce9"},
+    {file = "types-python-dateutil-2.8.19.20240106.tar.gz", hash = "sha256:1f8db221c3b98e6ca02ea83a58371b22c374f42ae5bbdf186db9c9a76581459f"},
+    {file = "types_python_dateutil-2.8.19.20240106-py3-none-any.whl", hash = "sha256:efbbdc54590d0f16152fa103c9879c7d4a00e82078f6e2cf01769042165acaa2"},
 ]
 
 [[package]]
@@ -1930,4 +1930,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "c2e197e23734cdf57eb86072bba7b0651d0ad11024b7633d216af81b9558ec90"
+content-hash = "ed9f13a6da134be068a30cc2712c18ea03d7381ec54478f5a8cd693e56d9a017"
