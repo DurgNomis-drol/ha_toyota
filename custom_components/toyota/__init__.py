@@ -126,6 +126,7 @@ async def async_setup_entry(  # pylint: disable=too-many-statements
             httpx.ReadTimeout,
         ) as ex:
             raise UpdateFailed("Update canceled! Toyota's API was too slow to respond. Will try again later...") from ex
+        return None
 
     coordinator = DataUpdateCoordinator(
         hass,
