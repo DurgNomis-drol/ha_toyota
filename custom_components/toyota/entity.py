@@ -34,6 +34,7 @@ class ToyotaBaseEntity(CoordinatorEntity):
         self.entity_description = description
         self.vehicle: Vehicle = coordinator.data[self.index]["data"]
         self.statistics: Optional[StatisticsData] = coordinator.data[self.index]["statistics"]
+        self.metric_values: bool = coordinator.data[self.index]["metric_values"]
 
         self._attr_unique_id = f"{entry_id}_{self.vehicle.vin}/{self.entity_description.key}"
         self._attr_device_info = DeviceInfo(

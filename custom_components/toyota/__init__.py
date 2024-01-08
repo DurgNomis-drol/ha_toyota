@@ -39,6 +39,7 @@ class VehicleData(TypedDict):
 
     data: Vehicle
     statistics: Optional[StatisticsData]
+    metric_values: bool
 
 
 async def async_setup_entry(  # pylint: disable=too-many-statements
@@ -73,7 +74,7 @@ async def async_setup_entry(  # pylint: disable=too-many-statements
             if vehicles is not None:
                 for vehicle in vehicles:
                     await vehicle.update()
-                    vehicle_data = VehicleData(data=vehicle, statistics=None)
+                    vehicle_data = VehicleData(data=vehicle, statistics=None, metric_values=use_metric_values)
 
                     if vehicle.vin is not None:
                         # Use parallel request to get car statistics.

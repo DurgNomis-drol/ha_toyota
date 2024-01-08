@@ -4,7 +4,7 @@ from __future__ import annotations
 import logging
 from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Any, Optional, Union
+from typing import Any, Literal, Optional, Union
 
 import arrow
 from homeassistant.components.sensor import (
@@ -108,7 +108,7 @@ FUEL_LEVEL_ENTITY_DESCRIPTION = ToyotaSensorEntityDescription(
 class ToyotaStatisticsSensorEntityDescriptionMixin:
     """Mixin for required keys."""
 
-    period: str
+    period: Literal["day", "week", "month", "year"]
 
 
 @dataclass
@@ -116,43 +116,44 @@ class ToyotaStatisticsSensorEntityDescription(SensorEntityDescription, ToyotaSta
     """Describes a Toyota statistics sensor entity."""
 
 
-STATISTICS_ENTITY_DESCRIPTIONS: tuple[ToyotaStatisticsSensorEntityDescription, ...] = (
-    ToyotaStatisticsSensorEntityDescription(
-        key="current_day_statistics",
-        translation_key="current_day_statistics",
-        icon="mdi:history",
-        device_class=SensorDeviceClass.DISTANCE,
-        state_class=SensorStateClass.MEASUREMENT,
-        suggested_display_precision=0,
-        period="day",
-    ),
-    ToyotaStatisticsSensorEntityDescription(
-        key="current_week_statistics",
-        translation_key="current_week_statistics",
-        icon="mdi:history",
-        device_class=SensorDeviceClass.DISTANCE,
-        state_class=SensorStateClass.MEASUREMENT,
-        suggested_display_precision=0,
-        period="week",
-    ),
-    ToyotaStatisticsSensorEntityDescription(
-        key="current_month_statistics",
-        translation_key="current_month_statistics",
-        icon="mdi:history",
-        device_class=SensorDeviceClass.DISTANCE,
-        state_class=SensorStateClass.MEASUREMENT,
-        suggested_display_precision=0,
-        period="month",
-    ),
-    ToyotaStatisticsSensorEntityDescription(
-        key="current_year_statistics",
-        translation_key="current_year_statistics",
-        icon="mdi:history",
-        device_class=SensorDeviceClass.DISTANCE,
-        state_class=SensorStateClass.MEASUREMENT,
-        suggested_display_precision=0,
-        period="year",
-    ),
+STATISTICS_ENTITY_DESCRIPTIONS_DAILY = ToyotaStatisticsSensorEntityDescription(
+    key="current_day_statistics",
+    translation_key="current_day_statistics",
+    icon="mdi:history",
+    device_class=SensorDeviceClass.DISTANCE,
+    state_class=SensorStateClass.MEASUREMENT,
+    suggested_display_precision=0,
+    period="day",
+)
+
+STATISTICS_ENTITY_DESCRIPTIONS_WEEKLY = ToyotaStatisticsSensorEntityDescription(
+    key="current_week_statistics",
+    translation_key="current_week_statistics",
+    icon="mdi:history",
+    device_class=SensorDeviceClass.DISTANCE,
+    state_class=SensorStateClass.MEASUREMENT,
+    suggested_display_precision=0,
+    period="week",
+)
+
+STATISTICS_ENTITY_DESCRIPTIONS_MONTHLY = ToyotaStatisticsSensorEntityDescription(
+    key="current_month_statistics",
+    translation_key="current_month_statistics",
+    icon="mdi:history",
+    device_class=SensorDeviceClass.DISTANCE,
+    state_class=SensorStateClass.MEASUREMENT,
+    suggested_display_precision=0,
+    period="month",
+)
+
+STATISTICS_ENTITY_DESCRIPTIONS_YEARLY = ToyotaStatisticsSensorEntityDescription(
+    key="current_year_statistics",
+    translation_key="current_year_statistics",
+    icon="mdi:history",
+    device_class=SensorDeviceClass.DISTANCE,
+    state_class=SensorStateClass.MEASUREMENT,
+    suggested_display_precision=0,
+    period="year",
 )
 
 
@@ -167,55 +168,38 @@ async def async_setup_entry(
     sensors: list[Union[ToyotaSensor, ToyotaStatisticsSensor]] = []
     for index, _ in enumerate(coordinator.data):
         vehicle = coordinator.data[index]["data"]
+        capabilities_descriptions = [
+            (
+                vehicle._vehicle_info.extended_capabilities.telemetry_capable,
+                STATISTICS_ENTITY_DESCRIPTIONS_DAILY,
+                ToyotaStatisticsSensor,
+            ),
+            (
+                vehicle._vehicle_info.extended_capabilities.telemetry_capable,
+                STATISTICS_ENTITY_DESCRIPTIONS_WEEKLY,
+                ToyotaStatisticsSensor,
+            ),
+            (
+                vehicle._vehicle_info.extended_capabilities.telemetry_capable,
+                STATISTICS_ENTITY_DESCRIPTIONS_MONTHLY,
+                ToyotaStatisticsSensor,
+            ),
+            (
+                vehicle._vehicle_info.extended_capabilities.telemetry_capable,
+                STATISTICS_ENTITY_DESCRIPTIONS_YEARLY,
+                ToyotaStatisticsSensor,
+            ),
+        ]
 
-        sensors.append(
-            ToyotaSensor(
+        sensors.extend(
+            sensor_type(
                 coordinator=coordinator,
                 entry_id=entry.entry_id,
                 vehicle_index=index,
-                description=LICENSE_PLATE_ENTITY_DESCRIPTION,
+                description=description,
             )
-        )
-
-        if vehicle.is_connected_services_enabled:
-            for description in STATISTICS_ENTITY_DESCRIPTIONS:
-                sensors.append(
-                    ToyotaStatisticsSensor(
-                        coordinator=coordinator,
-                        entry_id=entry.entry_id,
-                        vehicle_index=index,
-                        description=description,
-                    )
-                )
-
-        if vehicle.details.get("batteryHealth") is not None:
-            sensors.append(
-                ToyotaSensor(
-                    coordinator=coordinator,
-                    entry_id=entry.entry_id,
-                    vehicle_index=index,
-                    description=STARTER_BATTERY_HEALTH_ENTITY_DESCRIPTIONS,
-                )
-            )
-
-        sensors.append(
-            ToyotaSensor(
-                coordinator=coordinator,
-                entry_id=entry.entry_id,
-                vehicle_index=index,
-                description=ODOMETER_ENTITY_DESCRIPTION_KM
-                if vehicle.dashboard.is_metric
-                else ODOMETER_ENTITY_DESCRIPTION_MILES,
-            )
-        )
-
-        sensors.append(
-            ToyotaSensor(
-                coordinator=coordinator,
-                entry_id=entry.entry_id,
-                vehicle_index=index,
-                description=FUEL_LEVEL_ENTITY_DESCRIPTION,
-            )
+            for capability, description, sensor_type in capabilities_descriptions
+            if capability
         )
 
     async_add_devices(sensors)
@@ -249,13 +233,13 @@ class ToyotaStatisticsSensor(ToyotaSensor):
     ) -> None:
         """Initialise the ToyotaStatisticsSensor class."""
         super().__init__(coordinator, entry_id, vehicle_index, description)
-        self.period = description.period
-        self._attr_native_unit_of_measurement = LENGTH_KILOMETERS if self.vehicle.dashboard.is_metric else LENGTH_MILES
+        self.period: Literal["day", "week", "month", "year"] = description.period
+        self._attr_native_unit_of_measurement = LENGTH_KILOMETERS if self.metric_values else LENGTH_MILES
 
     @property
     def native_value(self) -> StateType:
         """Return the state of the sensor."""
-        data = self.coordinator.data[self.index]["statistics"][self.period][0]
+        data = self.statistics[self.period]
         return round(data[DATA][TOTAL_DISTANCE], 1) if DATA in data else None
 
     def _get_time_period_attributes(self, data: dict[str, Any]):
