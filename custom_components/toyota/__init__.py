@@ -133,7 +133,7 @@ async def async_setup_entry(  # pylint: disable=too-many-statements
         _LOGGER,
         name=DOMAIN,
         update_method=async_get_vehicle_data,
-        update_interval=timedelta(seconds=120),
+        update_interval=timedelta(seconds=360),
     )
 
     await coordinator.async_config_entry_first_refresh()
