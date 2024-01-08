@@ -56,7 +56,7 @@
         "name": "Statistik for dette år"
       }
     },
-    "binary_sensor" :{
+    "binary_sensor": {
       "over_all_status": {
         "name": "Status"
       },
