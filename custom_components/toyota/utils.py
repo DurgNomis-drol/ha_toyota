@@ -2,7 +2,8 @@
 from __future__ import annotations
 
 from datetime import timedelta
-from typing import Any
+
+from mytoyota.models.summary import Summary
 
 from .const import (
     AVERAGE_SPEED,
@@ -31,7 +32,7 @@ def round_number(number: int | float | None, places: int = 0) -> int | float | N
     return None if number is None else round(number, places)
 
 
-def format_statistics_attributes(statistics: dict[str, Any], is_hybrid: bool):
+def format_statistics_attributes(statistics: Summary, is_hybrid: bool):
     """Format and returns statistics attributes."""
 
     def get_timedelta(time):

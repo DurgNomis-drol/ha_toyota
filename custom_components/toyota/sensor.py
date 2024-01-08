@@ -6,7 +6,6 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Any, Literal, Optional, Union
 
-import arrow
 from homeassistant.components.sensor import (
     SensorDeviceClass,
     SensorEntity,
@@ -20,7 +19,7 @@ from homeassistant.const import (
     PERCENTAGE,
     STATE_UNKNOWN,
 )
-from homeassistant.core import HomeAssistant, callback
+from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.typing import StateType
@@ -28,7 +27,7 @@ from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 from mytoyota.models.vehicle import Vehicle
 
 from . import StatisticsData, VehicleData
-from .const import BUCKET, DATA, DOMAIN, LICENSE_PLATE, PERIODE_START, TOTAL_DISTANCE
+from .const import DOMAIN, LICENSE_PLATE
 from .entity import ToyotaBaseEntity
 from .utils import format_statistics_attributes, round_number
 
@@ -240,39 +239,13 @@ class ToyotaStatisticsSensor(ToyotaSensor):
     def native_value(self) -> StateType:
         """Return the state of the sensor."""
         data = self.statistics[self.period]
-        return round(data[DATA][TOTAL_DISTANCE], 1) if DATA in data else None
-
-    def _get_time_period_attributes(self, data: dict[str, Any]):
-        """Get time period attributes."""
-        now = arrow.now()
-        if self.period == "day":
-            dt = now.floor("day").format("YYYY-MM-DD")
-            return {"Day": data[BUCKET]["date"] if BUCKET in data else dt}
-        elif self.period == "week":
-            from_dt = now.floor("week").format("YYYY-MM-DD")
-            to_dt = now.ceil("week").format("YYYY-MM-DD")
-            return {
-                "From": data[BUCKET][PERIODE_START] if BUCKET in data else from_dt,
-                "To": to_dt,
-            }
-        elif self.period == "month":
-            from_month = now.floor("month").format("MMMM")
-            return {"Month": from_month}
-        elif self.period == "year":
-            from_year = now.floor("year").format("YYYY")
-            return {"Year": data[BUCKET]["year"] if BUCKET in data else from_year}
-        return None
+        return round(data.distance, 1) if data else None
 
     @property
     def extra_state_attributes(self):
         """Return the state attributes."""
-        data = self.coordinator.data[self.index]["statistics"][self.period][0]
-        attributes = format_statistics_attributes(data.get(DATA, {}), self.vehicle.hybrid)
-        attributes.update(self._get_time_period_attributes(data))
-        return attributes
-
-    @callback
-    def _handle_coordinator_update(self) -> None:
-        """Handle updated data from the coordinator."""
-        self.statistics = self.coordinator.data[self.index]["statistics"]
-        super()._handle_coordinator_update()
+        data = self.statistics[self.period]
+        if data is not None:
+            return format_statistics_attributes(data, self.vehicle.hybrid)
+        else:
+            return None
