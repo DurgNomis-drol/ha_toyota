@@ -32,6 +32,9 @@
       }
     },
     "sensor": {
+      "vin": {
+        "name": "Fahrzeug-Identifizierungsnummer"
+      },
       "starter_battery_health": {
         "name": "Zustand Starterbatterie"
       },

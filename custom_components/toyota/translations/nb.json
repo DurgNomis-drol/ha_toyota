@@ -32,6 +32,9 @@
       }
     },
     "sensor": {
+      "vin": {
+        "name": "Vehicle-Identify-Number"
+      },
       "starter_battery_health": {
         "name": "Starter battery health"
       },

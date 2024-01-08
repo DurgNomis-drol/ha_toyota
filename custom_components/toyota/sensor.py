@@ -17,7 +17,6 @@ from homeassistant.const import (
     LENGTH_KILOMETERS,
     LENGTH_MILES,
     PERCENTAGE,
-    STATE_UNKNOWN,
 )
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import EntityCategory
@@ -27,7 +26,7 @@ from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 from mytoyota.models.vehicle import Vehicle
 
 from . import StatisticsData, VehicleData
-from .const import DOMAIN, LICENSE_PLATE
+from .const import DOMAIN
 from .entity import ToyotaBaseEntity
 from .utils import format_statistics_attributes, round_number
 
@@ -47,16 +46,17 @@ class ToyotaSensorEntityDescription(SensorEntityDescription, ToyotaSensorEntityD
     """Describes a Toyota sensor entity."""
 
 
-LICENSE_PLATE_ENTITY_DESCRIPTION = ToyotaSensorEntityDescription(
-    key="license_plate",
-    translation_key="license_plate",
+# TODO: There is currently no information on the licence plate. Add it, wehen available
+VIN_ENTITY_DESCRIPTION = ToyotaSensorEntityDescription(
+    key="vin",
+    translation_key="vin",
     icon="mdi:car-info",
     entity_category=EntityCategory.DIAGNOSTIC,
     device_class=SensorDeviceClass.ENUM,
     native_unit_of_measurement=None,
     state_class=None,
-    value_fn=lambda vehicle: vehicle.details.get(LICENSE_PLATE, STATE_UNKNOWN),
-    attributes_fn=lambda vehicle: vehicle.details,
+    value_fn=lambda vehicle: vehicle.vin,
+    attributes_fn=lambda vehicle: vehicle._vehicle_info.extended_capabilities.dict(),
 )
 STARTER_BATTERY_HEALTH_ENTITY_DESCRIPTIONS = ToyotaSensorEntityDescription(
     key="starter_battery_health",
@@ -168,6 +168,11 @@ async def async_setup_entry(
     for index, _ in enumerate(coordinator.data):
         vehicle = coordinator.data[index]["data"]
         capabilities_descriptions = [
+            (
+                True,
+                VIN_ENTITY_DESCRIPTION,
+                ToyotaSensor,
+            ),
             (
                 vehicle._vehicle_info.extended_capabilities.telemetry_capable,
                 STATISTICS_ENTITY_DESCRIPTIONS_DAILY,
