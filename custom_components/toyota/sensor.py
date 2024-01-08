@@ -246,6 +246,6 @@ class ToyotaStatisticsSensor(ToyotaSensor):
         """Return the state attributes."""
         data = self.statistics[self.period]
         if data is not None:
-            return format_statistics_attributes(data, self.vehicle.hybrid)
+            return format_statistics_attributes(data, self.vehicle._vehicle_info)
         else:
             return None

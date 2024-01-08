@@ -1,30 +1,8 @@
 """Utilities for Toyota integration."""
 from __future__ import annotations
 
-from datetime import timedelta
-
+from mytoyota.models.endpoints.vehicle_guid import VehicleGuidModel
 from mytoyota.models.summary import Summary
-
-from .const import (
-    AVERAGE_SPEED,
-    COACHING_ADVICE,
-    DRIVER_SCORE,
-    DRIVER_SCORE_ACCELERATIONS,
-    DRIVER_SCORE_BRAKING,
-    EV_DISTANCE,
-    EV_DISTANCE_PERCENTAGE,
-    EV_DURATION,
-    EV_DURATION_PERCENTAGE,
-    FUEL_CONSUMED,
-    HARD_ACCELERATION,
-    HARD_BRAKING,
-    HIGHWAY_DISTANCE,
-    HIGHWAY_DISTANCE_PERCENTAGE,
-    MAX_SPEED,
-    NIGHT_TRIPS,
-    TOTAL_DURATION,
-    TRIPS,
-)
 
 
 def round_number(number: int | float | None, places: int = 0) -> int | float | None:
@@ -32,55 +10,29 @@ def round_number(number: int | float | None, places: int = 0) -> int | float | N
     return None if number is None else round(number, places)
 
 
-def format_statistics_attributes(statistics: Summary, is_hybrid: bool):
+def format_statistics_attributes(statistics: Summary, vehicle_info: VehicleGuidModel):
     """Format and returns statistics attributes."""
-
-    def get_timedelta(time):
-        return str(timedelta(seconds=time))
-
     attr = {
-        "Highway_distance": round(statistics.get(HIGHWAY_DISTANCE, 0), 1),
-        "Highway_percentage": round(statistics.get(HIGHWAY_DISTANCE_PERCENTAGE, 0), 1),
-        "Number_of_trips": statistics.get(TRIPS, 0),
-        "Number_of_night_trips": statistics.get(NIGHT_TRIPS, 0),
-        "Total_driving_time": get_timedelta(statistics.get(TOTAL_DURATION, 0)),
-        "Average_speed": round(statistics.get(AVERAGE_SPEED, 0), 1),
-        "Max_speed": round(statistics.get(MAX_SPEED, 0), 1),
-        "Hard_acceleration_count": statistics.get(HARD_ACCELERATION, 0),
-        "Hard_braking_count": statistics.get(HARD_BRAKING, 0),
+        "Average_speed": round(statistics.average_speed, 1) if statistics.average_speed else None,
+        "Countries": statistics.countries or [],
     }
 
-    if FUEL_CONSUMED in statistics:
+    if vehicle_info.fuel_type is not None:
+        attr["Fuel_consumed"] = round(statistics.fuel_consumed, 3) if statistics.fuel_consumed else None
+
+    if vehicle_info.electrical_platform_code == 15:
         attr.update(
             {
-                "Average_fuel_consumed": round(statistics.get(FUEL_CONSUMED, 0), 2),
+                "EV_distance": round(statistics.ev_distance, 1) if statistics.ev_distance else None,
+                "EV_duration": statistics.ev_duration,
             }
         )
 
-    if COACHING_ADVICE in statistics:
-        attr.update(
-            {
-                "Coaching_advice_most_occurrence": statistics.get(COACHING_ADVICE, 0),
-            }
-        )
-
-    if DRIVER_SCORE in statistics:
-        attr.update(
-            {
-                "Average_driver_score": round(statistics.get(DRIVER_SCORE, 0), 1),
-                "Average_driver_score_accelerations": round(statistics.get(DRIVER_SCORE_ACCELERATIONS, 0), 1),
-                "Average_driver_score_braking": round(statistics.get(DRIVER_SCORE_BRAKING, 0), 1),
-            }
-        )
-
-    if is_hybrid:
-        attr.update(
-            {
-                "EV_distance": round(statistics.get(EV_DISTANCE, 0), 1),
-                "EV_driving_time": get_timedelta(statistics.get(EV_DURATION, 0)),
-                "EV_distance_percentage": round(statistics.get(EV_DISTANCE_PERCENTAGE, 0), 1),
-                "EV_duration_percentage": round(statistics.get(EV_DURATION_PERCENTAGE, 0), 1),
-            }
-        )
+    attr.update(
+        {
+            "From_date": statistics.from_date,
+            "To_date": statistics.to_date,
+        }
+    )
 
     return attr
