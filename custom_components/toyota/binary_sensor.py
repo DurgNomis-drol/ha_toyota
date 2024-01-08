@@ -282,37 +282,28 @@ async def async_setup_entry(
                 vehicle._vehicle_info.extended_capabilities.rear_passenger_door_window_status,
                 REAR_PASSENGER_DOOR_WINDOW_STATUS_ENTITY_DESCRIPTION,
             ),
+            # TODO: Find correct matching capabilities in _vehicle_info
+            (
+                vehicle._vehicle_info.extended_capabilities.bonnet_status,
+                TRUNK_DOOR_LOCK_ENTITY_DESCRIPTION,
+            ),
+            # TODO: Find correct matching capabilities in _vehicle_info
+            (
+                vehicle._vehicle_info.extended_capabilities.bonnet_status,
+                TRUNK_DOOR_OPEN_ENTITY_DESCRIPTION,
+            ),
         ]
 
-        for capability, description in capabilities_descriptions:
-            if capability:
-                binary_sensors.append(
-                    ToyotaBinarySensor(
-                        coordinator=coordinator,
-                        entry_id=entry.entry_id,
-                        vehicle_index=index,
-                        description=description,
-                    )
-                )
-
-        # TODO: Find matching capabilities in _vehicle_info
-        binary_sensors.append(
+        binary_sensors.extend(
             ToyotaBinarySensor(
                 coordinator=coordinator,
                 entry_id=entry.entry_id,
                 vehicle_index=index,
-                description=TRUNK_DOOR_LOCK_ENTITY_DESCRIPTION,
+                description=description,
             )
+            for capability, description in capabilities_descriptions
+            if capability
         )
-        binary_sensors.append(
-            ToyotaBinarySensor(
-                coordinator=coordinator,
-                entry_id=entry.entry_id,
-                vehicle_index=index,
-                description=TRUNK_DOOR_OPEN_ENTITY_DESCRIPTION,
-            )
-        )
-
     async_add_devices(binary_sensors, True)
 
 
