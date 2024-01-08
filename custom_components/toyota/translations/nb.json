@@ -53,7 +53,7 @@
         "name": "Current year statistics"
       }
     },
-    "binary_sensor" :{
+    "binary_sensor": {
       "over_all_status": {
         "name": "Over all status"
       },

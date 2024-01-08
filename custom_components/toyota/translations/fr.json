@@ -53,7 +53,7 @@
         "name": "Statistiques année en cours"
       }
     },
-    "binary_sensor" :{
+    "binary_sensor": {
       "over_all_status": {
         "name": "Situation globale"
       },
