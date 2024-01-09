@@ -38,10 +38,12 @@ def format_vin_sensor_attributes(
         "Fuel_type": vehicle_info.fuel_type,
         "Electrical_platform_code": vehicle_info.electrical_platform_code,
         "EV_vehicle": vehicle_info.ev_vehicle,
-        "Features": [key for key, value in vehicle_info.features.dict() if value is True],
-        "Extended_capabilities": [key for key, value in vehicle_info.extended_capabilities.dict() if value is True],
+        "Features": [key for key, value in vehicle_info.features.dict().items() if value is True],
+        "Extended_capabilities": [
+            key for key, value in vehicle_info.extended_capabilities.dict().items() if value is True
+        ],
         "Remote_service_capabilities": [
-            key for key, value in vehicle_info.remote_service_capabilities.dict() if value is True
+            key for key, value in vehicle_info.remote_service_capabilities.dict().items() if value is True
         ],
     }
 
