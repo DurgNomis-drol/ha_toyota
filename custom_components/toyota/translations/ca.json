@@ -41,6 +41,9 @@
       "battery_range": {
         "name": "Battery range"
       },
+      "total_range": {
+        "name": "Total range"
+      },
       "current_day_statistics": {
         "name": "Current day statistics"
       },

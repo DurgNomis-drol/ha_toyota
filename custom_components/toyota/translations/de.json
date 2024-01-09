@@ -50,6 +50,9 @@
       "battery_range": {
         "name": "Batteriereichweite"
       },
+      "total_range": {
+        "name": "Gesamtreichweite"
+      },
       "current_day_statistics": {
         "name": "Aktuelle Tagesstatistiken"
       },
