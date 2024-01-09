@@ -26,14 +26,17 @@
       "vin": {
         "name": "Vehicle-Identify-Number"
       },
-      "starter_battery_health": {
-        "name": "Starter battery health"
-      },
       "odometer": {
         "name": "Odometer"
       },
       "fuel_level": {
         "name": "Fuel level"
+      },
+      "fuel_range": {
+        "name": "Fuel range"
+      },
+      "battery_level": {
+        "name": "Battery level"
       },
       "current_day_statistics": {
         "name": "Current day statistics"

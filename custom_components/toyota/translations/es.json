@@ -26,14 +26,17 @@
       "vin": {
         "name": "Vehicle-Identify-Number"
       },
-      "starter_battery_health": {
-        "name": "Salud de la batería de arranque"
-      },
       "odometer": {
         "name": "Odometro"
       },
       "fuel_level": {
         "name": "Nivel de combustible"
+      },
+      "fuel_range": {
+        "name": "Fuel range"
+      },
+      "battery_level": {
+        "name": "Battery level"
       },
       "current_day_statistics": {
         "name": "Estadísticas de hoy"

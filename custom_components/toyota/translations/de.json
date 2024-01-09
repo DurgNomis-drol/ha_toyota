@@ -35,14 +35,17 @@
       "vin": {
         "name": "Fahrzeug-Identifizierungsnummer"
       },
-      "starter_battery_health": {
-        "name": "Zustand Starterbatterie"
-      },
       "odometer": {
         "name": "Kilometerzähler"
       },
       "fuel_level": {
         "name": "Kraftstoffstand"
+      },
+      "fuel_range": {
+        "name": "Tankreichweite"
+      },
+      "battery_level": {
+        "name": "Batteriestand"
       },
       "current_day_statistics": {
         "name": "Aktuelle Tagesstatistiken"
