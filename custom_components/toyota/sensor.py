@@ -120,6 +120,28 @@ BATTERY_LEVEL_ENTITY_DESCRIPTION = ToyotaSensorEntityDescription(
     suggested_display_precision=0,
     attributes_fn=lambda vehicle: None,  # noqa : ARG005
 )
+BATTERY_RANGE_ENTITY_DESCRIPTION_KM = ToyotaSensorEntityDescription(
+    key="battery_range",
+    translation_key="battery_range",
+    icon="mdi:map-marker-distance",
+    device_class=SensorDeviceClass.DISTANCE,
+    native_unit_of_measurement=LENGTH_KILOMETERS,
+    state_class=SensorStateClass.MEASUREMENT,
+    value_fn=lambda vehicle: None if vehicle.dashboard is None else vehicle.dashboard.battery_range,
+    suggested_display_precision=0,
+    attributes_fn=lambda vehicle: None,  # noqa : ARG005
+)
+BATTERY_RANGE_ENTITY_DESCRIPTION_MILES = ToyotaSensorEntityDescription(
+    key="battery_range",
+    translation_key="battery_range",
+    icon="mdi:map-marker-distance",
+    device_class=SensorDeviceClass.DISTANCE,
+    native_unit_of_measurement=LENGTH_MILES,
+    state_class=SensorStateClass.MEASUREMENT,
+    value_fn=lambda vehicle: None if vehicle.dashboard is None else vehicle.dashboard.battery_range,
+    suggested_display_precision=0,
+    attributes_fn=lambda vehicle: None,  # noqa : ARG005
+)
 
 
 @dataclass
@@ -222,6 +244,24 @@ async def async_setup_entry(
             (
                 vehicle._vehicle_info.extended_capabilities.battery_status or vehicle._vehicle_info.ev_vehicle is True,
                 BATTERY_LEVEL_ENTITY_DESCRIPTION,
+                ToyotaSensor,
+            ),
+            (
+                entry.data[CONF_METRIC_VALUES] is True
+                and (
+                    vehicle._vehicle_info.extended_capabilities.battery_status
+                    or vehicle._vehicle_info.ev_vehicle is True
+                ),
+                BATTERY_RANGE_ENTITY_DESCRIPTION_KM,
+                ToyotaSensor,
+            ),
+            (
+                entry.data[CONF_METRIC_VALUES] is False
+                and (
+                    vehicle._vehicle_info.extended_capabilities.battery_status
+                    or vehicle._vehicle_info.ev_vehicle is True
+                ),
+                BATTERY_RANGE_ENTITY_DESCRIPTION_MILES,
                 ToyotaSensor,
             ),
             (
