@@ -25,7 +25,7 @@ def format_vin_sensor_attributes(
         "Brand": vehicle_info.brand,
         "Car_line_name": vehicle_info.car_line_name,
         "Car_model_year": vehicle_info.car_model_year,
-        "Car_model_name": vehicle_info.car_line_name,
+        "Car_model_name": vehicle_info.car_model_name,
         "Color": vehicle_info.color,
         "Generation": vehicle_info.generation,
         "Manufactured_date": None
