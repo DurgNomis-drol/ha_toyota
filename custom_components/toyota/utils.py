@@ -24,14 +24,14 @@ def format_statistics_attributes(statistics: Summary, vehicle_info: VehicleGuidM
         attr.update(
             {
                 "EV_distance": round(statistics.ev_distance, 1) if statistics.ev_distance else None,
-                "EV_duration": statistics.ev_duration,
+                "EV_duration": str(statistics.ev_duration),
             }
         )
 
     attr.update(
         {
-            "From_date": statistics.from_date,
-            "To_date": statistics.to_date,
+            "From_date": statistics.from_date.strftime("%Y-%m-%d"),
+            "To_date": statistics.to_date.strftime("%Y-%m-%d"),
         }
     )
 
