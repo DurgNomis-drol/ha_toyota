@@ -1,6 +1,8 @@
 """Utilities for Toyota integration."""
 from __future__ import annotations
 
+from typing import Optional, Union
+
 from mytoyota.models.endpoints.vehicle_guid import VehicleGuidModel
 from mytoyota.models.summary import Summary
 
@@ -10,7 +12,39 @@ def round_number(number: int | float | None, places: int = 0) -> int | float | N
     return None if number is None else round(number, places)
 
 
-def format_statistics_attributes(statistics: Summary, vehicle_info: VehicleGuidModel):
+def format_vin_sensor_attributes(
+    vehicle_info: VehicleGuidModel,
+) -> dict[str, Optional[Union[str, bool, dict[str, bool]]]]:
+    """Format and returns vin sensor attributes."""
+    return {
+        "Vin": vehicle_info.vin,
+        "Contract_id": vehicle_info.contract_id,
+        "Katashiki_code": vehicle_info.katashiki_code,
+        "Asi_code": vehicle_info.asi_code,
+        "Imei": vehicle_info.imei,
+        "Brand": vehicle_info.brand,
+        "Car_line_name": vehicle_info.car_line_name,
+        "Car_model_year": vehicle_info.car_model_year,
+        "Car_model_name": vehicle_info.car_line_name,
+        "Color": vehicle_info.color,
+        "Generation": vehicle_info.generation,
+        "Manufactured_date": None
+        if vehicle_info.manufactured_date is None
+        else vehicle_info.manufactured_date.strftime("%Y-%m-%d"),
+        "Date_of_first_use": None
+        if vehicle_info.date_of_first_use is None
+        else vehicle_info.date_of_first_use.strftime("%Y-%m-%d"),
+        "Transmission_type": vehicle_info.transmission_type,
+        "Fuel_type": vehicle_info.fuel_type,
+        "Electrical_platform_code": vehicle_info.electrical_platform_code,
+        "EV_vehicle": vehicle_info.ev_vehicle,
+        "Features": vehicle_info.features.dict(),
+        "Extended_capabilities": vehicle_info.extended_capabilities.dict(),
+        "Remote_service_capabilities": vehicle_info.remote_service_capabilities.dict(),
+    }
+
+
+def format_statistics_attributes(statistics: Summary, vehicle_info: VehicleGuidModel) -> dict[str, Optional[str]]:
     """Format and returns statistics attributes."""
     attr = {
         "Average_speed": round(statistics.average_speed, 1) if statistics.average_speed else None,

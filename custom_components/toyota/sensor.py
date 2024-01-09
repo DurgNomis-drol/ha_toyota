@@ -24,7 +24,7 @@ from mytoyota.models.vehicle import Vehicle
 from . import StatisticsData, VehicleData
 from .const import CONF_METRIC_VALUES, DOMAIN
 from .entity import ToyotaBaseEntity
-from .utils import format_statistics_attributes
+from .utils import format_statistics_attributes, format_vin_sensor_attributes
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -52,7 +52,7 @@ VIN_ENTITY_DESCRIPTION = ToyotaSensorEntityDescription(
     native_unit_of_measurement=None,
     state_class=None,
     value_fn=lambda vehicle: vehicle.vin,
-    attributes_fn=lambda vehicle: vehicle._vehicle_info.dict(),
+    attributes_fn=lambda vehicle: format_vin_sensor_attributes(vehicle._vehicle_info),
 )
 ODOMETER_ENTITY_DESCRIPTION_KM = ToyotaSensorEntityDescription(
     key="odometer",
