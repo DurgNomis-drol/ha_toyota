@@ -220,7 +220,7 @@ async def async_setup_entry(
                 ToyotaSensor,
             ),
             (
-                vehicle._vehicle_info.extended_capabilities.battery_status,
+                vehicle._vehicle_info.extended_capabilities.battery_status or vehicle._vehicle_info.ev_vehicle is True,
                 BATTERY_LEVEL_ENTITY_DESCRIPTION,
                 ToyotaSensor,
             ),
