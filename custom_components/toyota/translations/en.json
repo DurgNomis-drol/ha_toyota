@@ -47,6 +47,9 @@
       "battery_level": {
         "name": "Battery level"
       },
+      "battery_range_ac": {
+        "name": "Battery range with AC"
+      },
       "battery_range": {
         "name": "Battery range"
       },

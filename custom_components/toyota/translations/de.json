@@ -50,6 +50,9 @@
       "battery_range": {
         "name": "Batteriereichweite"
       },
+      "battery_range_ac": {
+        "name": "Batteriereichweite mit AC"
+      },
       "total_range": {
         "name": "Gesamtreichweite"
       },

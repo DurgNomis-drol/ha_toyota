@@ -50,6 +50,9 @@
       "battery_range": {
         "name": "Battery range"
       },
+      "battery_range_ac": {
+        "name": "Battery range with AC"
+      },
       "total_range": {
         "name": "Total range"
       },
