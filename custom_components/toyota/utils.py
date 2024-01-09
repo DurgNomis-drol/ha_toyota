@@ -20,7 +20,7 @@ def format_statistics_attributes(statistics: Summary, vehicle_info: VehicleGuidM
     if vehicle_info.fuel_type is not None:
         attr["Fuel_consumed"] = round(statistics.fuel_consumed, 3) if statistics.fuel_consumed else None
 
-    if vehicle_info.electrical_platform_code == 15:
+    if vehicle_info.electrical_platform_code == 15 or vehicle_info.ev_vehicle is True:
         attr.update(
             {
                 "EV_distance": round(statistics.ev_distance, 1) if statistics.ev_distance else None,
