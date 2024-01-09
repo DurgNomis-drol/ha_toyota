@@ -116,7 +116,7 @@ BATTERY_LEVEL_ENTITY_DESCRIPTION = ToyotaSensorEntityDescription(
     device_class=None,
     native_unit_of_measurement=PERCENTAGE,
     state_class=SensorStateClass.MEASUREMENT,
-    value_fn=lambda vehicle: None if vehicle.dashboard is None else vehicle.dashboard.fuel_level,
+    value_fn=lambda vehicle: None if vehicle.dashboard is None else vehicle.dashboard.battery_level,
     suggested_display_precision=0,
     attributes_fn=lambda vehicle: None,  # noqa : ARG005
 )
