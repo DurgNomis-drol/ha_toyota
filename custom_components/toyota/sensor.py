@@ -22,9 +22,9 @@ from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 from mytoyota.models.vehicle import Vehicle
 
 from . import StatisticsData, VehicleData
-from .const import DOMAIN
+from .const import CONF_METRIC_VALUES, DOMAIN
 from .entity import ToyotaBaseEntity
-from .utils import format_statistics_attributes, round_number
+from .utils import format_statistics_attributes
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -54,24 +54,14 @@ VIN_ENTITY_DESCRIPTION = ToyotaSensorEntityDescription(
     value_fn=lambda vehicle: vehicle.vin,
     attributes_fn=lambda vehicle: vehicle._vehicle_info.dict(),
 )
-STARTER_BATTERY_HEALTH_ENTITY_DESCRIPTIONS = ToyotaSensorEntityDescription(
-    key="starter_battery_health",
-    translation_key="starter_battery_health",
-    icon="mdi:car_battery",
-    device_class=SensorDeviceClass.ENUM,
-    native_unit_of_measurement=None,
-    state_class=None,
-    value_fn=lambda vehicle: vehicle.details.get("batteryHealth").capitalize(),
-    attributes_fn=lambda vehicle: None,  # noqa : ARG005
-)
 ODOMETER_ENTITY_DESCRIPTION_KM = ToyotaSensorEntityDescription(
     key="odometer",
     translation_key="odometer",
     icon="mdi:counter",
     device_class=SensorDeviceClass.DISTANCE,
     native_unit_of_measurement=LENGTH_KILOMETERS,
-    state_class=SensorStateClass.MEASUREMENT,
-    value_fn=lambda vehicle: vehicle.dashboard.odometer,
+    state_class=SensorStateClass.TOTAL_INCREASING,
+    value_fn=lambda vehicle: None if vehicle.dashboard is None else vehicle.dashboard.odometer,
     suggested_display_precision=0,
     attributes_fn=lambda vehicle: None,  # noqa : ARG005
 )
@@ -81,8 +71,8 @@ ODOMETER_ENTITY_DESCRIPTION_MILES = ToyotaSensorEntityDescription(
     icon="mdi:counter",
     device_class=SensorDeviceClass.DISTANCE,
     native_unit_of_measurement=LENGTH_MILES,
-    state_class=SensorStateClass.MEASUREMENT,
-    value_fn=lambda vehicle: vehicle.dashboard.odometer,
+    state_class=SensorStateClass.TOTAL_INCREASING,
+    value_fn=lambda vehicle: None if vehicle.dashboard is None else vehicle.dashboard.odometer,
     suggested_display_precision=0,
     attributes_fn=lambda vehicle: None,  # noqa : ARG005
 )
@@ -93,7 +83,40 @@ FUEL_LEVEL_ENTITY_DESCRIPTION = ToyotaSensorEntityDescription(
     device_class=None,
     native_unit_of_measurement=PERCENTAGE,
     state_class=SensorStateClass.MEASUREMENT,
-    value_fn=lambda vehicle: round_number(vehicle.dashboard.fuel_level, 0),
+    value_fn=lambda vehicle: None if vehicle.dashboard is None else vehicle.dashboard.fuel_level,
+    suggested_display_precision=0,
+    attributes_fn=lambda vehicle: None,  # noqa : ARG005
+)
+FUEL_RANGE_ENTITY_DESCRIPTION_KM = ToyotaSensorEntityDescription(
+    key="fuel_range",
+    translation_key="fuel_range",
+    icon="mdi:map-marker-distance",
+    device_class=SensorDeviceClass.DISTANCE,
+    native_unit_of_measurement=LENGTH_KILOMETERS,
+    state_class=SensorStateClass.MEASUREMENT,
+    value_fn=lambda vehicle: None if vehicle.dashboard is None else vehicle.dashboard.fuel_range,
+    suggested_display_precision=0,
+    attributes_fn=lambda vehicle: None,  # noqa : ARG005
+)
+FUEL_RANGE_ENTITY_DESCRIPTION_MILES = ToyotaSensorEntityDescription(
+    key="fuel_range",
+    translation_key="fuel_range",
+    icon="mdi:map-marker-distance",
+    device_class=SensorDeviceClass.DISTANCE,
+    native_unit_of_measurement=LENGTH_MILES,
+    state_class=SensorStateClass.MEASUREMENT,
+    value_fn=lambda vehicle: None if vehicle.dashboard is None else vehicle.dashboard.fuel_range,
+    suggested_display_precision=0,
+    attributes_fn=lambda vehicle: None,  # noqa : ARG005
+)
+BATTERY_LEVEL_ENTITY_DESCRIPTION = ToyotaSensorEntityDescription(
+    key="battery_level",
+    translation_key="battery_level",
+    icon="mdi:car-electric",
+    device_class=None,
+    native_unit_of_measurement=PERCENTAGE,
+    state_class=SensorStateClass.MEASUREMENT,
+    value_fn=lambda vehicle: None if vehicle.dashboard is None else vehicle.dashboard.fuel_level,
     suggested_display_precision=0,
     attributes_fn=lambda vehicle: None,  # noqa : ARG005
 )
@@ -167,6 +190,38 @@ async def async_setup_entry(
             (
                 True,
                 VIN_ENTITY_DESCRIPTION,
+                ToyotaSensor,
+            ),
+            (
+                entry.data[CONF_METRIC_VALUES] is True,
+                ODOMETER_ENTITY_DESCRIPTION_KM,
+                ToyotaSensor,
+            ),
+            (
+                entry.data[CONF_METRIC_VALUES] is False,
+                ODOMETER_ENTITY_DESCRIPTION_MILES,
+                ToyotaSensor,
+            ),
+            (
+                vehicle._vehicle_info.extended_capabilities.fuel_level_available,
+                FUEL_LEVEL_ENTITY_DESCRIPTION,
+                ToyotaSensor,
+            ),
+            (
+                entry.data[CONF_METRIC_VALUES] is True
+                and vehicle._vehicle_info.extended_capabilities.fuel_range_available,
+                FUEL_RANGE_ENTITY_DESCRIPTION_KM,
+                ToyotaSensor,
+            ),
+            (
+                entry.data[CONF_METRIC_VALUES] is False
+                and vehicle._vehicle_info.extended_capabilities.fuel_range_available,
+                FUEL_RANGE_ENTITY_DESCRIPTION_MILES,
+                ToyotaSensor,
+            ),
+            (
+                vehicle._vehicle_info.extended_capabilities.battery_status,
+                BATTERY_LEVEL_ENTITY_DESCRIPTION,
                 ToyotaSensor,
             ),
             (
