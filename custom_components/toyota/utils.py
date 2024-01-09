@@ -14,7 +14,7 @@ def round_number(number: int | float | None, places: int = 0) -> int | float | N
 
 def format_vin_sensor_attributes(
     vehicle_info: VehicleGuidModel,
-) -> dict[str, Optional[Union[str, bool, dict[str, bool]]]]:
+) -> dict[str, Optional[Union[str, bool, list[Optional[str]]]]]:
     """Format and returns vin sensor attributes."""
     return {
         "Vin": vehicle_info.vin,
@@ -38,9 +38,11 @@ def format_vin_sensor_attributes(
         "Fuel_type": vehicle_info.fuel_type,
         "Electrical_platform_code": vehicle_info.electrical_platform_code,
         "EV_vehicle": vehicle_info.ev_vehicle,
-        "Features": vehicle_info.features.dict(),
-        "Extended_capabilities": vehicle_info.extended_capabilities.dict(),
-        "Remote_service_capabilities": vehicle_info.remote_service_capabilities.dict(),
+        "Features": [key for key, value in vehicle_info.features.dict() if value is True],
+        "Extended_capabilities": [key for key, value in vehicle_info.extended_capabilities.dict() if value is True],
+        "Remote_service_capabilities": [
+            key for key, value in vehicle_info.remote_service_capabilities.dict() if value is True
+        ],
     }
 
 
