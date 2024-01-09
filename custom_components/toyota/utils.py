@@ -12,16 +12,21 @@ def round_number(number: int | float | None, places: int = 0) -> int | float | N
     return None if number is None else round(number, places)
 
 
+def mask_string(string: str) -> str:
+    """Mask all except the last 5 digits of a given string with asteriks."""
+    return "*" * (len(string) - 5) + string[-5:] if len(string) >= 5 else "*****"
+
+
 def format_vin_sensor_attributes(
     vehicle_info: VehicleGuidModel,
 ) -> dict[str, Optional[Union[str, bool, dict[str, bool]]]]:
     """Format and returns vin sensor attributes."""
     return {
-        "Vin": vehicle_info.vin,
-        "Contract_id": vehicle_info.contract_id,
-        "Katashiki_code": vehicle_info.katashiki_code,
+        "Vin": mask_string(vehicle_info.vin),
+        "Contract_id": mask_string(vehicle_info.contract_id),
+        "Katashiki_code": mask_string(vehicle_info.katashiki_code),
         "ASI_code": vehicle_info.asi_code,
-        "IMEI": vehicle_info.imei,
+        "IMEI": mask_string(vehicle_info.imei),
         "Brand": vehicle_info.brand,
         "Car_line_name": vehicle_info.car_line_name,
         "Car_model_year": vehicle_info.car_model_year,
