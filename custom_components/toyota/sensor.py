@@ -13,11 +13,7 @@ from homeassistant.components.sensor import (
     SensorStateClass,
 )
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import (
-    LENGTH_KILOMETERS,
-    LENGTH_MILES,
-    PERCENTAGE,
-)
+from homeassistant.const import LENGTH_KILOMETERS, LENGTH_MILES, PERCENTAGE
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -56,7 +52,7 @@ VIN_ENTITY_DESCRIPTION = ToyotaSensorEntityDescription(
     native_unit_of_measurement=None,
     state_class=None,
     value_fn=lambda vehicle: vehicle.vin,
-    attributes_fn=lambda vehicle: vehicle._vehicle_info.extended_capabilities.dict(),
+    attributes_fn=lambda vehicle: vehicle._vehicle_info.dict(),
 )
 STARTER_BATTERY_HEALTH_ENTITY_DESCRIPTIONS = ToyotaSensorEntityDescription(
     key="starter_battery_health",
