@@ -80,4 +80,6 @@ class ToyotaOptionsFlowHandler(config_entries.OptionsFlow):
         """Manage the options."""
         if user_input is not None:
             self.options.update(user_input)
-            return self.async_create_entry(title=self.config_entry.data.get(CONF_EMAIL), data=self.options)
+            return self.async_create_entry(
+                title=self.config_entry.data.get(CONF_EMAIL), data=self.options
+            )

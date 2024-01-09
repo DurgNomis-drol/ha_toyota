@@ -43,17 +43,25 @@ def format_vin_sensor_attributes(
         "Fuel_type": vehicle_info.fuel_type,
         "Electrical_platform_code": vehicle_info.electrical_platform_code,
         "EV_vehicle": vehicle_info.ev_vehicle,
-        "Features": {key: value for key, value in vehicle_info.features.dict().items() if value is True},
+        "Features": {
+            key: value for key, value in vehicle_info.features.dict().items() if value is True
+        },
         "Extended_capabilities": {
-            key: value for key, value in vehicle_info.extended_capabilities.dict().items() if value is True
+            key: value
+            for key, value in vehicle_info.extended_capabilities.dict().items()
+            if value is True
         },
         "Remote_service_capabilities": {
-            key: value for key, value in vehicle_info.remote_service_capabilities.dict().items() if value is True
+            key: value
+            for key, value in vehicle_info.remote_service_capabilities.dict().items()
+            if value is True
         },
     }
 
 
-def format_statistics_attributes(statistics: Summary, vehicle_info: VehicleGuidModel) -> dict[str, Optional[str]]:
+def format_statistics_attributes(
+    statistics: Summary, vehicle_info: VehicleGuidModel
+) -> dict[str, Optional[str]]:
     """Format and returns statistics attributes."""
     attr = {
         "Average_speed": round(statistics.average_speed, 1) if statistics.average_speed else None,
@@ -61,12 +69,16 @@ def format_statistics_attributes(statistics: Summary, vehicle_info: VehicleGuidM
     }
 
     if vehicle_info.fuel_type is not None:
-        attr["Fuel_consumed"] = round(statistics.fuel_consumed, 3) if statistics.fuel_consumed else None
+        attr["Fuel_consumed"] = (
+            round(statistics.fuel_consumed, 3) if statistics.fuel_consumed else None
+        )
 
     if vehicle_info.electrical_platform_code == 15 or vehicle_info.ev_vehicle is True:
         attr.update(
             {
-                "EV_distance": round(statistics.ev_distance, 1) if statistics.ev_distance else None,
+                "EV_distance": round(statistics.ev_distance, 1)
+                if statistics.ev_distance
+                else None,
                 "EV_duration": str(statistics.ev_duration),
             }
         )

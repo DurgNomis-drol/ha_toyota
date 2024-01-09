@@ -74,7 +74,9 @@ async def async_setup_entry(  # pylint: disable=too-many-statements
             if vehicles is not None:
                 for vehicle in vehicles:
                     await vehicle.update()
-                    vehicle_data = VehicleData(data=vehicle, statistics=None, metric_values=use_metric_values)
+                    vehicle_data = VehicleData(
+                        data=vehicle, statistics=None, metric_values=use_metric_values
+                    )
 
                     if vehicle.vin is not None:
                         # Use parallel request to get car statistics.
@@ -126,7 +128,9 @@ async def async_setup_entry(  # pylint: disable=too-many-statements
             asyncioexceptions.TimeoutError,
             httpx.ReadTimeout,
         ) as ex:
-            raise UpdateFailed("Update canceled! Toyota's API was too slow to respond. Will try again later...") from ex
+            raise UpdateFailed(
+                "Update canceled! Toyota's API was too slow to respond. Will try again later..."
+            ) from ex
         return None
 
     coordinator = DataUpdateCoordinator(

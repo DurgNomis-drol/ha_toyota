@@ -65,7 +65,9 @@ ODOMETER_ENTITY_DESCRIPTION_KM = ToyotaSensorEntityDescription(
     device_class=SensorDeviceClass.DISTANCE,
     native_unit_of_measurement=LENGTH_KILOMETERS,
     state_class=SensorStateClass.TOTAL_INCREASING,
-    value_fn=lambda vehicle: None if vehicle.dashboard is None else round_number(vehicle.dashboard.odometer),
+    value_fn=lambda vehicle: None
+    if vehicle.dashboard is None
+    else round_number(vehicle.dashboard.odometer),
     suggested_display_precision=0,
     attributes_fn=lambda vehicle: None,  # noqa : ARG005
 )
@@ -76,7 +78,9 @@ ODOMETER_ENTITY_DESCRIPTION_MILES = ToyotaSensorEntityDescription(
     device_class=SensorDeviceClass.DISTANCE,
     native_unit_of_measurement=LENGTH_MILES,
     state_class=SensorStateClass.TOTAL_INCREASING,
-    value_fn=lambda vehicle: None if vehicle.dashboard is None else round_number(vehicle.dashboard.odometer),
+    value_fn=lambda vehicle: None
+    if vehicle.dashboard is None
+    else round_number(vehicle.dashboard.odometer),
     suggested_display_precision=0,
     attributes_fn=lambda vehicle: None,  # noqa : ARG005
 )
@@ -87,7 +91,9 @@ FUEL_LEVEL_ENTITY_DESCRIPTION = ToyotaSensorEntityDescription(
     device_class=None,
     native_unit_of_measurement=PERCENTAGE,
     state_class=SensorStateClass.MEASUREMENT,
-    value_fn=lambda vehicle: None if vehicle.dashboard is None else round_number(vehicle.dashboard.fuel_level),
+    value_fn=lambda vehicle: None
+    if vehicle.dashboard is None
+    else round_number(vehicle.dashboard.fuel_level),
     suggested_display_precision=0,
     attributes_fn=lambda vehicle: None,  # noqa : ARG005
 )
@@ -98,7 +104,9 @@ FUEL_RANGE_ENTITY_DESCRIPTION_KM = ToyotaSensorEntityDescription(
     device_class=SensorDeviceClass.DISTANCE,
     native_unit_of_measurement=LENGTH_KILOMETERS,
     state_class=SensorStateClass.MEASUREMENT,
-    value_fn=lambda vehicle: None if vehicle.dashboard is None else round_number(vehicle.dashboard.fuel_range),
+    value_fn=lambda vehicle: None
+    if vehicle.dashboard is None
+    else round_number(vehicle.dashboard.fuel_range),
     suggested_display_precision=0,
     attributes_fn=lambda vehicle: None,  # noqa : ARG005
 )
@@ -109,7 +117,9 @@ FUEL_RANGE_ENTITY_DESCRIPTION_MILES = ToyotaSensorEntityDescription(
     device_class=SensorDeviceClass.DISTANCE,
     native_unit_of_measurement=LENGTH_MILES,
     state_class=SensorStateClass.MEASUREMENT,
-    value_fn=lambda vehicle: None if vehicle.dashboard is None else round_number(vehicle.dashboard.fuel_range),
+    value_fn=lambda vehicle: None
+    if vehicle.dashboard is None
+    else round_number(vehicle.dashboard.fuel_range),
     suggested_display_precision=0,
     attributes_fn=lambda vehicle: None,  # noqa : ARG005
 )
@@ -120,7 +130,9 @@ BATTERY_LEVEL_ENTITY_DESCRIPTION = ToyotaSensorEntityDescription(
     device_class=None,
     native_unit_of_measurement=PERCENTAGE,
     state_class=SensorStateClass.MEASUREMENT,
-    value_fn=lambda vehicle: None if vehicle.dashboard is None else round_number(vehicle.dashboard.battery_level),
+    value_fn=lambda vehicle: None
+    if vehicle.dashboard is None
+    else round_number(vehicle.dashboard.battery_level),
     suggested_display_precision=0,
     attributes_fn=lambda vehicle: None,  # noqa : ARG005
 )
@@ -131,7 +143,9 @@ BATTERY_RANGE_ENTITY_DESCRIPTION_KM = ToyotaSensorEntityDescription(
     device_class=SensorDeviceClass.DISTANCE,
     native_unit_of_measurement=LENGTH_KILOMETERS,
     state_class=SensorStateClass.MEASUREMENT,
-    value_fn=lambda vehicle: None if vehicle.dashboard is None else round_number(vehicle.dashboard.battery_range),
+    value_fn=lambda vehicle: None
+    if vehicle.dashboard is None
+    else round_number(vehicle.dashboard.battery_range),
     suggested_display_precision=0,
     attributes_fn=lambda vehicle: None,  # noqa : ARG005
 )
@@ -142,7 +156,9 @@ BATTERY_RANGE_ENTITY_DESCRIPTION_MILES = ToyotaSensorEntityDescription(
     device_class=SensorDeviceClass.DISTANCE,
     native_unit_of_measurement=LENGTH_MILES,
     state_class=SensorStateClass.MEASUREMENT,
-    value_fn=lambda vehicle: None if vehicle.dashboard is None else round_number(vehicle.dashboard.battery_range),
+    value_fn=lambda vehicle: None
+    if vehicle.dashboard is None
+    else round_number(vehicle.dashboard.battery_range),
     suggested_display_precision=0,
     attributes_fn=lambda vehicle: None,  # noqa : ARG005
 )
@@ -179,7 +195,9 @@ TOTAL_RANGE_ENTITY_DESCRIPTION_KM = ToyotaSensorEntityDescription(
     device_class=SensorDeviceClass.DISTANCE,
     native_unit_of_measurement=LENGTH_KILOMETERS,
     state_class=SensorStateClass.MEASUREMENT,
-    value_fn=lambda vehicle: None if vehicle.dashboard is None else round_number(vehicle.dashboard.range),
+    value_fn=lambda vehicle: None
+    if vehicle.dashboard is None
+    else round_number(vehicle.dashboard.range),
     suggested_display_precision=0,
     attributes_fn=lambda vehicle: None,  # noqa : ARG005
 )
@@ -190,7 +208,9 @@ TOTAL_RANGE_ENTITY_DESCRIPTION_MILES = ToyotaSensorEntityDescription(
     device_class=SensorDeviceClass.DISTANCE,
     native_unit_of_measurement=LENGTH_MILES,
     state_class=SensorStateClass.MEASUREMENT,
-    value_fn=lambda vehicle: None if vehicle.dashboard is None else round_number(vehicle.dashboard.range),
+    value_fn=lambda vehicle: None
+    if vehicle.dashboard is None
+    else round_number(vehicle.dashboard.range),
     suggested_display_precision=0,
     attributes_fn=lambda vehicle: None,  # noqa : ARG005
 )
@@ -204,7 +224,9 @@ class ToyotaStatisticsSensorEntityDescriptionMixin:
 
 
 @dataclass
-class ToyotaStatisticsSensorEntityDescription(SensorEntityDescription, ToyotaStatisticsSensorEntityDescriptionMixin):
+class ToyotaStatisticsSensorEntityDescription(
+    SensorEntityDescription, ToyotaStatisticsSensorEntityDescriptionMixin
+):
     """Describes a Toyota statistics sensor entity."""
 
 
@@ -294,7 +316,8 @@ async def async_setup_entry(
                 ToyotaSensor,
             ),
             (
-                vehicle._vehicle_info.extended_capabilities.battery_status or vehicle._vehicle_info.ev_vehicle is True,
+                vehicle._vehicle_info.extended_capabilities.battery_status
+                or vehicle._vehicle_info.ev_vehicle is True,
                 BATTERY_LEVEL_ENTITY_DESCRIPTION,
                 ToyotaSensor,
             ),
@@ -419,7 +442,9 @@ class ToyotaStatisticsSensor(ToyotaSensor):
         """Initialise the ToyotaStatisticsSensor class."""
         super().__init__(coordinator, entry_id, vehicle_index, description)
         self.period: Literal["day", "week", "month", "year"] = description.period
-        self._attr_native_unit_of_measurement = LENGTH_KILOMETERS if self.metric_values else LENGTH_MILES
+        self._attr_native_unit_of_measurement = (
+            LENGTH_KILOMETERS if self.metric_values else LENGTH_MILES
+        )
 
     @property
     def native_value(self) -> StateType:

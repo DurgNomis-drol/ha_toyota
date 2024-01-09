@@ -47,7 +47,7 @@ select = [
     "I"
 ]
 extend-ignore = ["PLR2004", "D203", "D213", "COM812"]
-line-length = 120
+line-length = 99
 fix = true
 
 [build-system]

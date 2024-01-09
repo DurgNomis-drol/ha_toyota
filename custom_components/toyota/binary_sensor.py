@@ -33,7 +33,9 @@ class ToyotaBinaryEntityDescriptionMixin:
 
 
 @dataclass
-class ToyotaBinaryEntityDescription(BinarySensorEntityDescription, ToyotaBinaryEntityDescriptionMixin):
+class ToyotaBinaryEntityDescription(
+    BinarySensorEntityDescription, ToyotaBinaryEntityDescriptionMixin
+):
     """Describes a Toyota binary entity."""
 
 
