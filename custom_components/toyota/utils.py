@@ -24,9 +24,9 @@ def format_vin_sensor_attributes(
     return {
         "Vin": mask_string(vehicle_info.vin),
         "Contract_id": mask_string(vehicle_info.contract_id),
-        "Katashiki_code": mask_string(vehicle_info.katashiki_code),
-        "ASI_code": vehicle_info.asi_code,
         "IMEI": mask_string(vehicle_info.imei),
+        "Katashiki_code": vehicle_info.katashiki_code,
+        "ASI_code": vehicle_info.asi_code,
         "Brand": vehicle_info.brand,
         "Car_line_name": vehicle_info.car_line_name,
         "Car_model_year": vehicle_info.car_model_year,
