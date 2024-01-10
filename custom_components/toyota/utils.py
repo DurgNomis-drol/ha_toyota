@@ -69,7 +69,7 @@ def format_statistics_attributes(
     }
 
     if vehicle_info.fuel_type is not None:
-        attr["Fuel_consumed"] = (
+        attr["Total_fuel_consumed"] = (
             round(statistics.fuel_consumed, 3) if statistics.fuel_consumed else None
         )
 
