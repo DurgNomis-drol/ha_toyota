@@ -65,7 +65,6 @@ def format_statistics_attributes(
     attr = {
         "Average_speed": round(statistics.average_speed, 1) if statistics.average_speed else None,
         "Countries": statistics.countries or [],
-        "Distance": round(statistics.distance, 1) if statistics.distance else None,
         "Duration": str(statistics.duration) if statistics.duration else None,
     }
 
