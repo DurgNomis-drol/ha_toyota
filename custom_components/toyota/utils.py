@@ -22,7 +22,6 @@ def format_vin_sensor_attributes(
 ) -> dict[str, Optional[Union[str, bool, dict[str, bool]]]]:
     """Format and returns vin sensor attributes."""
     return {
-        "Vin": mask_string(vehicle_info.vin),
         "Contract_id": mask_string(vehicle_info.contract_id),
         "IMEI": mask_string(vehicle_info.imei),
         "Katashiki_code": vehicle_info.katashiki_code,
