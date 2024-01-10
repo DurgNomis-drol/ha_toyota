@@ -66,6 +66,8 @@ def format_statistics_attributes(
     attr = {
         "Average_speed": round(statistics.average_speed, 1) if statistics.average_speed else None,
         "Countries": statistics.countries or [],
+        "Distance": round(statistics.distance, 1) if statistics.distance else None,
+        "Duration": str(statistics.duration) if statistics.duration else None,
     }
 
     if vehicle_info.fuel_type is not None:
@@ -73,13 +75,13 @@ def format_statistics_attributes(
             round(statistics.fuel_consumed, 3) if statistics.fuel_consumed else None
         )
 
-    if vehicle_info.electrical_platform_code == 15 or vehicle_info.ev_vehicle is True:
+    if vehicle_info.extended_capabilities.hybrid_pulse or vehicle_info.ev_vehicle is True:
         attr.update(
             {
                 "EV_distance": round(statistics.ev_distance, 1)
                 if statistics.ev_distance
                 else None,
-                "EV_duration": str(statistics.ev_duration),
+                "EV_duration": str(statistics.ev_duration) if statistics.ev_duration else None,
             }
         )
 
