@@ -316,63 +316,40 @@ async def async_setup_entry(
                 ToyotaSensor,
             ),
             (
-                vehicle._vehicle_info.extended_capabilities.battery_status
-                or vehicle._vehicle_info.ev_vehicle is True,
+                vehicle._vehicle_info.ev_vehicle,
                 BATTERY_LEVEL_ENTITY_DESCRIPTION,
                 ToyotaSensor,
             ),
             (
-                entry.data[CONF_METRIC_VALUES] is True
-                and (
-                    vehicle._vehicle_info.extended_capabilities.battery_status
-                    or vehicle._vehicle_info.ev_vehicle is True
-                ),
+                entry.data[CONF_METRIC_VALUES] is True and vehicle._vehicle_info.ev_vehicle,
                 BATTERY_RANGE_ENTITY_DESCRIPTION_KM,
                 ToyotaSensor,
             ),
             (
-                entry.data[CONF_METRIC_VALUES] is False
-                and (
-                    vehicle._vehicle_info.extended_capabilities.battery_status
-                    or vehicle._vehicle_info.ev_vehicle is True
-                ),
+                entry.data[CONF_METRIC_VALUES] is False and vehicle._vehicle_info.ev_vehicle,
                 BATTERY_RANGE_ENTITY_DESCRIPTION_MILES,
                 ToyotaSensor,
             ),
             (
-                entry.data[CONF_METRIC_VALUES] is True
-                and (
-                    vehicle._vehicle_info.extended_capabilities.battery_status
-                    or vehicle._vehicle_info.ev_vehicle is True
-                ),
+                entry.data[CONF_METRIC_VALUES] is True and vehicle._vehicle_info.ev_vehicle,
                 BATTERY_RANGE_AC_ENTITY_DESCRIPTION_KM,
                 ToyotaSensor,
             ),
             (
-                entry.data[CONF_METRIC_VALUES] is False
-                and (
-                    vehicle._vehicle_info.extended_capabilities.battery_status
-                    or vehicle._vehicle_info.ev_vehicle is True
-                ),
+                entry.data[CONF_METRIC_VALUES] is False and vehicle._vehicle_info.ev_vehicle,
                 BATTERY_RANGE_AC_ENTITY_DESCRIPTION_MILES,
                 ToyotaSensor,
             ),
             (
                 entry.data[CONF_METRIC_VALUES] is True
-                and (
-                    vehicle._vehicle_info.extended_capabilities.battery_status
-                    or vehicle._vehicle_info.ev_vehicle is True
-                )
+                and vehicle._vehicle_info.ev_vehicle
                 and vehicle._vehicle_info.extended_capabilities.fuel_range_available,
                 TOTAL_RANGE_ENTITY_DESCRIPTION_KM,
                 ToyotaSensor,
             ),
             (
                 entry.data[CONF_METRIC_VALUES] is False
-                and (
-                    vehicle._vehicle_info.extended_capabilities.battery_status
-                    or vehicle._vehicle_info.ev_vehicle is True
-                )
+                and vehicle._vehicle_info.ev_vehicle
                 and vehicle._vehicle_info.extended_capabilities.fuel_range_available,
                 TOTAL_RANGE_ENTITY_DESCRIPTION_MILES,
                 ToyotaSensor,
