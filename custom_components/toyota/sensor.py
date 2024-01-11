@@ -361,22 +361,22 @@ async def async_setup_entry(
                 ToyotaSensor,
             ),
             (
-                vehicle._vehicle_info.extended_capabilities.telemetry_capable,
+                True,  # TODO Unsure of the required capability
                 STATISTICS_ENTITY_DESCRIPTIONS_DAILY,
                 ToyotaStatisticsSensor,
             ),
             (
-                vehicle._vehicle_info.extended_capabilities.telemetry_capable,
+                True,  # TODO Unsure of the required capability
                 STATISTICS_ENTITY_DESCRIPTIONS_WEEKLY,
                 ToyotaStatisticsSensor,
             ),
             (
-                vehicle._vehicle_info.extended_capabilities.telemetry_capable,
+                True,  # TODO Unsure of the required capability
                 STATISTICS_ENTITY_DESCRIPTIONS_MONTHLY,
                 ToyotaStatisticsSensor,
             ),
             (
-                vehicle._vehicle_info.extended_capabilities.telemetry_capable,
+                True,  # TODO Unsure of the required capability
                 STATISTICS_ENTITY_DESCRIPTIONS_YEARLY,
                 ToyotaStatisticsSensor,
             ),
