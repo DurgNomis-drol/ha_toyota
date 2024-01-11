@@ -9,7 +9,6 @@ from typing import Optional, TypedDict
 
 import httpcore
 import httpx
-from arrow import Arrow
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_EMAIL, CONF_PASSWORD
 from homeassistant.core import HomeAssistant
@@ -17,7 +16,7 @@ from homeassistant.exceptions import ConfigEntryAuthFailed, ConfigEntryNotReady
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 from mytoyota import MyT
 from mytoyota.exceptions import ToyotaApiError, ToyotaInternalError, ToyotaLoginError
-from mytoyota.models.summary import Summary, SummaryType
+from mytoyota.models.summary import Summary
 from mytoyota.models.vehicle import Vehicle
 
 from .const import CONF_METRIC_VALUES, DOMAIN, PLATFORMS, STARTUP_MESSAGE
@@ -81,33 +80,17 @@ async def async_setup_entry(  # pylint: disable=too-many-statements
                     if vehicle.vin is not None:
                         # Use parallel request to get car statistics.
                         driving_statistics = await asyncio.gather(
-                            vehicle.get_summary(
-                                Arrow.now().date(),
-                                Arrow.now().date(),
-                                summary_type=SummaryType.DAILY,
-                            ),
-                            vehicle.get_summary(
-                                Arrow.now().floor("week").date(),
-                                Arrow.now().date(),
-                                summary_type=SummaryType.WEEKLY,
-                            ),
-                            vehicle.get_summary(
-                                Arrow.now().floor("month").date(),
-                                Arrow.now().date(),
-                                summary_type=SummaryType.MONTHLY,
-                            ),
-                            vehicle.get_summary(
-                                Arrow.now().floor("year").date(),
-                                Arrow.now().date(),
-                                summary_type=SummaryType.YEARLY,
-                            ),
+                            vehicle.get_current_day_summary(),
+                            vehicle.get_current_week_summary(),
+                            vehicle.get_current_month_summary(),
+                            vehicle.get_current_year_summary(),
                         )
 
                         vehicle_data["statistics"] = StatisticsData(
-                            day=next(iter(driving_statistics[0] or []), None),
-                            week=next(iter(driving_statistics[1] or []), None),
-                            month=next(iter(driving_statistics[2] or []), None),
-                            year=next(iter(driving_statistics[3] or []), None),
+                            day=driving_statistics[0],
+                            week=driving_statistics[1],
+                            month=driving_statistics[2],
+                            year=driving_statistics[3],
                         )
 
                     vehicle_informations.append(vehicle_data)
