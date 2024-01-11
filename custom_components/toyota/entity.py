@@ -12,7 +12,7 @@ from homeassistant.helpers.update_coordinator import (
 from mytoyota.models.vehicle import Vehicle
 
 from . import StatisticsData, VehicleData
-from .const import DOMAIN
+from .const import CONF_BRAND_MAPPING, DOMAIN
 
 
 class ToyotaBaseEntity(CoordinatorEntity):
@@ -41,7 +41,7 @@ class ToyotaBaseEntity(CoordinatorEntity):
             identifiers={(DOMAIN, self.vehicle.vin)},
             name=self.vehicle.alias,
             model=self.vehicle._vehicle_info.car_model_name,
-            manufacturer=self.vehicle._vehicle_info.brand,
+            manufacturer=CONF_BRAND_MAPPING.get(self.vehicle._vehicle_info.brand),
         )
 
     @callback

@@ -11,6 +11,7 @@ NAME = "Toyota Connected Services"
 ISSUES_URL = "https://github.com/DurgNomis-drol/ha_toyota/issues"
 
 # CONF
+CONF_BRAND_MAPPING = {"T": "Toyota"}
 CONF_METRIC_VALUES = "use_metric_values"
 
 # DEFAULTS

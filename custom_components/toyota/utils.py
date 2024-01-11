@@ -6,6 +6,8 @@ from typing import Optional, Union
 from mytoyota.models.endpoints.vehicle_guid import VehicleGuidModel
 from mytoyota.models.summary import Summary
 
+from .const import CONF_BRAND_MAPPING
+
 
 def round_number(number: int | float | None, places: int = 0) -> int | float | None:
     """Round a number if it is not None."""
@@ -26,7 +28,7 @@ def format_vin_sensor_attributes(
         "IMEI": mask_string(vehicle_info.imei),
         "Katashiki_code": vehicle_info.katashiki_code,
         "ASI_code": vehicle_info.asi_code,
-        "Brand": vehicle_info.brand,
+        "Brand": CONF_BRAND_MAPPING.get(vehicle_info.brand),
         "Car_line_name": vehicle_info.car_line_name,
         "Car_model_year": vehicle_info.car_model_year,
         "Car_model_name": vehicle_info.car_model_name,
