@@ -80,7 +80,10 @@ def format_statistics_attributes(
             else None,
         }
 
-    if vehicle_info.extended_capabilities.hybrid_pulse or vehicle_info.ev_vehicle is True:
+    if (
+        vehicle_info.extended_capabilities.hybrid_pulse
+        or vehicle_info.extended_capabilities.econnect_vehicle_status_capable
+    ):
         attr |= {
             "EV_distance": round(statistics.ev_distance, 1) if statistics.ev_distance else None,
             "EV_duration": str(statistics.ev_duration) if statistics.ev_duration else None,
