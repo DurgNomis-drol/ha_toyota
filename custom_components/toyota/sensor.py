@@ -289,12 +289,14 @@ async def async_setup_entry(
                 ToyotaSensor,
             ),
             (
-                entry.data[CONF_METRIC_VALUES] is True,
+                entry.data[CONF_METRIC_VALUES] is True
+                and vehicle._vehicle_info.extended_capabilities.telemetry_capable,
                 ODOMETER_ENTITY_DESCRIPTION_KM,
                 ToyotaSensor,
             ),
             (
-                entry.data[CONF_METRIC_VALUES] is False,
+                entry.data[CONF_METRIC_VALUES] is False
+                and vehicle._vehicle_info.extended_capabilities.telemetry_capable,
                 ODOMETER_ENTITY_DESCRIPTION_MILES,
                 ToyotaSensor,
             ),
