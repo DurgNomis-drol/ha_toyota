@@ -17,7 +17,7 @@
 ## About
 
 This is a custom integration the retrieves' data from the
-Toyota EU MyT API and makes them available in Home Assistant as different types of sensors.
+Toyota EU MyToyota ctpa-oneapi API and makes them available in Home Assistant as different types of sensors.
 As there is no official API from Toyota, I will try my best to keep
 it working, but there are no promises.
 
@@ -30,47 +30,42 @@ See [here](https://github.com/widewing/ha-toyota-na) for North America.
 
 ### Overview
 
-- Numberplate and starter battery sensors
+- VIN (Vehicle Identification Number) sensor
 - Fuel, battery and odometer information
-- Current week, month and year statistics.
-- HVAC, Window and lights sensors
+- Current day, week, month and year statistics.
 - Door and door lock sensors, including hood and trunk sensor.
-- Is key in car and over all status sensor.
 
 ### Binary sensor(s)
 
-| <div style="width:250px">Name</div>     | Description                                                                         |
-| --------------------------------------- | ----------------------------------------------------------------------------------- |
-| `binary_sensor.corolla_hood`            | If the hood is open of not.                                                         |
-| `binary_sensor.corolla_*_defogger`      | Defogger is on sensor, one is created for front and rear if available               |
-| `binary_sensor.corolla_*_door`          | Door sensor, one is created for each door and trunk.                                |
-| `binary_sensor.corolla_*_lock`          | Lock sensor, one is created for each door and trunk.                                |
-| `binary_sensor.corolla_*_lights`        | Light sensor, one is created for front, back and hazard lights.                     |
-| `binary_sensor.corolla_over_all_status` | Over all status of the vehicle, if warning is true for a sensor, this will show it. |
-| `binary_sensor.corolla_key_in_car`      | If key is in the car.                                                               |
-| `binary_sensor.corolla_*_window`        | Window sensor, one is created for window.                                           |
+| <div style="width:250px">Name</div>      | Description                                           |
+| ---------------------------------------- | ----------------------------------------------------- |
+| `binary_sensor.<you_car_alias>_hood`     | If the hood is open of not.                           |
+| `binary_sensor.<you_car_alias>_*_door`   | Door sensors, one is created for each door and trunk. |
+| `binary_sensor.<you_car_alias>_*_lock`   | Lock sensors, one is created for each door and trunk. |
+| `binary_sensor.<you_car_alias>_*_window` | Window sensors, one is created for window.            |
 
 ### Device tracker(s)
 
-| <div style="width:250px">Name</div> | Description                        |
-| ----------------------------------- | ---------------------------------- |
-| `device_tracker.corolla`            | Shows you last parked information. |
+| <div style="width:250px">Name</div> | Description                         |
+| ----------------------------------- | ----------------------------------- |
+| `device_tracker.<you_car_alias>`    | Shows you last parking information. |
 
 ### Sensor(s)
 
-| <div style="width:250px">Name</div>  | Description                                                              |
-| ------------------------------------ | ------------------------------------------------------------------------ |
-| `sensor.corolla`                     | Static data about your car.                                              |
-| `sensor.corolla_ev_battery_status`   | EV battery information                                                   |
-| `sensor.corolla_ev_remaining_charge` | EV battery remaining charge (in per cent of full capacity)               |
-| `sensor.corolla_fuel_tank`           | Fuel tank information.                                                   |
-| `sensor.corolla_hvac`                | HVAC sensor showing current and target temperature, including other data |
-| `sensor.corolla_odometer`            | Odometer information.                                                    |
-| `sensor.corolla_range`               | Remaining range sensor                                                   |
-| `sensor.aygo_starter_battery`        | Starter battery health.                                                  |
-| `sensor.corolla_current_week_stats`  | Statistics for current week.                                             |
-| `sensor.corolla_current_month_stats` | Statistics for current month.                                            |
-| `sensor.corolla_current_year_stats`  | Statistics for current year.                                             |
+| <div style="width:250px">Name</div>          | Description                                        |
+| -------------------------------------------- | -------------------------------------------------- |
+| `sensor.<you_car_alias>_vin`                 | Static data about your car.                        |
+| `sensor.<you_car_alias>_odometer`            | Odometer information.                              |
+| `sensor.<you_car_alias>_fuel_level`          | Fuel level information.                            |
+| `sensor.<you_car_alias>_fuel_range`          | Fuel range information.                            |
+| `sensor.<you_car_alias>_battery_level`       | Battery level information.                         |
+| `sensor.<you_car_alias>_battery_range`       | Battery range information.                         |
+| `sensor.<you_car_alias>_battery_range_ac`    | Battery range information when AC is on.           |
+| `sensor.<you_car_alias>_total_range`         | Information about combined fuel and battery range. |
+| `sensor.<you_car_alias>_current_day_stats`   | Statistics for current day.                        |
+| `sensor.<you_car_alias>_current_week_stats`  | Statistics for current week.                       |
+| `sensor.<you_car_alias>_current_month_stats` | Statistics for current month.                      |
+| `sensor.<you_car_alias>_current_year_stats`  | Statistics for current year.                       |
 
 ### Statistics sensors
 
@@ -83,34 +78,26 @@ Due to this, this integration will list sensors as unavailable when no data is a
 
 **Disclaimer: Attributes available depends on your car model and year.**
 
-All values will show zero if no data is available for the periode.
+All values will show `None` if no data is available for the periode.
 
-| Attribute                            | Description                                                                                         |
-| ------------------------------------ | --------------------------------------------------------------------------------------------------- |
-| `Highway_distance`                   | Distance driven on Highway/Motorway.                                                                |
-| `Highway_percentage`                 | Percentage driven on Highway/Motorway.                                                              |
-| `Number_of_trips`                    | Number of trips performed. A trip is started when you start the engine.                             |
-| `Number_of_night_trips`              | Number of trips performed at night.                                                                 |
-| `Total_driving_time`                 | Total time driven.                                                                                  |
-| `Average_speed`                      | Average speed.                                                                                      |
-| `Max_speed`                          | Max speed achieved.                                                                                 |
-| `Hard_acceleration_count`            | Hard accelerations counter. Can be very sensitive.                                                  |
-| `Hard_braking_count`                 | Hard braking counter. Can be very sensitive.                                                        |
-| `Average_fuel_consumed`              | Average fuel consumed. If car is in km then this will show L/100km. If in mi then it will show Mpg. |
-| `Coaching_advice_most_occurrence`    | Coaching advice most occurrence.                                                                    |
-| `Average_driver_score`               | Average driver score.                                                                               |
-| `Average_driver_score_accelerations` | Average driver score for accelerations.                                                             |
-| `Average_driver_score_braking`       | Average driver score for braking.                                                                   |
-| `EV_distance`                        | Distance which have been driven on electric.                                                        |
-| `EV_distance_percentage`             | Percentage of the distance driven on electric.                                                      |
-| `EV_driving_time`                    | Driving time on electric.                                                                           |
-| `EV_duration_percentage`             | Percentage of the driving time on electric.                                                         |
+| Attribute               | Description                                                                     |
+| ----------------------- | ------------------------------------------------------------------------------- |
+| `Distance`              | Distance driven (Displayed as sensor value).                                    |
+| `Average_speed`         | The average speed in the respective period (can be km/h or mph).                |
+| `Countries`             | The countries travelled through in the respective period.                       |
+| `Duration`              | The total driving time in the respective period.                                |
+| `Total_fuel_consumed`   | The total fuel consumption in the respective period (can be litres or gallons). |
+| `Average_fuel_consumed` | The average fuel consumption in the respective period (can be l/100km or mpg).  |
+| `EV_distance`           | The driving distiance in EV mode in the respective period .                     |
+| `EV_duration`           | The driving time in EV mode in the respective period .                          |
+| `From_date`             | Start date of the calculation period.                                           |
+| `To_date`               | End date of the calculation period.                                             |
 
 ## Getting started
 
 ### Prerequisites
 
-Use Home Assistant build 2021.4 or above.
+Use Home Assistant build 2023.12 or above.
 
 If you can confirm that it is working as advertised on older version please open a PR.
 
@@ -138,16 +125,16 @@ Now you can clone the repository somewhere else and symlink it to Home Assistant
 
 1. Clone the repo.
 
-```shell
-git clone https://github.com/DurgNomis-drol/ha_toyota.git
-```
+   ```shell
+   git clone https://github.com/DurgNomis-drol/ha_toyota.git
+   ```
 
 2. Create the symlink to `toyota` in the configuration directory.
    If you have non-standard directory for configuration, use it instead.
 
-```shell
-ln -s ha_toyota/custom_components/toyota ~/.homeassistant/custom_components/toyota
-```
+   ```shell
+   ln -s ha_toyota/custom_components/toyota ~/.homeassistant/custom_components/toyota
+   ```
 
 #### Copy method
 
