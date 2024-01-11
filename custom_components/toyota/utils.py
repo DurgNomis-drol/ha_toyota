@@ -72,6 +72,11 @@ def format_statistics_attributes(
         attr["Total_fuel_consumed"] = (
             round(statistics.fuel_consumed, 3) if statistics.fuel_consumed else None
         )
+        attr["Average_fuel_consumed"] = (
+            round(statistics.average_fuel_consumed, 3)
+            if statistics.average_fuel_consumed
+            else None
+        )
 
     if vehicle_info.extended_capabilities.hybrid_pulse or vehicle_info.ev_vehicle is True:
         attr.update(
