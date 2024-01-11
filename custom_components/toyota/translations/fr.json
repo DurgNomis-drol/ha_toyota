@@ -33,7 +33,7 @@
     },
     "sensor": {
       "vin": {
-        "name": "Vehicle-Identify-Number"
+        "name": "Numéro d'identification du véhicule"
       },
       "odometer": {
         "name": "Odomètre"
@@ -42,19 +42,19 @@
         "name": "Niveau de carburant"
       },
       "fuel_range": {
-        "name": "Fuel range"
+        "name": "Autonomie d'essence"
       },
       "battery_level": {
-        "name": "Battery level"
+        "name": "Niveau de batterie"
       },
       "battery_range": {
-        "name": "Battery range"
+        "name": "Autonomie électrique"
       },
       "battery_range_ac": {
-        "name": "Battery range with AC"
+        "name": "Autonomie électrique avec AC"
       },
       "total_range": {
-        "name": "Total range"
+        "name": "Autonomie totale"
       },
       "current_day_statistics": {
         "name": "Statistiques aujourd'hui"
