@@ -69,30 +69,24 @@ def format_statistics_attributes(
     }
 
     if vehicle_info.fuel_type is not None:
-        attr["Total_fuel_consumed"] = (
-            round(statistics.fuel_consumed, 3) if statistics.fuel_consumed else None
-        )
-        attr["Average_fuel_consumed"] = (
-            round(statistics.average_fuel_consumed, 3)
+        attr |= {
+            "Total_fuel_consumed": round(statistics.fuel_consumed, 3)
+            if statistics.fuel_consumed
+            else None,
+            "Average_fuel_consumed": round(statistics.average_fuel_consumed, 3)
             if statistics.average_fuel_consumed
-            else None
-        )
+            else None,
+        }
 
     if vehicle_info.extended_capabilities.hybrid_pulse or vehicle_info.ev_vehicle is True:
-        attr.update(
-            {
-                "EV_distance": round(statistics.ev_distance, 1)
-                if statistics.ev_distance
-                else None,
-                "EV_duration": str(statistics.ev_duration) if statistics.ev_duration else None,
-            }
-        )
-
-    attr.update(
-        {
-            "From_date": statistics.from_date.strftime("%Y-%m-%d"),
-            "To_date": statistics.to_date.strftime("%Y-%m-%d"),
+        attr |= {
+            "EV_distance": round(statistics.ev_distance, 1) if statistics.ev_distance else None,
+            "EV_duration": str(statistics.ev_duration) if statistics.ev_duration else None,
         }
-    )
+
+    attr |= {
+        "From_date": statistics.from_date.strftime("%Y-%m-%d"),
+        "To_date": statistics.to_date.strftime("%Y-%m-%d"),
+    }
 
     return attr
