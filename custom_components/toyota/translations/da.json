@@ -5,7 +5,8 @@
         "description": "Angiv venligst din email og adgangskode til MyT nedenfor.",
         "data": {
           "email": "Email",
-          "password": "Adgangskode"
+          "password": "Adgangskode",
+          "use_metric_values": "Brug metriske enheder (f.eks. km i stedet for miles)"
         }
       }
     },
@@ -31,17 +32,29 @@
       }
     },
     "sensor": {
-      "starter_battery_health": {
-        "name": "Starter batteri tilstand",
-        "state": {
-          "Good": "God"
-        }
+      "vin": {
+        "name": "Vehicle-Identify-Number"
       },
       "odometer": {
         "name": "Odometer"
       },
       "fuel_level": {
         "name": "Brændstof niveau"
+      },
+      "fuel_range": {
+        "name": "Fuel range"
+      },
+      "battery_level": {
+        "name": "Battery level"
+      },
+      "battery_range": {
+        "name": "Battery range"
+      },
+      "battery_range_ac": {
+        "name": "Battery range with AC"
+      },
+      "total_range": {
+        "name": "Total range"
       },
       "current_day_statistics": {
         "name": "Statistik for denne dag"

@@ -5,7 +5,8 @@
         "description": "Merci d'insérer vos identifiant et mot de passe MyT ci-dessous.",
         "data": {
           "email": "Email",
-          "password": "Mot de passe"
+          "password": "Mot de passe",
+          "use_metric_values": "Utiliser des unités métriques (par exemple, km au lieu de miles)"
         }
       }
     },
@@ -31,14 +32,29 @@
       }
     },
     "sensor": {
-      "starter_battery_health": {
-        "name": "État de la batterie de démarrage"
+      "vin": {
+        "name": "Numéro d'identification du véhicule"
       },
       "odometer": {
         "name": "Odomètre"
       },
       "fuel_level": {
         "name": "Niveau de carburant"
+      },
+      "fuel_range": {
+        "name": "Autonomie d'essence"
+      },
+      "battery_level": {
+        "name": "Niveau de batterie"
+      },
+      "battery_range": {
+        "name": "Autonomie électrique"
+      },
+      "battery_range_ac": {
+        "name": "Autonomie électrique avec AC"
+      },
+      "total_range": {
+        "name": "Autonomie totale"
       },
       "current_day_statistics": {
         "name": "Statistiques aujourd'hui"

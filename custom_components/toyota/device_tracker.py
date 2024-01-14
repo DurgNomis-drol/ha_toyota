@@ -11,7 +11,7 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 
 from . import VehicleData
-from .const import DOMAIN, ICON_PARKING, IMAGE
+from .const import DOMAIN, ICON_PARKING
 from .entity import ToyotaBaseEntity
 
 PARKING_TRACKER_DESCRIPTION: EntityDescription = EntityDescription(
@@ -37,7 +37,8 @@ async def async_setup_entry(
             description=PARKING_TRACKER_DESCRIPTION,
         )
         for index, vehicle in enumerate(coordinator.data)
-        if vehicle["data"].is_connected_services_enabled and vehicle["data"].parkinglocation
+        if vehicle["data"]._vehicle_info.extended_capabilities.last_parked_capable
+        or vehicle["data"]._vehicle_info.features.last_parked
     )
 
 
@@ -49,14 +50,14 @@ class ToyotaParkingTracker(ToyotaBaseEntity, TrackerEntity):
     @property
     def latitude(self) -> Optional[float]:
         """Return latitude value of the device."""
-        parking = self.coordinator.data[self.index]["data"].parkinglocation
-        return parking.latitude if parking else None
+        location = self.vehicle.location
+        return location.latitude if location else None
 
     @property
     def longitude(self) -> Optional[float]:
         """Return longitude value of the device."""
-        parking = self.coordinator.data[self.index]["data"].parkinglocation
-        return parking.longitude if parking else None
+        location = self.vehicle.location
+        return location.longitude if location else None
 
     @property
     def source_type(self) -> str:
@@ -66,4 +67,4 @@ class ToyotaParkingTracker(ToyotaBaseEntity, TrackerEntity):
     @property
     def entity_picture(self) -> Optional[str]:
         """Return entity picture."""
-        return self.vehicle.details.get(IMAGE)
+        return self.vehicle._vehicle_info.image

@@ -11,45 +11,22 @@ NAME = "Toyota Connected Services"
 ISSUES_URL = "https://github.com/DurgNomis-drol/ha_toyota/issues"
 
 # CONF
-CONF_REGION_SUPPORTED = [
-    "europe",
-]
-CONF_UNIT_SYSTEM_IMPERIAL_LITERS = "imperial_liters"
-CONF_USE_LITERS_PER_100_MILES = "use_liters"
+CONF_BRAND_MAPPING = {"T": "Toyota"}
+CONF_METRIC_VALUES = "use_metric_values"
 
 # DEFAULTS
 DEFAULT_LOCALE = "en-gb"
 
 # DATA COORDINATOR ATTRIBUTES
-AVERAGE_SPEED = "averageSpeedInKmph"
 BUCKET = "bucket"
-COACHING_ADVICE = "coachingAdviceMostOccurrence"
 DATA = "data"
-DRIVER_SCORE = "averageDriverScore"
-DRIVER_SCORE_ACCELERATIONS = "averageAccelerationDriverScore"
-DRIVER_SCORE_BRAKING = "averageBrakingDriverScore"
 ENGINE = "engine"
-EV_DISTANCE = "evDistanceInKm"
-EV_DURATION = "evDurationInSec"
-EV_DISTANCE_PERCENTAGE = "evDistancePercentage"
-EV_DURATION_PERCENTAGE = "evDurationPercentage"
-FUEL_CONSUMED = "totalFuelConsumedInL"
 FUEL_TYPE = "fuel"
-HARD_ACCELERATION = "hardAccelerationCount"
-HARD_BRAKING = "hardBrakingCount"
-HIGHWAY_DISTANCE = "highwayDistanceInKm"
-HIGHWAY_DISTANCE_PERCENTAGE = "highwayDistancePercentage"
 HYBRID = "hybrid"
-IMAGE = "imageUrl"
 LAST_UPDATED = "last_updated"
-LICENSE_PLATE = "licensePlate"
-MAX_SPEED = "maxSpeedInKmph"
-NIGHT_TRIPS = "nightTripsCount"
+VIN = "vin"
 PERIODE_START = "periode_start"
 STATISTICS = "statistics"
-TOTAL_DURATION = "totalDurationInSec"
-TOTAL_DISTANCE = "totalDistanceInKm"
-TRIPS = "tripCount"
 WARNING = "warning"
 
 # ICONS

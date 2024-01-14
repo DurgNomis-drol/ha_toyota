@@ -5,7 +5,8 @@
         "description": "Please input your email and password for MyT below.",
         "data": {
           "email": "Email",
-          "password": "Password"
+          "password": "Password",
+          "use_metric_values": "Use metric units (e.g. km instead of miles)"
         }
       }
     },
@@ -31,14 +32,29 @@
       }
     },
     "sensor": {
-      "starter_battery_health": {
-        "name": "Starter battery health"
+      "vin": {
+        "name": "Vehicle-Identify-Number"
       },
       "odometer": {
         "name": "Odometer"
       },
       "fuel_level": {
         "name": "Fuel level"
+      },
+      "fuel_range": {
+        "name": "Fuel range"
+      },
+      "battery_level": {
+        "name": "Battery level"
+      },
+      "battery_range_ac": {
+        "name": "Battery range with AC"
+      },
+      "battery_range": {
+        "name": "Battery range"
+      },
+      "total_range": {
+        "name": "Total range"
       },
       "current_day_statistics": {
         "name": "Current day statistics"

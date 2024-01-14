@@ -6,14 +6,12 @@ from homeassistant import config_entries
 from homeassistant.const import CONF_EMAIL, CONF_PASSWORD
 from homeassistant.core import callback
 from homeassistant.data_entry_flow import FlowResult
+from homeassistant.helpers import selector
 from mytoyota.client import MyT
-from mytoyota.exceptions import ToyotaInvalidUsername, ToyotaLoginError
+from mytoyota.exceptions import ToyotaInvalidUsernameError, ToyotaLoginError
 
 # https://github.com/PyCQA/pylint/issues/3202
-from .const import (  # pylint: disable=unused-import
-    CONF_USE_LITERS_PER_100_MILES,
-    DOMAIN,
-)
+from .const import CONF_METRIC_VALUES, DOMAIN  # pylint: disable=unused-import
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -21,6 +19,10 @@ DATA_SCHEMA = vol.Schema(
     {
         vol.Required(CONF_EMAIL): str,
         vol.Required(CONF_PASSWORD): str,
+        vol.Required(
+            CONF_METRIC_VALUES,
+            default=True,
+        ): selector.BooleanSelector(),
     }
 )
 
@@ -41,7 +43,6 @@ class ToyotaConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 client = MyT(
                     username=user_input[CONF_EMAIL],
                     password=user_input[CONF_PASSWORD],
-                    disable_locale_check=True,
                 )
 
                 await client.login()
@@ -49,7 +50,7 @@ class ToyotaConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             except ToyotaLoginError as ex:
                 errors["base"] = "invalid_auth"
                 _LOGGER.error(ex)
-            except ToyotaInvalidUsername as ex:
+            except ToyotaInvalidUsernameError as ex:
                 errors["base"] = "invalid_username"
                 _LOGGER.error(ex)
             except Exception as ex:  # pylint: disable=broad-except
@@ -79,16 +80,6 @@ class ToyotaOptionsFlowHandler(config_entries.OptionsFlow):
         """Manage the options."""
         if user_input is not None:
             self.options.update(user_input)
-            return self.async_create_entry(title=self.config_entry.data.get(CONF_EMAIL), data=self.options)
-
-        return self.async_show_form(
-            step_id="init",
-            data_schema=vol.Schema(
-                {
-                    vol.Optional(
-                        CONF_USE_LITERS_PER_100_MILES,
-                        default=self.config_entry.options.get(CONF_USE_LITERS_PER_100_MILES, False),
-                    ): bool,
-                }
-            ),
-        )
+            return self.async_create_entry(
+                title=self.config_entry.data.get(CONF_EMAIL), data=self.options
+            )

@@ -5,31 +5,21 @@ import asyncio
 import asyncio.exceptions as asyncioexceptions
 import logging
 from datetime import timedelta
-from typing import Any, Optional, TypedDict
+from typing import Optional, TypedDict
 
 import httpcore
 import httpx
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import (
-    CONF_EMAIL,
-    CONF_PASSWORD,
-    CONF_UNIT_SYSTEM_IMPERIAL,
-    CONF_UNIT_SYSTEM_METRIC,
-)
+from homeassistant.const import CONF_EMAIL, CONF_PASSWORD
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryAuthFailed, ConfigEntryNotReady
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 from mytoyota import MyT
 from mytoyota.exceptions import ToyotaApiError, ToyotaInternalError, ToyotaLoginError
+from mytoyota.models.summary import Summary
 from mytoyota.models.vehicle import Vehicle
 
-from .const import (
-    CONF_UNIT_SYSTEM_IMPERIAL_LITERS,
-    CONF_USE_LITERS_PER_100_MILES,
-    DOMAIN,
-    PLATFORMS,
-    STARTUP_MESSAGE,
-)
+from .const import CONF_METRIC_VALUES, DOMAIN, PLATFORMS, STARTUP_MESSAGE
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -37,10 +27,10 @@ _LOGGER = logging.getLogger(__name__)
 class StatisticsData(TypedDict):
     """Representing Statistics data."""
 
-    day: list[dict[str, Any]]
-    week: list[dict[str, Any]]
-    month: list[dict[str, Any]]
-    year: list[dict[str, Any]]
+    day: Optional[Summary]
+    week: Optional[Summary]
+    month: Optional[Summary]
+    year: Optional[Summary]
 
 
 class VehicleData(TypedDict):
@@ -48,6 +38,7 @@ class VehicleData(TypedDict):
 
     data: Vehicle
     statistics: Optional[StatisticsData]
+    metric_values: bool
 
 
 async def async_setup_entry(  # pylint: disable=too-many-statements
@@ -60,12 +51,11 @@ async def async_setup_entry(  # pylint: disable=too-many-statements
 
     email = entry.data[CONF_EMAIL]
     password = entry.data[CONF_PASSWORD]
-    use_liters = entry.options.get(CONF_USE_LITERS_PER_100_MILES, False)
+    use_metric_values = entry.data[CONF_METRIC_VALUES]
 
     client = MyT(
         username=email,
         password=password,
-        disable_locale_check=True,
     )
 
     try:
@@ -75,49 +65,38 @@ async def async_setup_entry(  # pylint: disable=too-many-statements
     except (httpx.ConnectTimeout, httpcore.ConnectTimeout) as ex:
         raise ConfigEntryNotReady("Unable to connect to Toyota Connected Services") from ex
 
-    async def async_get_vehicle_data() -> list[VehicleData]:
+    async def async_get_vehicle_data() -> Optional[list[VehicleData]]:
         """Fetch vehicle data from Toyota API."""
         try:
-            vehicles = await asyncio.wait_for(client.get_vehicles(), 15)
+            vehicles = await asyncio.wait_for(client.get_vehicles(metric=use_metric_values), 15)
             vehicle_informations: list[VehicleData] = []
-            for vehicle in vehicles:
-                vehicle_status = await client.get_vehicle_status(vehicle)
-                _LOGGER.debug(vars(vehicle_status))
-
-                vehicle_data = VehicleData(data=vehicle_status, statistics=None)
-
-                unit_system_map = {
-                    False: CONF_UNIT_SYSTEM_IMPERIAL,
-                    True: CONF_UNIT_SYSTEM_IMPERIAL_LITERS,
-                }
-                unit = CONF_UNIT_SYSTEM_METRIC if vehicle_status.dashboard.is_metric else unit_system_map[use_liters]
-
-                _LOGGER.debug(f"The car is reporting data in {unit}")
-                if use_liters and not vehicle_status.dashboard.is_metric:
-                    _LOGGER.debug("Getting statistics in imperial and L/100 miles")
-                elif not vehicle_status.dashboard.is_metric:
-                    _LOGGER.debug("Getting statistics in imperial and MPG")
-
-                if vehicle_status.is_connected_services_enabled and vehicle_status.vin is not None:
-                    # Use parallel request to get car statistics.
-                    driving_statistics = await asyncio.gather(
-                        client.get_driving_statistics(vehicle_status.vin, interval="day", unit=unit),
-                        client.get_driving_statistics(vehicle_status.vin, interval="isoweek", unit=unit),
-                        client.get_driving_statistics(vehicle_status.vin, unit=unit),
-                        client.get_driving_statistics(vehicle_status.vin, interval="year", unit=unit),
+            if vehicles is not None:
+                for vehicle in vehicles:
+                    await vehicle.update()
+                    vehicle_data = VehicleData(
+                        data=vehicle, statistics=None, metric_values=use_metric_values
                     )
 
-                    vehicle_data["statistics"] = StatisticsData(
-                        day=driving_statistics[0],
-                        week=driving_statistics[1],
-                        month=driving_statistics[2],
-                        year=driving_statistics[3],
-                    )
+                    if vehicle.vin is not None:
+                        # Use parallel request to get car statistics.
+                        driving_statistics = await asyncio.gather(
+                            vehicle.get_current_day_summary(),
+                            vehicle.get_current_week_summary(),
+                            vehicle.get_current_month_summary(),
+                            vehicle.get_current_year_summary(),
+                        )
 
-                vehicle_informations.append(vehicle_data)
+                        vehicle_data["statistics"] = StatisticsData(
+                            day=driving_statistics[0],
+                            week=driving_statistics[1],
+                            month=driving_statistics[2],
+                            year=driving_statistics[3],
+                        )
 
-            _LOGGER.debug(vehicle_informations)
-            return vehicle_informations
+                    vehicle_informations.append(vehicle_data)
+
+                _LOGGER.debug(vehicle_informations)
+                return vehicle_informations
 
         except ToyotaLoginError as ex:
             _LOGGER.error(ex)
@@ -133,15 +112,16 @@ async def async_setup_entry(  # pylint: disable=too-many-statements
             httpx.ReadTimeout,
         ) as ex:
             raise UpdateFailed(
-                "Update canceled! Toyota's API was too slow to respond." " Will try again later..."
+                "Update canceled! Toyota's API was too slow to respond. Will try again later..."
             ) from ex
+        return None
 
     coordinator = DataUpdateCoordinator(
         hass,
         _LOGGER,
         name=DOMAIN,
         update_method=async_get_vehicle_data,
-        update_interval=timedelta(seconds=120),
+        update_interval=timedelta(seconds=360),
     )
 
     await coordinator.async_config_entry_first_refresh()

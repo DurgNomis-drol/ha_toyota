@@ -1,29 +1,12 @@
 """Utilities for Toyota integration."""
 from __future__ import annotations
 
-from datetime import timedelta
-from typing import Any
+from typing import Optional, Union
 
-from .const import (
-    AVERAGE_SPEED,
-    COACHING_ADVICE,
-    DRIVER_SCORE,
-    DRIVER_SCORE_ACCELERATIONS,
-    DRIVER_SCORE_BRAKING,
-    EV_DISTANCE,
-    EV_DISTANCE_PERCENTAGE,
-    EV_DURATION,
-    EV_DURATION_PERCENTAGE,
-    FUEL_CONSUMED,
-    HARD_ACCELERATION,
-    HARD_BRAKING,
-    HIGHWAY_DISTANCE,
-    HIGHWAY_DISTANCE_PERCENTAGE,
-    MAX_SPEED,
-    NIGHT_TRIPS,
-    TOTAL_DURATION,
-    TRIPS,
-)
+from mytoyota.models.endpoints.vehicle_guid import VehicleGuidModel
+from mytoyota.models.summary import Summary
+
+from .const import CONF_BRAND_MAPPING
 
 
 def round_number(number: int | float | None, places: int = 0) -> int | float | None:
@@ -31,55 +14,84 @@ def round_number(number: int | float | None, places: int = 0) -> int | float | N
     return None if number is None else round(number, places)
 
 
-def format_statistics_attributes(statistics: dict[str, Any], is_hybrid: bool):
-    """Format and returns statistics attributes."""
+def mask_string(string: str) -> str:
+    """Mask all except the last 5 digits of a given string with asteriks."""
+    return "*" * (len(string) - 5) + string[-5:] if len(string) >= 5 else "*****"
 
-    def get_timedelta(time):
-        return str(timedelta(seconds=time))
 
-    attr = {
-        "Highway_distance": round(statistics.get(HIGHWAY_DISTANCE, 0), 1),
-        "Highway_percentage": round(statistics.get(HIGHWAY_DISTANCE_PERCENTAGE, 0), 1),
-        "Number_of_trips": statistics.get(TRIPS, 0),
-        "Number_of_night_trips": statistics.get(NIGHT_TRIPS, 0),
-        "Total_driving_time": get_timedelta(statistics.get(TOTAL_DURATION, 0)),
-        "Average_speed": round(statistics.get(AVERAGE_SPEED, 0), 1),
-        "Max_speed": round(statistics.get(MAX_SPEED, 0), 1),
-        "Hard_acceleration_count": statistics.get(HARD_ACCELERATION, 0),
-        "Hard_braking_count": statistics.get(HARD_BRAKING, 0),
+def format_vin_sensor_attributes(
+    vehicle_info: VehicleGuidModel,
+) -> dict[str, Optional[Union[str, bool, dict[str, bool]]]]:
+    """Format and returns vin sensor attributes."""
+    return {
+        "Contract_id": mask_string(vehicle_info.contract_id),
+        "IMEI": mask_string(vehicle_info.imei),
+        "Katashiki_code": vehicle_info.katashiki_code,
+        "ASI_code": vehicle_info.asi_code,
+        "Brand": CONF_BRAND_MAPPING.get(vehicle_info.brand),
+        "Car_line_name": vehicle_info.car_line_name,
+        "Car_model_year": vehicle_info.car_model_year,
+        "Car_model_name": vehicle_info.car_model_name,
+        "Color": vehicle_info.color,
+        "Generation": vehicle_info.generation,
+        "Manufactured_date": None
+        if vehicle_info.manufactured_date is None
+        else vehicle_info.manufactured_date.strftime("%Y-%m-%d"),
+        "Date_of_first_use": None
+        if vehicle_info.date_of_first_use is None
+        else vehicle_info.date_of_first_use.strftime("%Y-%m-%d"),
+        "Transmission_type": vehicle_info.transmission_type,
+        "Fuel_type": vehicle_info.fuel_type,
+        "Electrical_platform_code": vehicle_info.electrical_platform_code,
+        "EV_vehicle": vehicle_info.ev_vehicle,
+        "Features": {
+            key: value for key, value in vehicle_info.features.dict().items() if value is True
+        },
+        "Extended_capabilities": {
+            key: value
+            for key, value in vehicle_info.extended_capabilities.dict().items()
+            if value is True
+        },
+        "Remote_service_capabilities": {
+            key: value
+            for key, value in vehicle_info.remote_service_capabilities.dict().items()
+            if value is True
+        },
     }
 
-    if FUEL_CONSUMED in statistics:
-        attr.update(
-            {
-                "Average_fuel_consumed": round(statistics.get(FUEL_CONSUMED, 0), 2),
-            }
-        )
 
-    if COACHING_ADVICE in statistics:
-        attr.update(
-            {
-                "Coaching_advice_most_occurrence": statistics.get(COACHING_ADVICE, 0),
-            }
-        )
+def format_statistics_attributes(
+    statistics: Summary, vehicle_info: VehicleGuidModel
+) -> dict[str, Optional[str]]:
+    """Format and returns statistics attributes."""
+    attr = {
+        "Average_speed": round(statistics.average_speed, 1) if statistics.average_speed else None,
+        "Countries": statistics.countries or [],
+        "Duration": str(statistics.duration) if statistics.duration else None,
+    }
 
-    if DRIVER_SCORE in statistics:
-        attr.update(
-            {
-                "Average_driver_score": round(statistics.get(DRIVER_SCORE, 0), 1),
-                "Average_driver_score_accelerations": round(statistics.get(DRIVER_SCORE_ACCELERATIONS, 0), 1),
-                "Average_driver_score_braking": round(statistics.get(DRIVER_SCORE_BRAKING, 0), 1),
-            }
-        )
+    if vehicle_info.fuel_type is not None:
+        attr |= {
+            "Total_fuel_consumed": round(statistics.fuel_consumed, 3)
+            if statistics.fuel_consumed
+            else None,
+            "Average_fuel_consumed": round(statistics.average_fuel_consumed, 3)
+            if statistics.average_fuel_consumed
+            else None,
+        }
 
-    if is_hybrid:
-        attr.update(
-            {
-                "EV_distance": round(statistics.get(EV_DISTANCE, 0), 1),
-                "EV_driving_time": get_timedelta(statistics.get(EV_DURATION, 0)),
-                "EV_distance_percentage": round(statistics.get(EV_DISTANCE_PERCENTAGE, 0), 1),
-                "EV_duration_percentage": round(statistics.get(EV_DURATION_PERCENTAGE, 0), 1),
-            }
-        )
+    if (
+        vehicle_info.extended_capabilities.hybrid_pulse
+        or vehicle_info.extended_capabilities.econnect_vehicle_status_capable
+    ):
+        attr |= {
+            "EV_distance": round(statistics.ev_distance, 1) if statistics.ev_distance else None,
+            "EV_duration": str(statistics.ev_duration) if statistics.ev_duration else None,
+        }
+
+    attr |= {
+        "From_date": statistics.from_date.strftime("%Y-%m-%d"),
+        "To_date": statistics.to_date.strftime("%Y-%m-%d"),
+    }
 
     return attr

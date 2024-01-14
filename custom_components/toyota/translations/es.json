@@ -5,7 +5,8 @@
         "description": "Ingrese su dirección de correo electrónico y contraseña para la aplicación de MyT abajo",
         "data": {
           "email": "Dirección de correo electonico",
-          "password": "Contraseña"
+          "password": "Contraseña",
+          "use_metric_values": "Utilizar unidades métricas (por ejemplo, km en lugar de millas)"
         }
       }
     },
@@ -22,14 +23,29 @@
       }
     },
     "sensor": {
-      "starter_battery_health": {
-        "name": "Salud de la batería de arranque"
+      "vin": {
+        "name": "Vehicle-Identify-Number"
       },
       "odometer": {
         "name": "Odometro"
       },
       "fuel_level": {
         "name": "Nivel de combustible"
+      },
+      "fuel_range": {
+        "name": "Fuel range"
+      },
+      "battery_level": {
+        "name": "Battery level"
+      },
+      "battery_range": {
+        "name": "Battery range"
+      },
+      "battery_range_ac": {
+        "name": "Battery range with AC"
+      },
+      "total_range": {
+        "name": "Total range"
       },
       "current_day_statistics": {
         "name": "Estadísticas de hoy"
