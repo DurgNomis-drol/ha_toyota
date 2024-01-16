@@ -13,7 +13,7 @@ from homeassistant.components.sensor import (
     SensorStateClass,
 )
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import LENGTH_KILOMETERS, LENGTH_MILES, PERCENTAGE
+from homeassistant.const import PERCENTAGE, UnitOfLength
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -63,7 +63,7 @@ ODOMETER_ENTITY_DESCRIPTION_KM = ToyotaSensorEntityDescription(
     translation_key="odometer",
     icon="mdi:counter",
     device_class=SensorDeviceClass.DISTANCE,
-    native_unit_of_measurement=LENGTH_KILOMETERS,
+    native_unit_of_measurement=UnitOfLength.KILOMETERS,
     state_class=SensorStateClass.TOTAL_INCREASING,
     value_fn=lambda vehicle: None
     if vehicle.dashboard is None
@@ -76,7 +76,7 @@ ODOMETER_ENTITY_DESCRIPTION_MILES = ToyotaSensorEntityDescription(
     translation_key="odometer",
     icon="mdi:counter",
     device_class=SensorDeviceClass.DISTANCE,
-    native_unit_of_measurement=LENGTH_MILES,
+    native_unit_of_measurement=UnitOfLength.MILES,
     state_class=SensorStateClass.TOTAL_INCREASING,
     value_fn=lambda vehicle: None
     if vehicle.dashboard is None
@@ -102,7 +102,7 @@ FUEL_RANGE_ENTITY_DESCRIPTION_KM = ToyotaSensorEntityDescription(
     translation_key="fuel_range",
     icon="mdi:map-marker-distance",
     device_class=SensorDeviceClass.DISTANCE,
-    native_unit_of_measurement=LENGTH_KILOMETERS,
+    native_unit_of_measurement=UnitOfLength.KILOMETERS,
     state_class=SensorStateClass.MEASUREMENT,
     value_fn=lambda vehicle: None
     if vehicle.dashboard is None
@@ -115,7 +115,7 @@ FUEL_RANGE_ENTITY_DESCRIPTION_MILES = ToyotaSensorEntityDescription(
     translation_key="fuel_range",
     icon="mdi:map-marker-distance",
     device_class=SensorDeviceClass.DISTANCE,
-    native_unit_of_measurement=LENGTH_MILES,
+    native_unit_of_measurement=UnitOfLength.MILES,
     state_class=SensorStateClass.MEASUREMENT,
     value_fn=lambda vehicle: None
     if vehicle.dashboard is None
@@ -141,7 +141,7 @@ BATTERY_RANGE_ENTITY_DESCRIPTION_KM = ToyotaSensorEntityDescription(
     translation_key="battery_range",
     icon="mdi:map-marker-distance",
     device_class=SensorDeviceClass.DISTANCE,
-    native_unit_of_measurement=LENGTH_KILOMETERS,
+    native_unit_of_measurement=UnitOfLength.KILOMETERS,
     state_class=SensorStateClass.MEASUREMENT,
     value_fn=lambda vehicle: None
     if vehicle.dashboard is None
@@ -154,7 +154,7 @@ BATTERY_RANGE_ENTITY_DESCRIPTION_MILES = ToyotaSensorEntityDescription(
     translation_key="battery_range",
     icon="mdi:map-marker-distance",
     device_class=SensorDeviceClass.DISTANCE,
-    native_unit_of_measurement=LENGTH_MILES,
+    native_unit_of_measurement=UnitOfLength.MILES,
     state_class=SensorStateClass.MEASUREMENT,
     value_fn=lambda vehicle: None
     if vehicle.dashboard is None
@@ -167,7 +167,7 @@ BATTERY_RANGE_AC_ENTITY_DESCRIPTION_KM = ToyotaSensorEntityDescription(
     translation_key="battery_range_ac",
     icon="mdi:map-marker-distance",
     device_class=SensorDeviceClass.DISTANCE,
-    native_unit_of_measurement=LENGTH_KILOMETERS,
+    native_unit_of_measurement=UnitOfLength.KILOMETERS,
     state_class=SensorStateClass.MEASUREMENT,
     value_fn=lambda vehicle: None
     if vehicle.dashboard is None
@@ -180,7 +180,7 @@ BATTERY_RANGE_AC_ENTITY_DESCRIPTION_MILES = ToyotaSensorEntityDescription(
     translation_key="battery_range_ac",
     icon="mdi:map-marker-distance",
     device_class=SensorDeviceClass.DISTANCE,
-    native_unit_of_measurement=LENGTH_MILES,
+    native_unit_of_measurement=UnitOfLength.MILES,
     state_class=SensorStateClass.MEASUREMENT,
     value_fn=lambda vehicle: None
     if vehicle.dashboard is None
@@ -193,7 +193,7 @@ TOTAL_RANGE_ENTITY_DESCRIPTION_KM = ToyotaSensorEntityDescription(
     translation_key="total_range",
     icon="mdi:map-marker-distance",
     device_class=SensorDeviceClass.DISTANCE,
-    native_unit_of_measurement=LENGTH_KILOMETERS,
+    native_unit_of_measurement=UnitOfLength.KILOMETERS,
     state_class=SensorStateClass.MEASUREMENT,
     value_fn=lambda vehicle: None
     if vehicle.dashboard is None
@@ -206,7 +206,7 @@ TOTAL_RANGE_ENTITY_DESCRIPTION_MILES = ToyotaSensorEntityDescription(
     translation_key="total_range",
     icon="mdi:map-marker-distance",
     device_class=SensorDeviceClass.DISTANCE,
-    native_unit_of_measurement=LENGTH_MILES,
+    native_unit_of_measurement=UnitOfLength.MILES,
     state_class=SensorStateClass.MEASUREMENT,
     value_fn=lambda vehicle: None
     if vehicle.dashboard is None
@@ -426,7 +426,7 @@ class ToyotaStatisticsSensor(ToyotaSensor):
         super().__init__(coordinator, entry_id, vehicle_index, description)
         self.period: Literal["day", "week", "month", "year"] = description.period
         self._attr_native_unit_of_measurement = (
-            LENGTH_KILOMETERS if self.metric_values else LENGTH_MILES
+            UnitOfLength.KILOMETERS if self.metric_values else UnitOfLength.MILES
         )
 
     @property
