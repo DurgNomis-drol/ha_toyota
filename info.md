@@ -1,4 +1,4 @@
-# Toyota Connected Services Europe
+## Toyota Connected Services Europe
 
 This custom integration aims to provide plug-and-play integration for your Toyota vehicle.
 
@@ -8,7 +8,7 @@ This means that this version is **no longer compatible** with your vehicle **if 
 **If you already have an installation of the custom component, make sure when updating to a version >= 2.0 to completely remove the previous installation from your Home Assistant devices and HACS!
 You should then perform a reboot and can then reinstall the custom component via HACS again.**
 
-## Features
+### Features
 
 **Only Europe is supported**
 **Disclaimer: Features available depends on your car model and year.**
@@ -22,15 +22,15 @@ You should then perform a reboot and can then reinstall the custom component via
 
 See [features](https://github.com/DurgNomis-drol/ha_toyota#binary-sensors) section for more details
 
-## Installations
+### Installations
 
 Go to: Settings -> Integrations -> Add integration and search for Toyota Connected Services.
 
 [Add Integration](https://my.home-assistant.io/redirect/config_flow_start?domain=toyota)
 
-## Help is need to
+### Help is need to
 
 - Implement Lock and HVAC control.
 - Add support for other regions.
 
-### [Docs (installation, config, and issues)](https://github.com/DurgNomis-drol/ha_toyota)
+#### [Docs (installation, config, and issues)](https://github.com/DurgNomis-drol/ha_toyota)
