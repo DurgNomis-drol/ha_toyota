@@ -22,7 +22,7 @@ from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 from mytoyota.models.vehicle import Vehicle
 
 from . import StatisticsData, VehicleData
-from .const import CONF_METRIC_VALUES, DOMAIN
+from .const import DOMAIN
 from .entity import ToyotaBaseEntity
 from .utils import (
     format_statistics_attributes,
@@ -282,6 +282,7 @@ async def async_setup_entry(
     sensors: list[Union[ToyotaSensor, ToyotaStatisticsSensor]] = []
     for index, _ in enumerate(coordinator.data):
         vehicle = coordinator.data[index]["data"]
+        metric_values = coordinator.data[index]["metric_values"]
         capabilities_descriptions = [
             (
                 True,
@@ -289,13 +290,13 @@ async def async_setup_entry(
                 ToyotaSensor,
             ),
             (
-                entry.data[CONF_METRIC_VALUES] is True
+                metric_values is True
                 and vehicle._vehicle_info.extended_capabilities.telemetry_capable,
                 ODOMETER_ENTITY_DESCRIPTION_KM,
                 ToyotaSensor,
             ),
             (
-                entry.data[CONF_METRIC_VALUES] is False
+                metric_values is False
                 and vehicle._vehicle_info.extended_capabilities.telemetry_capable,
                 ODOMETER_ENTITY_DESCRIPTION_MILES,
                 ToyotaSensor,
@@ -306,13 +307,13 @@ async def async_setup_entry(
                 ToyotaSensor,
             ),
             (
-                entry.data[CONF_METRIC_VALUES] is True
+                metric_values is True
                 and vehicle._vehicle_info.extended_capabilities.fuel_range_available,
                 FUEL_RANGE_ENTITY_DESCRIPTION_KM,
                 ToyotaSensor,
             ),
             (
-                entry.data[CONF_METRIC_VALUES] is False
+                metric_values is False
                 and vehicle._vehicle_info.extended_capabilities.fuel_range_available,
                 FUEL_RANGE_ENTITY_DESCRIPTION_MILES,
                 ToyotaSensor,
@@ -323,38 +324,38 @@ async def async_setup_entry(
                 ToyotaSensor,
             ),
             (
-                entry.data[CONF_METRIC_VALUES] is True
+                metric_values is True
                 and vehicle._vehicle_info.extended_capabilities.econnect_vehicle_status_capable,
                 BATTERY_RANGE_ENTITY_DESCRIPTION_KM,
                 ToyotaSensor,
             ),
             (
-                entry.data[CONF_METRIC_VALUES] is False
+                metric_values is False
                 and vehicle._vehicle_info.extended_capabilities.econnect_vehicle_status_capable,
                 BATTERY_RANGE_ENTITY_DESCRIPTION_MILES,
                 ToyotaSensor,
             ),
             (
-                entry.data[CONF_METRIC_VALUES] is True
+                metric_values is True
                 and vehicle._vehicle_info.extended_capabilities.econnect_vehicle_status_capable,
                 BATTERY_RANGE_AC_ENTITY_DESCRIPTION_KM,
                 ToyotaSensor,
             ),
             (
-                entry.data[CONF_METRIC_VALUES] is False
+                metric_values is False
                 and vehicle._vehicle_info.extended_capabilities.econnect_vehicle_status_capable,
                 BATTERY_RANGE_AC_ENTITY_DESCRIPTION_MILES,
                 ToyotaSensor,
             ),
             (
-                entry.data[CONF_METRIC_VALUES] is True
+                metric_values is True
                 and vehicle._vehicle_info.extended_capabilities.econnect_vehicle_status_capable
                 and vehicle._vehicle_info.extended_capabilities.fuel_range_available,
                 TOTAL_RANGE_ENTITY_DESCRIPTION_KM,
                 ToyotaSensor,
             ),
             (
-                entry.data[CONF_METRIC_VALUES] is False
+                metric_values is False
                 and vehicle._vehicle_info.extended_capabilities.econnect_vehicle_status_capable
                 and vehicle._vehicle_info.extended_capabilities.fuel_range_available,
                 TOTAL_RANGE_ENTITY_DESCRIPTION_MILES,
