@@ -24,7 +24,7 @@ class ToyotaConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         """Start the toyota custom component config flow."""
         self._reauth_entry = None
         self._email = None
-        self._metric_values = True
+        self._metric_values = None
 
     async def async_step_user(self, user_input=None) -> FlowResult:
         """Handle the initial step."""
