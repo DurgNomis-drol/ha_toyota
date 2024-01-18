@@ -14,17 +14,6 @@ from .const import CONF_METRIC_VALUES, DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
-DATA_SCHEMA = vol.Schema(
-    {
-        vol.Required(CONF_EMAIL): str,
-        vol.Required(CONF_PASSWORD): str,
-        vol.Required(
-            CONF_METRIC_VALUES,
-            default=True,
-        ): selector.BooleanSelector(),
-    }
-)
-
 
 class ToyotaConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """Handle a config flow for Toyota Connected Services."""
@@ -35,7 +24,7 @@ class ToyotaConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         """Start the toyota custom component config flow."""
         self._reauth_entry = None
         self._email = None
-        self._metric_values = None
+        self._metric_values = True
 
     async def async_step_user(self, user_input=None) -> FlowResult:
         """Handle the initial step."""
