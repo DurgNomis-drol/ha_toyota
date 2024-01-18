@@ -283,6 +283,10 @@ async def async_setup_entry(
     for index, _ in enumerate(coordinator.data):
         vehicle = coordinator.data[index]["data"]
         metric_values = coordinator.data[index]["metric_values"]
+        _LOGGER.error(
+            "Setup sensor entries with metric values = '%s'",
+            metric_values,
+        )
         capabilities_descriptions = [
             (
                 True,
