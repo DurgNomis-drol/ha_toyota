@@ -34,6 +34,11 @@ class ToyotaConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             self._email = user_input[CONF_EMAIL]
             self._metric_values = user_input[CONF_METRIC_VALUES]
             unique_id = user_input[CONF_EMAIL].lower()
+            _LOGGER.debug(
+                "Set up config entry with the ID '%s' and metric units = '%s'",
+                unique_id,
+                self._metric_values,
+            )
             client = MyT(
                 username=user_input[CONF_EMAIL],
                 password=user_input[CONF_PASSWORD],
