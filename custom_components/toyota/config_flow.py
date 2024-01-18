@@ -34,7 +34,7 @@ class ToyotaConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             self._email = user_input[CONF_EMAIL]
             self._metric_values = user_input[CONF_METRIC_VALUES]
             unique_id = user_input[CONF_EMAIL].lower()
-            _LOGGER.debug(
+            _LOGGER.error(
                 "Set up Toyota connected services config entry with metric values = '%s'",
                 self._metric_values,
             )
