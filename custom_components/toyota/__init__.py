@@ -67,10 +67,7 @@ async def async_setup_entry(  # pylint: disable=too-many-statements
     async def async_get_vehicle_data() -> Optional[list[VehicleData]]:
         """Fetch vehicle data from Toyota API."""
         metric_values = entry.data[CONF_METRIC_VALUES]
-        _LOGGER.error(
-            "Get vehicle data with metric values = '%s'",
-            metric_values,
-        )
+
         try:
             vehicles = await asyncio.wait_for(client.get_vehicles(metric=metric_values), 15)
             vehicle_informations: list[VehicleData] = []
