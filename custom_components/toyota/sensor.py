@@ -161,7 +161,7 @@ STATISTICS_ENTITY_DESCRIPTIONS_DAILY = ToyotaStatisticsSensorEntityDescription(
     translation_key="current_day_statistics",
     icon="mdi:history",
     device_class=SensorDeviceClass.DISTANCE,
-    state_class=SensorStateClass.TOTAL,
+    state_class=SensorStateClass.MEASUREMENT,
     suggested_display_precision=0,
     period="day",
 )
@@ -171,7 +171,7 @@ STATISTICS_ENTITY_DESCRIPTIONS_WEEKLY = ToyotaStatisticsSensorEntityDescription(
     translation_key="current_week_statistics",
     icon="mdi:history",
     device_class=SensorDeviceClass.DISTANCE,
-    state_class=SensorStateClass.TOTAL,
+    state_class=SensorStateClass.MEASUREMENT,
     suggested_display_precision=0,
     period="week",
 )
@@ -181,7 +181,7 @@ STATISTICS_ENTITY_DESCRIPTIONS_MONTHLY = ToyotaStatisticsSensorEntityDescription
     translation_key="current_month_statistics",
     icon="mdi:history",
     device_class=SensorDeviceClass.DISTANCE,
-    state_class=SensorStateClass.TOTAL,
+    state_class=SensorStateClass.MEASUREMENT,
     suggested_display_precision=0,
     period="month",
 )
@@ -191,7 +191,7 @@ STATISTICS_ENTITY_DESCRIPTIONS_YEARLY = ToyotaStatisticsSensorEntityDescription(
     translation_key="current_year_statistics",
     icon="mdi:history",
     device_class=SensorDeviceClass.DISTANCE,
-    state_class=SensorStateClass.TOTAL,
+    state_class=SensorStateClass.MEASUREMENT,
     suggested_display_precision=0,
     period="year",
 )
