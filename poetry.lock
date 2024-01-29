@@ -1226,13 +1226,13 @@ files = [
 
 [[package]]
 name = "mytoyota"
-version = "1.2.0"
+version = "1.3.1"
 description = "Python client for Toyota Connected Services."
 optional = false
 python-versions = ">=3.8.1,<4.0.0"
 files = [
-    {file = "mytoyota-1.2.0-py3-none-any.whl", hash = "sha256:c6e6228c557665adf71bf8171402a60489a96d14e422b145bca97d223f78af2e"},
-    {file = "mytoyota-1.2.0.tar.gz", hash = "sha256:a6a1b62af06ed5ada7ca5df6ffc380917405c7679cfcc849a5a7752db7915180"},
+    {file = "mytoyota-1.3.1-py3-none-any.whl", hash = "sha256:6718e9c9d115c3737f6fadf6a20e5cc5e7afddf2f775b29b21457a7479b6e99d"},
+    {file = "mytoyota-1.3.1.tar.gz", hash = "sha256:3e50e1d193efa409316cb2fb8fc3be5b6dabe92b77d614520c15d759d9e282ef"},
 ]
 
 [package.dependencies]
