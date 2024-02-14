@@ -18,6 +18,7 @@ from mytoyota import MyT
 from mytoyota.exceptions import ToyotaApiError, ToyotaInternalError, ToyotaLoginError
 from mytoyota.models.summary import Summary
 from mytoyota.models.vehicle import Vehicle
+from pydantic import ValidationError
 
 from .const import CONF_METRIC_VALUES, DOMAIN, PLATFORMS, STARTUP_MESSAGE
 
@@ -106,6 +107,8 @@ async def async_setup_entry(  # pylint: disable=too-many-statements
             raise UpdateFailed(ex) from ex
         except (httpx.ConnectTimeout, httpcore.ConnectTimeout) as ex:
             raise UpdateFailed("Unable to connect to Toyota Connected Services") from ex
+        except ValidationError as ex:
+            _LOGGER.error(ex)
         except (
             asyncioexceptions.CancelledError,
             asyncioexceptions.TimeoutError,
