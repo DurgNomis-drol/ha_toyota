@@ -49,6 +49,7 @@ class ToyotaBaseEntity(CoordinatorEntity):
         """Handle updated data from the coordinator."""
         self.vehicle = self.coordinator.data[self.index]["data"]
         self.statistics = self.coordinator.data[self.index]["statistics"]
+        self.metric_values = self.coordinator.data[self.index]["metric_values"]
         super()._handle_coordinator_update()
 
     async def async_added_to_hass(self) -> None:
