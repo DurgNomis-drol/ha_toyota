@@ -34,7 +34,7 @@ jobs:
           zip toyota.zip -r ./
 
       - name: 🔏 Sign release package
-        uses: sigstore/gh-action-sigstore-python@v2.1.1
+        uses: sigstore/gh-action-sigstore-python@v3.0.0
         with:
           inputs: ${{ github.workspace }}/custom_components/toyota/toyota.zip
 
