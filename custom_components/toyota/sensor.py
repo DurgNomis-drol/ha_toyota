@@ -318,7 +318,6 @@ class ToyotaSensor(ToyotaBaseEntity, SensorEntity):
         super().__init__(coordinator, entry_id, vehicle_index, description)
         self.description = description
         self._attr_native_unit_of_measurement = unit
-        self._attr_suggested_unit_of_measurement = unit
 
     @property
     def native_value(self) -> StateType:
@@ -348,7 +347,6 @@ class ToyotaStatisticsSensor(ToyotaBaseEntity, SensorEntity):
         super().__init__(coordinator, entry_id, vehicle_index, description)
         self.period: Literal["day", "week", "month", "year"] = description.period
         self._attr_native_unit_of_measurement = unit
-        self._attr_suggested_unit_of_measurement = unit
 
     @property
     def native_value(self) -> StateType:
