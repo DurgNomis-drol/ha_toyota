@@ -59,8 +59,8 @@ async def async_setup_entry(  # pylint: disable=too-many-statements
             MyT,
             username=email,
             password=password,
-            )
         )
+    )
 
     try:
         await client.login()
