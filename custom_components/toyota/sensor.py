@@ -216,11 +216,13 @@ async def async_setup_entry(
                 VIN_ENTITY_DESCRIPTION,
                 ToyotaSensor,
                 None,
+                None,
             ),
             (
                 vehicle._vehicle_info.extended_capabilities.telemetry_capable,
                 ODOMETER_ENTITY_DESCRIPTION,
                 ToyotaSensor,
+                UnitOfLength.KILOMETERS if metric_values is True else UnitOfLength.MILES,
                 UnitOfLength.KILOMETERS if metric_values is True else UnitOfLength.MILES,
             ),
             (
@@ -228,11 +230,13 @@ async def async_setup_entry(
                 FUEL_LEVEL_ENTITY_DESCRIPTION,
                 ToyotaSensor,
                 PERCENTAGE,
+                None,
             ),
             (
                 vehicle._vehicle_info.extended_capabilities.fuel_range_available,
                 FUEL_RANGE_ENTITY_DESCRIPTION,
                 ToyotaSensor,
+                UnitOfLength.KILOMETERS if metric_values is True else UnitOfLength.MILES,
                 UnitOfLength.KILOMETERS if metric_values is True else UnitOfLength.MILES,
             ),
             (
@@ -240,17 +244,20 @@ async def async_setup_entry(
                 BATTERY_LEVEL_ENTITY_DESCRIPTION,
                 ToyotaSensor,
                 PERCENTAGE,
+                PERCENTAGE,
             ),
             (
                 vehicle._vehicle_info.extended_capabilities.econnect_vehicle_status_capable,
                 BATTERY_RANGE_ENTITY_DESCRIPTION,
                 ToyotaSensor,
                 UnitOfLength.KILOMETERS if metric_values is True else UnitOfLength.MILES,
+                UnitOfLength.KILOMETERS if metric_values is True else UnitOfLength.MILES,
             ),
             (
                 vehicle._vehicle_info.extended_capabilities.econnect_vehicle_status_capable,
                 BATTERY_RANGE_AC_ENTITY_DESCRIPTION,
                 ToyotaSensor,
+                UnitOfLength.KILOMETERS if metric_values is True else UnitOfLength.MILES,
                 UnitOfLength.KILOMETERS if metric_values is True else UnitOfLength.MILES,
             ),
             (
@@ -259,11 +266,13 @@ async def async_setup_entry(
                 TOTAL_RANGE_ENTITY_DESCRIPTION,
                 ToyotaSensor,
                 UnitOfLength.KILOMETERS if metric_values is True else UnitOfLength.MILES,
+                UnitOfLength.KILOMETERS if metric_values is True else UnitOfLength.MILES,
             ),
             (
                 True,  # TODO Unsure of the required capability
                 STATISTICS_ENTITY_DESCRIPTIONS_DAILY,
                 ToyotaStatisticsSensor,
+                UnitOfLength.KILOMETERS if metric_values is True else UnitOfLength.MILES,
                 UnitOfLength.KILOMETERS if metric_values is True else UnitOfLength.MILES,
             ),
             (
@@ -271,17 +280,20 @@ async def async_setup_entry(
                 STATISTICS_ENTITY_DESCRIPTIONS_WEEKLY,
                 ToyotaStatisticsSensor,
                 UnitOfLength.KILOMETERS if metric_values is True else UnitOfLength.MILES,
+                UnitOfLength.KILOMETERS if metric_values is True else UnitOfLength.MILES,
             ),
             (
                 True,  # TODO Unsure of the required capability
                 STATISTICS_ENTITY_DESCRIPTIONS_MONTHLY,
                 ToyotaStatisticsSensor,
                 UnitOfLength.KILOMETERS if metric_values is True else UnitOfLength.MILES,
+                UnitOfLength.KILOMETERS if metric_values is True else UnitOfLength.MILES,
             ),
             (
                 True,  # TODO Unsure of the required capability
                 STATISTICS_ENTITY_DESCRIPTIONS_YEARLY,
                 ToyotaStatisticsSensor,
+                UnitOfLength.KILOMETERS if metric_values is True else UnitOfLength.MILES,
                 UnitOfLength.KILOMETERS if metric_values is True else UnitOfLength.MILES,
             ),
         ]
@@ -293,8 +305,9 @@ async def async_setup_entry(
                 vehicle_index=index,
                 description=description,
                 unit=unit,
+                suggested_unit=unit2,
             )
-            for capability, description, sensor_type, unit in capabilities_descriptions
+            for capability, description, sensor_type, unit, unit2 in capabilities_descriptions
             if capability
         )
 
@@ -313,12 +326,13 @@ class ToyotaSensor(ToyotaBaseEntity, SensorEntity):
         vehicle_index: int,
         description: ToyotaSensorEntityDescription,
         unit: Union[UnitOfLength, str],
+        suggested_unit: Union[UnitOfLength, str],
     ) -> None:
         """Initialise the ToyotaSensor class."""
         super().__init__(coordinator, entry_id, vehicle_index, description)
         self.description = description
         self._attr_native_unit_of_measurement = unit
-        self._attr_suggested_unit_of_measurement = unit
+        self._attr_suggested_unit_of_measurement = suggested_unit
 
     @property
     def native_value(self) -> StateType:
@@ -343,12 +357,13 @@ class ToyotaStatisticsSensor(ToyotaBaseEntity, SensorEntity):
         vehicle_index: int,
         description: ToyotaStatisticsSensorEntityDescription,
         unit: Union[UnitOfLength, str],
+        suggested_unit: Union[UnitOfLength, str],
     ) -> None:
         """Initialise the ToyotaStatisticsSensor class."""
         super().__init__(coordinator, entry_id, vehicle_index, description)
         self.period: Literal["day", "week", "month", "year"] = description.period
         self._attr_native_unit_of_measurement = unit
-        self._attr_suggested_unit_of_measurement = unit
+        self._attr_suggested_unit_of_measurement = suggested_unit
 
     @property
     def native_value(self) -> StateType:
