@@ -304,10 +304,10 @@ async def async_setup_entry(
                 entry_id=entry.entry_id,
                 vehicle_index=index,
                 description=description,
-                unit=unit,
-                suggested_unit=unit2,
+                native_unit=native_unit,
+                suggested_unit=suggested_unit,
             )
-            for capability, description, sensor_type, unit, unit2 in capabilities_descriptions
+            for capability, description, sensor_type, native_unit, suggested_unit in capabilities_descriptions  # noqa: E501
             if capability
         )
 
@@ -325,13 +325,13 @@ class ToyotaSensor(ToyotaBaseEntity, SensorEntity):
         entry_id: str,
         vehicle_index: int,
         description: ToyotaSensorEntityDescription,
-        unit: Union[UnitOfLength, str],
+        native_unit: Union[UnitOfLength, str],
         suggested_unit: Union[UnitOfLength, str],
     ) -> None:
         """Initialise the ToyotaSensor class."""
         super().__init__(coordinator, entry_id, vehicle_index, description)
         self.description = description
-        self._attr_native_unit_of_measurement = unit
+        self._attr_native_unit_of_measurement = native_unit
         self._attr_suggested_unit_of_measurement = suggested_unit
 
     @property
@@ -356,13 +356,13 @@ class ToyotaStatisticsSensor(ToyotaBaseEntity, SensorEntity):
         entry_id: str,
         vehicle_index: int,
         description: ToyotaStatisticsSensorEntityDescription,
-        unit: Union[UnitOfLength, str],
+        native_unit: Union[UnitOfLength, str],
         suggested_unit: Union[UnitOfLength, str],
     ) -> None:
         """Initialise the ToyotaStatisticsSensor class."""
         super().__init__(coordinator, entry_id, vehicle_index, description)
         self.period: Literal["day", "week", "month", "year"] = description.period
-        self._attr_native_unit_of_measurement = unit
+        self._attr_native_unit_of_measurement = native_unit
         self._attr_suggested_unit_of_measurement = suggested_unit
 
     @property
