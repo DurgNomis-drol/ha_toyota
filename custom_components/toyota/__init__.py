@@ -5,6 +5,7 @@ import asyncio
 import asyncio.exceptions as asyncioexceptions
 import logging
 from datetime import timedelta
+from functools import partial
 from typing import Optional, TypedDict
 
 import httpcore
@@ -53,9 +54,12 @@ async def async_setup_entry(  # pylint: disable=too-many-statements
     email = entry.data[CONF_EMAIL]
     password = entry.data[CONF_PASSWORD]
 
-    client = MyT(
-        username=email,
-        password=password,
+    client = await hass.async_add_executor_job(
+        partial(
+            MyT,
+            username=email,
+            password=password,
+        )
     )
 
     try:
