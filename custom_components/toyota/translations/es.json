@@ -4,14 +4,14 @@
       "user": {
         "description": "Ingrese su dirección de correo electrónico y contraseña para la aplicación de MyT abajo",
         "data": {
-          "email": "Dirección de correo electonico",
+          "email": "Dirección de correo electrónico",
           "password": "Contraseña",
           "use_metric_values": "Utilizar unidades métricas (por ejemplo, km en lugar de millas)"
         }
       }
     },
     "error": {
-      "invalid_username": "La dirección del correo correo electrónico tiene que contener un @.",
+      "invalid_username": "La dirección de correo electrónico debe contener un @",
       "invalid_auth": "Correo electrónico/Contraseña incorrecta.",
       "unknown": "Error inesperado."
     }
@@ -27,22 +27,22 @@
         "name": "Vehicle-Identify-Number"
       },
       "odometer": {
-        "name": "Odometro"
+        "name": "Odómetro"
       },
       "fuel_level": {
         "name": "Nivel de combustible"
       },
       "fuel_range": {
-        "name": "Fuel range"
+        "name": "Autonomía de combustible"
       },
       "battery_level": {
-        "name": "Battery level"
+        "name": "Nivel de batería"
       },
       "battery_range": {
-        "name": "Battery range"
+        "name": "Autonomía de la batería"
       },
       "battery_range_ac": {
-        "name": "Battery range with AC"
+        "name": "Autonomía de la batería con AC"
       },
       "total_range": {
         "name": "Total range"
@@ -116,7 +116,7 @@
         "name": "Maletero"
       },
       "trunk_lock": {
-        "name": "Bloqueo mealetero"
+        "name": "Bloqueo del maletero"
       },
       "hazardlights": {
         "name": "Luces de emergencia"
