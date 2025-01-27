@@ -1,0 +1,141 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "description": "Per favore inserisci la tua mail e password per MyT di seguito.",
+        "data": {
+          "email": "Email",
+          "password": "Password",
+          "use_metric_values": "Usa unità di misura (es. km al posto di miglia)"
+        }
+      }
+    },
+    "error": {
+      "invalid_username": "La mail delve contenere @.",
+      "invalid_auth": "Mail/Password non corrette.",
+      "unknown": "Errore Inaspettato."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "data": {
+          "use_liters": "Usa Litri (L/100 miglia) al posto di MPG. Applicabile solo se la tua auto risporta i dati in miglia (Sistema di misura Imperiale)."
+        }
+      }
+    }
+  },
+  "entity": {
+    "device_tracker": {
+      "parking_location": {
+        "name": "Luogo di Parcheggio"
+      }
+    },
+    "sensor": {
+      "vin": {
+        "name": "Numero-Identificativo-Veicolo"
+      },
+      "odometer": {
+        "name": "Odometro"
+      },
+      "fuel_level": {
+        "name": "Livello Carbutante"
+      },
+      "fuel_range": {
+        "name": "Percorrenza con Carburante"
+      },
+      "battery_level": {
+        "name": "Livello Batteria"
+      },
+      "battery_range_ac": {
+        "name": "Percorrenza con Batteria in AC"
+      },
+      "battery_range": {
+        "name": "Percorrenza a Batteria"
+      },
+      "total_range": {
+        "name": "Percorrenza Totale"
+      },
+      "current_day_statistics": {
+        "name": "Statistiche di oggi"
+      },
+      "current_week_statistics": {
+        "name": "Statistiche corrente settimana"
+      },
+      "current_month_statistics": {
+        "name": "Statistiche corrente mese"
+      },
+      "current_year_statistics": {
+        "name": "Statistiche corrente anno"
+      }
+    },
+    "binary_sensor": {
+      "over_all_status": {
+        "name": "Stato complessico"
+      },
+      "hood": {
+        "name": "Cofano"
+      },
+      "key_in_car": {
+        "name": "Chiave sull Auto"
+      },
+      "front_defogger": {
+        "name": "Sbrinatore frontale"
+      },
+      "rear_defogger": {
+        "name": "Sbrinatore posteriore"
+      },
+      "driverseat_window": {
+        "name": "Finestrino del conducente"
+      },
+      "passengerseat_window": {
+        "name": "Finsetrino del passeggero"
+      },
+      "leftrearseat_window": {
+        "name": "Finestrino posteriore sinistro"
+      },
+      "rightrearseat_window": {
+        "name": "Finestrino posteriore destro"
+      },
+      "driverseat_door": {
+        "name": "Portiera conducente"
+      },
+      "driverseat_lock": {
+        "name": "Blocco portiera conducente"
+      },
+      "passengerseat_door": {
+        "name": "Portiera passeggero"
+      },
+      "passengerseat_lock": {
+        "name": "Blocco portiera passeggero"
+      },
+      "leftrearseat_door": {
+        "name": "Portiera posteriore sinistra"
+      },
+      "leftrearseat_lock": {
+        "name": "Blocco portiera posteriore sinistra"
+      },
+      "rightrearseat_door": {
+        "name": "Portiera posteriore destra"
+      },
+      "rightrearseat_lock": {
+        "name": "Blocco portiera posteriore destra"
+      },
+      "trunk_door": {
+        "name": "Bagagliaio"
+      },
+      "trunk_lock": {
+        "name": "Blocco Bagagliaio"
+      },
+      "hazardlights": {
+        "name": "Luci di Emergenza"
+      },
+      "headlights": {
+        "name": "Fari"
+      },
+      "taillights": {
+        "name": "Fari Posteriori"
+      }
+    }
+  }
+}
