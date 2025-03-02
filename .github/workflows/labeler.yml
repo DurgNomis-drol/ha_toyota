@@ -2,6 +2,7 @@
 name: "Manage labels"
 
 on:
+  workflow_dispatch:
   schedule:
     - cron: "0 0 * * *"
 
@@ -9,6 +10,9 @@ jobs:
   labeler:
     name: "Labeler"
     runs-on: "ubuntu-latest"
+    permissions:
+      contents: read
+      issues: write
     steps:
       - name: "⤵️ Check out code from GitHub"
         uses: "actions/checkout@v4"
