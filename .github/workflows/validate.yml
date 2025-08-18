@@ -14,7 +14,7 @@ jobs:
     name: "HACS"
     steps:
       - name: "⤵️ Check out code from GitHub"
-        uses: "actions/checkout@v4"
+        uses: "actions/checkout@v5"
       - name: "🏠 HACS validation"
         uses: "hacs/action@main"
         with:
@@ -25,6 +25,6 @@ jobs:
     name: "Hassfest"
     steps:
       - name: "⤵️ Check out code from GitHub"
-        uses: "actions/checkout@v4"
+        uses: "actions/checkout@v5"
       - name: "🏠 Hassfest validation"
         uses: "home-assistant/actions/hassfest@master"
